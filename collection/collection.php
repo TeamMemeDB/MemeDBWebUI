@@ -26,7 +26,7 @@ function meme(){
     }
     if(ctype_digit($id)){
         $memepreview = $conn->query(
-            'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,COALESCE(SUM(memevote.Value),0) AS Votes,'.$memevote.'
+            'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,Hash,Color,COALESCE(SUM(memevote.Value),0) AS Votes,'.$memevote.'
             FROM meme LEFT JOIN edge ON meme.Id=edge.memeId
             LEFT JOIN memevote ON meme.Id = memevote.memeId
             WHERE Hidden = 0 AND (Id = '.$id.' OR CollectionParent = '.$id.')

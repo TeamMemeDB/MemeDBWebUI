@@ -670,7 +670,7 @@ img:after{
 .meme>video{
 	min-width:15em;
 }
-.meme>.edit,.meme>.upvote,.meme>.downvote,.meme>.voteval,.meme>.fav,.meme>.collection{
+.meme>.btn,.meme>.collection{
 	background:#eee;
 	color:#111;
 	display:block;
@@ -682,8 +682,6 @@ img:after{
 	line-height: 0.8em;
 	opacity:0;
 	transition:opacity,background,color 125ms;
-}
-.meme>.edit,.meme>.upvote,.meme>.downvote,.meme>.voteval,.meme>.fav{
 	width:1em;
 	height:1em;
 }
@@ -708,11 +706,21 @@ img:after{
 	bottom: 1.5em;
 	left: 0.35em;
 }
+.meme>.dupe{
+	bottom: 0.25em;
+	right: 0.25em;
+	background: #f9ca24;
+}
 .meme>.collection{
 	top:0.25em;
 	left:2em;
 	padding:0.25em;
 	padding-top:0;
+	width: auto;
+	height: auto;
+}
+.video>.dupe{
+	bottom: 2.25em;
 }
 .video>.upvote{
 	bottom:4.5em;
@@ -739,7 +747,7 @@ img:after{
 	opacity:0;
 	transition:opacity,background,color 125ms;
 }
-.meme:hover>.edit,html.touch .meme>.edit,.meme:hover>.upvote,html.touch .meme>.upvote,.meme:hover>.downvote,.meme:hover>.fav,html.touch .meme>.downvote,.meme:hover>.voteval,html.touch .meme>.voteval,html.touch .fav,.meme:hover>.embedopen,html.touch .meme>.embedopen, .meme:hover>.collection, html.touch .meme>.collection{
+.meme:hover>.btn,html.touch .meme>.btn{
 	opacity:0.7;
 }
 .meme .youtube{
@@ -749,6 +757,9 @@ img:after{
 .meme iframe{
 	width:18em;
 	height:15em;
+}
+.meme.duplicate{
+	border-color: #f9ca24;
 }
 .meme.gif::before,.meme.video::before,.meme.audio::before,.meme.webm::before,.meme.parent::before{
 	content:"GIF";
@@ -835,7 +846,7 @@ div:fullscreen>video,div:-webkit-fullscreen>video,div:-moz-fullscreen>video,div:
 #memepreview>.embedopen{
 	display:none;
 }
-#memepreview>.edit,#memepreview>.upvote,#memepreview>.downvote,#memepreview>.voteval,#memepreview>.fav{
+#memepreview>.btn{
 	text-align:center;
 	color:#fff;
 	background:rgba(0,0,0,0.5);
@@ -849,14 +860,14 @@ div:fullscreen>video,div:-webkit-fullscreen>video,div:-moz-fullscreen>video,div:
 	left:0;
 	transition:background,color 125ms;
 }
-#memepreview>.edit:hover,#memepreview>.upvote:hover,#memepreview>.downvote:hover,#memepreview>.voteval:hover,#memepreview>.fav:hover{
+#memepreview>.btn:hover{
 	background:rgba(50,50,50,0.5);
 }
-#memepreview>.edit.active,#memepreview>.upvote.active,#memepreview>.downvote.active,#memepreview>.voteval.active,#memepreview>.fav.active{
+#memepreview>.btn.active{
 	background:rgba(255,255,255,0.5);
 	color:#000;
 }
-#memepreview>.edit.active:hover,#memepreview>.upvote.active:hover,#memepreview>.downvote.active:hover,#memepreview>.voteval.active:hover,#memepreview>.fav.active:hover{
+#memepreview>.btn.active:hover{
 	background:rgba(200,200,200,0.5);
 }
 #memepreview>.voteval{
@@ -868,6 +879,14 @@ div:fullscreen>video,div:-webkit-fullscreen>video,div:-moz-fullscreen>video,div:
 #memepreview>.edit{
 	right:0;
 	left:auto;
+}
+#memepreview>.dupe{
+	background: #f9cb2480;
+	right:3em;
+	left: auto;
+}
+#memepreview>.dupe:hover{
+	background: #ffe07080;
 }
 #memepreview>.fav{
 	left:9em;

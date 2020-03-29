@@ -147,13 +147,18 @@ function printmemes($memes,$limit,$conn){
 					</div>';
                 
 				$memebtns='
-					<span class="edit">✎</span>
-					<span class="fav'.(($row['MemeFav']=='1')?' active':'').'">★</span>
-					<span class="upvote'.(($row['MemeVote']=='1')?' active':'').'">&#708;</span>
-					<span class="voteval">'.$row['Votes'].'</span>
-					<span class="downvote'.(($row['MemeVote']=='-1')?' active':'').'">&#709;</span>
+					<span class="btn edit">✎</span>
+					<span class="btn fav'.(($row['MemeFav']=='1')?' active':'').'">★</span>
+					<span class="btn upvote'.(($row['MemeVote']=='1')?' active':'').'">&#708;</span>
+					<span class="btn voteval">'.$row['Votes'].'</span>
+					<span class="btn downvote'.(($row['MemeVote']=='-1')?' active':'').'">&#709;</span>
 					<a class="embedopen" href="/meme/'.$row['Id'].'">&#x1f517;</a>
 				';
+				if(strpos($row['Hash'],'#')===0 && in_array($row['Type'], ['image','video','gif','webm'])){
+					// This meme may be a duplicate
+					$memebtns = '<a class="btn dupe" href="/meme/'.substr($row['Hash'],1).'" title="This meme may be a duplicate! Click to view the original.">&#x1f4cb;</a>'.$memebtns;
+					$core = ' duplicate'.$core;
+				}
 				
 				if($row['Children']>0){
 					$memebtns=str_replace('"embedopen" href="/meme/','"embedopen" href="/collection/',$memebtns).'<span class="collection">1 of '.strval($row['Children']+1).'</span>';

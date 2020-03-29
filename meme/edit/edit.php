@@ -242,7 +242,7 @@ if(isset($_SESSION['access_token'])){
     }
     
     $memepreview = $conn->query(
-        'SELECT meme.Id AS Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,
+        'SELECT meme.Id AS Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,Hash,Color,
         description.Text AS Description,description.Id AS DescId,
         transcription.Text AS Transcription,transcription.Id AS TransId,
         category.Name AS category,
