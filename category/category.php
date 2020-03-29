@@ -27,7 +27,7 @@ if(strlen($id)==0|strlen($name)==0){
 
 if(!isset($_GET['get'])) if(!$header) $header=headr(['title'=>$name." memes",'description'=>"Todo: get real name and description of category.",'tags'=>['category',$name]],$conn);
 $memes = $conn->query(
-    'SELECT meme.Id AS Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+    'SELECT meme.Id AS Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
     (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes
     FROM ((meme LEFT JOIN categoryvote ON meme.Id = categoryvote.memeId)
     LEFT JOIN category ON categoryvote.categoryId = category.Id)

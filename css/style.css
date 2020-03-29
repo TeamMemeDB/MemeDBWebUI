@@ -642,14 +642,6 @@ a:hover>.dropdown-menu-item{
 		max-height:30em;
 		margin-right:0;
 	}
-	.meme>img,video{
-		width:auto!important;
-		height:auto!important;
-		max-width:100%!important;
-		max-height:30em!important;
-		min-width:auto!important;
-		min-height:auto!important;
-	}
 	.memewrapper{
 		font-size: 1em!important;
 	}
@@ -800,8 +792,9 @@ img:after{
 .meme.gif:hover::before,.meme.video:hover::before,.meme.audio:hover::before,.meme.webm:hover::before,.meme.parent:hover::before{
 	opacity:0;
 }
-.meme img,.meme video{
-	height:15em;
+.meme img, .meme video{
+	width: auto;
+	height: 15em;
 }
 .meme video{
 	min-width:15em;

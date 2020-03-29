@@ -26,7 +26,7 @@ if(!isset($_GET['get'])){
     print('<h2>Results for <span class="accent">#'.$name.'</span>;</h2>');
 }
 $memes = $conn->query(
-    'SELECT meme.Id AS Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+    'SELECT meme.Id AS Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
     (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes
     FROM ((meme LEFT JOIN tagvote ON meme.Id = tagvote.memeId)
     LEFT JOIN tag ON tagvote.tagId = tag.Id)

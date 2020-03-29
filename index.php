@@ -17,7 +17,7 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	<div class="super-bg" id="titlecardscroller">
 		<?php 
 		$memes = $conn->query('
-			SELECT Id
+			SELECT Id,Color
 			FROM meme LEFT JOIN edge ON meme.Id=edge.memeId
 			WHERE Nsfw=0 AND Type = "image"
 			GROUP BY Id
@@ -27,7 +27,8 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 		');
 		if($memes){
 			while($row=$memes->fetch_assoc()){
-				echo '<img src="https://cdn.yiays.com/meme/'.$row['Id'].'.mini.jpg" width="192" height="192">';
+				$style = ($row['Color']?' style="background:'.$row['Color'].';"':'');
+				echo '<img'.$style.' src="https://cdn.yiays.com/meme/'.$row['Id'].'.mini.jpg" width="192" height="192">';
 			}
 		}
 

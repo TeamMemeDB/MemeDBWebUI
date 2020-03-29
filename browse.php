@@ -113,6 +113,9 @@ function printmemes($memes,$limit,$conn){
 			echo '<span class="page">';
 			while($row = $memes->fetch_assoc()){
 				$core='" data-src="'.$row['Url'].'" data-id="'.$row['Id'].'"';
+				if($row['Color']){
+					$core.=' style="background-color:'.$row['Color'].';"';
+				}
 				if($row['CollectionParent']!=Null){
 					$core=' child'.$core.' data-parent="'.$row['CollectionParent'].'"';
 				}
@@ -120,6 +123,11 @@ function printmemes($memes,$limit,$conn){
 					$core=' parent'.$core;
 				}
 				if(isset($row['SearchData'])) $core.=' data-search="'.str_replace('<br />',' ',str_replace('"',"'",$row['SearchData'])).'"';
+				
+				$srccore = "";
+				if($row['Width']&&$row['Height']){
+					$srccore.=' width="'.$row['Width'].'px" height="'.$row['Height'].'px"';
+				}
 				
 				$youtube = '';
 				if(strpos($row['OriginalUrl'],'ttps://youtu.be/')==1||strpos($row['OriginalUrl'],'ttps://www.youtube.com/')==1){
@@ -152,19 +160,19 @@ function printmemes($memes,$limit,$conn){
 				}
 
 				if($row['Type']=='image'){
-					echo '<div class="meme img'.$core.'><img src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
+					echo '<div class="meme img'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='gif'){
-					echo '<div class="meme gif'.$core.'><img src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
+					echo '<div class="meme gif'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='webm'){
-					echo '<div class="meme webm'.$core.'><video muted preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/webm"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
+					echo '<div class="meme webm'.$core.'><video'.$srccore.' muted preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/webm"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='video'){
-					echo '<div class="meme video'.$core.'><div class="videoplayer"><video preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
+					echo '<div class="meme video'.$core.'><div class="videoplayer"><video'.$srccore.' preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='audio'){
-					echo '<div class="meme audio'.$core.'><video controls preload="none" poster="/img/audio.png"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$memebtns.'</div>';
+					echo '<div class="meme audio'.$core.'><video'.$srccore.' controls preload="none" poster="/img/audio.png"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='url'){
 					echo '<div class="meme url'.$core.'>'.embed($row['Url']).$memebtns.'</div>';

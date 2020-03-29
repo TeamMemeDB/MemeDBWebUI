@@ -21,7 +21,7 @@ $name=urldecode(substr($name,0,(strpos($name,'/')==0)?strlen($name):strpos($name
 if($name=='top'){
     if(!isset($_GET['get'])) if(!$header) $header=headr(['title'=>"Top Memes",'description'=>"A list of top rated memes by you, the users.",'tags'=>['top','best','rated']],$conn);
     $memes = $conn->query(
-        'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+        'SELECT Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
         (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes
         FROM meme LEFT JOIN edge ON meme.Id=edge.memeId
         WHERE '.$filters.'
@@ -40,7 +40,7 @@ else if($name=='random'){
 else if($name=='new'){
     if(!isset($_GET['get'])) if(!$header) $header=headr(['title'=>"Latest Memes",'description'=>"The memes added most recently to MemeDB. Updated instantly.",'tags'=>['memes','meme','latest','new','fresh']],$conn);
     $memes = $conn->query(
-        'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+        'SELECT Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
         (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes
         FROM meme LEFT JOIN edge ON meme.Id=edge.memeId
         WHERE '.$filters.'

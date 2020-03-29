@@ -39,7 +39,7 @@ function headr($data,$conn){
 	<meta name="theme-color" content="f9ca24">
 	<link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 	<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-	<link rel="stylesheet" href="/css/style.css?v=17" type="text/css">
+	<link rel="stylesheet" href="/css/style.css?v=20" type="text/css">
 	<link rel="stylesheet" type="text/css" href="/css/video.css">
 	<noscript>
 		<style>
@@ -200,7 +200,7 @@ function footer($meme=false){
 			<span class="float-right">
 				<a href="/terms">Terms</a> |
 				<a href="/report/">Report abuse</a> |
-				<a href="/sitemap">Sitemap</a> |
+				<a href="https://github.com/TeamMemeDB">GitHub</a> |
 				<a href="/dmca">DMCA</a>
 			</span>
 		</footer>

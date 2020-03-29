@@ -18,7 +18,7 @@ if(!isset($_GET['get'])){
 
 if(isset($_SESSION['access_token'])){
     $memes = $conn->query(
-        'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+        'SELECT Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
         (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes
         FROM (meme RIGHT JOIN favourites ON meme.Id=favourites.memeId)
         LEFT JOIN edge ON meme.Id=edge.memeId

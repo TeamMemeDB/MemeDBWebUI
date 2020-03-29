@@ -39,7 +39,7 @@ if(!isset($_GET['get'])){
 }
 if(strlen($query)>0){
 	$memes = $conn->query(
-		"SELECT meme.Id AS Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,$memevote,
+		"SELECT meme.Id AS Id,Color,Width,Height,Type,CollectionParent,Url,OriginalUrl,Nsfw,$memevote,
 		(SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=meme.Id) AS Votes,
 		REPLACE(
 			REPLACE(
