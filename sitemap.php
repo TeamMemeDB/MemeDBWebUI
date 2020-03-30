@@ -35,6 +35,7 @@ $generator->addUrl('/tutorial/manual.php', new DateTime(), 'always', '0.9');
 $generator->addUrl('/search/', new DateTime(), 'always', '0.8');
 $generator->addUrl('/sort/top/', new DateTime(), 'always', '0.8');
 $generator->addUrl('/sort/new/', new DateTime(), 'always', '0.8');
+$generator->addUrl('/sort/old/', new DateTime(), 'always', '0.8');
 $generator->addUrl('/sort/random/', new DateTime(), 'always', '0.8');
 $generator->addUrl('/user/', new DateTime(), 'always', '0.8');
 $generator->addUrl('/terms/', new DateTime(), 'always', '0.7');
