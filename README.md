@@ -12,5 +12,5 @@ After you have the dependencies set up...
  2. Clone this repo into the `public_html` or `www` folder (or whatever is equivalent in your stack)
  3. Enable the rewrite mod in Apache2.
  4. Create a user with restricted permissions in MariaDB
- 5. Create a connection file named `meme.conn.php` which connects to the database with the new user and stores the connection in a variable named `$conn`.
+ 5. Create a connection file named `meme.conn.php` in the folder above the root of the repo which connects to the database with the new user and stores the connection in a variable named `$conn`.
  6. You should be good to go!
