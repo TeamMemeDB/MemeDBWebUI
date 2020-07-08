@@ -19,6 +19,7 @@ if(substr($id,-1)=='/'){// remove trailing slash
 if(strpos($id,'/')<strlen($id)){// remove anything before last slash
     $name=substr($id,0,(strpos($id,'/')==0)?strlen($id):strpos($id,'/'));
     $id=substr($id,strlen($name)+1);
+    $name=urldecode($name);
 }
 
 if(!isset($_GET['get'])){

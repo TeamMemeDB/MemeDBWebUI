@@ -588,7 +588,7 @@ $(document).ready(function(){
 		}
 		else{
 			if(window.location.pathname.startsWith('/tag/')){
-				document.title='#'+decodeURI(window.location.pathname.replace(/\+/g,' ').substr(5,window.location.pathname.replace(/\/$/,'').lastIndexOf('/')-5))+' memes - MemeDB';
+				document.title='#'+decodeURI(window.location.pathname.replace(/\+/g,' ').substr(5,window.location.pathname.replace(/\/$/,'').lastIndexOf('/')-5)).replace('%2F','/')+' memes - MemeDB';
 			}
 			else if(window.location.pathname.startsWith('/search')){
 				if(window.location.search.startsWith('?q=')){
@@ -599,7 +599,7 @@ $(document).ready(function(){
 				document.title='Report - MemeDB';
 			}
 			else if(window.location.pathname.startsWith('/category/')|window.location.pathname.startsWith('/sort/')){
-				document.title=decodeURI(window.location.pathname.replace(/\+/g,' ').substr(10,window.location.pathname.replace(/\/$/,'').lastIndexOf('/')-10))+' memes - MemeDB';
+				document.title=decodeURI(window.location.pathname.replace(/\+/g,' ').substr(10,window.location.pathname.replace(/\/$/,'').lastIndexOf('/')-10)).replace('%2F','/')+' memes - MemeDB';
 			}
 			else if(window.location.pathname.startsWith('/user/fav')){
 				document.title='My Favourite Memes - MemeDB';

@@ -41,7 +41,7 @@ if(!isset($_GET['get'])){
         echo "You are reporting on $type#$id.";
         if($type=='meme'){
             $meme = $conn->query(
-                'SELECT Id,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+                'SELECT Id,Color,Width,Height,Hash,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
                 (SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=Id) AS Votes
                 FROM meme
                 WHERE Id = '.$id.'

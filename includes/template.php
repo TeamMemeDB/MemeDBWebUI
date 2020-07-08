@@ -209,7 +209,7 @@ function footer($meme=false){
 		<script src="/js/video.js" type="text/javascript"></script>
 		<?php 
 		if($meme){
-			echo '<script src="/js/meme.js" type="text/javascript"></script>';
+			echo '<script src="/js/meme.js?v=1" type="text/javascript"></script>';
 		}
 		?>
 		<?php  if(isset($_SESSION['return'])){ ?>
