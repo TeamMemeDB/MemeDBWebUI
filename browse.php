@@ -165,16 +165,16 @@ function printmemes($memes,$limit,$conn){
 				}
 
 				if($row['Type']=='image'){
-					echo '<div class="meme img'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
+					echo '<div class="meme img'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'x'.$row['Hash'].'.thumb.jpg"></a>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='gif'){
-					echo '<div class="meme gif'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"></a>'.$memebtns.'</div>';
+					echo '<div class="meme gif'.$core.'><img'.$srccore.' src="https://cdn.yiays.com/meme/'.$row['Id'].'x'.$row['Hash'].'.thumb.jpg"></a>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='webm'){
-					echo '<div class="meme webm'.$core.'><video'.$srccore.' muted preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/webm"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
+					echo '<div class="meme webm'.$core.'><video'.$srccore.' muted preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'x'.$row['Hash'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/webm"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='video'){
-					echo '<div class="meme video'.$core.'><div class="videoplayer"><video'.$srccore.' preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
+					echo '<div class="meme video'.$core.'><div class="videoplayer"><video'.$srccore.' preload="none" poster="https://cdn.yiays.com/meme/'.$row['Id'].'x'.$row['Hash'].'.thumb.jpg"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$videotemplate.'</div>'.$memebtns.'</div>';
 				}
 				else if($row['Type']=='audio'){
 					echo '<div class="meme audio'.$core.'><video'.$srccore.' controls preload="none" poster="/img/audio.png"><source src="'.$row['Url'].'" type="video/mp4"></video>'.$memebtns.'</div>';

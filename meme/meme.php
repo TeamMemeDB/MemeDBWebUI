@@ -37,15 +37,17 @@ function meme(){
             $singleedge = $conn->query('SELECT IFNULL(AVG(edge.Rating),4) AS Edge,Nsfw,Hidden FROM meme LEFT JOIN edge ON meme.Id=edge.memeId WHERE meme.Id = '.$id.' GROUP BY meme.Id');
             if($singleedge->num_rows<1){
                 $printpost.='<script>window.onload=function(){PopUp(true,"<h3>Unable to find meme!</h3><p>A meme by the provided ID doesn\'t seem to exist.</p>");}</script>';
+                $header=headr(['title'=>"Meme not found"], $conn);
             }else{
                 $row = $singleedge->fetch_assoc();
                 $dict=['edge'=>$row['Edge'],'nsfw'=>$row['Nsfw'],'hidden'=>$row['Hidden']];
                 $printpost.='<script>singleedge='.json_encode($dict).'</script>';
+                $header=headr(['title'=>"Edgy Meme",'description'=>"This meme is too edgy to be shown in an embed. Open the link and consent to seeing it first!"], $conn);
             }
         }
         if(!isset($_GET['get'])&!$header){
             $mememeta = $conn->query(
-                'SELECT Type,tag.Name AS tag,
+                'SELECT Type,Hash,tag.Name AS tag,
                 (
                     SELECT description.Text
                     FROM description
@@ -68,13 +70,14 @@ function meme(){
             $desc = "No one has provided a description for this meme yet. Log in with discord and contribute yours!";
             $tags = [];
             $row = $mememeta->fetch_assoc();
+            $hash = $row['Hash'];
             if(isset($row['TopDesc'])) $desc = $row['TopDesc'];
             array_push($tags,$row['Type']);
             if($row['Type']=='video'||$row['Type']=='webm') $desc = "This meme is a video! Open in the browser to play it.\n".$desc;
             while($row = $mememeta->fetch_assoc()){
                 if(isset($row['TagVote'])&&$row['TagVote']>0) array_push($tags,$row['tag']);
             }
-            $header=headr(['title'=>"Meme #".$id,'description'=>$desc,'tags'=>$tags,'image'=>"https://cdn.yiays.com/meme/$id.thumb.jpg"],$conn);
+            $header=headr(['title'=>"Meme #".$id,'description'=>$desc,'tags'=>$tags,'image'=>"https://cdn.yiays.com/meme/${id}x${hash}.thumb.jpg"],$conn);
         }
     }else{
         $printpost.='<script>$(document).load(function(){PopUp(true,"<h3>Unable to find meme!</h3><p>This meme may have been deleted.</p>");});</script>';
