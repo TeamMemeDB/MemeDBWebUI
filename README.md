@@ -1,4 +1,4 @@
-![MemeDB Icon](favicon-96x96.png "MemeDB")
+![MemeDB Icon](icons/favicon-96x96.png "MemeDB")
 
 # MemeDB WebUI
 This repo contains the full-stack WebUI for MemeDB.
