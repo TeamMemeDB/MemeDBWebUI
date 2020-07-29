@@ -125,7 +125,7 @@ function printmemes($memes,$limit,$conn){
 				if(isset($row['SearchData'])) $core.=' data-search="'.str_replace('<br />',' ',str_replace('"',"'",$row['SearchData'])).'"';
 				
 				$srccore = "";
-				if($row['Width']&&$row['Height']){
+				if(isset($row['Width'])&&isset($row['Height'])){
 					$srccore.=' width="'.$row['Width'].'px" height="'.$row['Height'].'px"';
 				}
 				
