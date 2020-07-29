@@ -1,14 +1,19 @@
 <?php 
 require('../../meme.conn.php');
 require('../includes/template.php');
+
 session_start();
+
+require('favourites.php');
+require('stats.php');
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-ini_set('max_execution_time', 300); //300 seconds = 5 minutes. In case if your CURL is slow and is loading too much (Can be IPv6 problem)
 error_reporting(E_ALL);
-define('OAUTH2_CLIENT_ID', '626548679750320129');
-define('OAUTH2_CLIENT_SECRET', 'snohIee-Xx8HX52iLyT86zGuloPKXAh4');
+
+// Get authorization details for discord API
+require('../../meme.discord.php');
+
 $authorizeURL = 'https://discordapp.com/api/oauth2/authorize';
 $tokenURL = 'https://discordapp.com/api/oauth2/token';
 $apiURLBase = 'https://discordapp.com/api/users/@me';
