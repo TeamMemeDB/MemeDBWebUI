@@ -298,7 +298,7 @@ if(isset($_SESSION['access_token'])){
 }else{
     $conn->close();
     if(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest'){
-        die("<script>window.location='/user?login&return='+encodeURIComponent(window.location.pathname);</script>");
+        die("<script>window.location='/user/login/?return='+encodeURIComponent(window.location.pathname);</script>");
     }else{
         die(json_encode(['success'=>0,'msg'=>"You must be logged in to use this!"]));
     }

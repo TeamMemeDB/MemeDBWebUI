@@ -70,7 +70,7 @@ if(is_touch_device()){
 }
 
 function LoginAndReturn(){
-	window.location='/user?login&return='+encodeURIComponent(window.location.pathname);
+	window.location='/user/login/?return='+encodeURIComponent(window.location.pathname);
 }
 
 function StayLoggedIn(){

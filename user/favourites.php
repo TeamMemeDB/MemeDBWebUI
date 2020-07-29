@@ -31,7 +31,7 @@ function favourites($userid){
         );
     }else{
         $conn->close();
-        die("<p><b>You must be logged in to see this page!</p><a href='/user?login' class='btn'>Login</a>");
+        die("<p><b>You must be logged in to see this page!</p><a href='/user/login/' class='btn'>Login</a>");
     }
 
 

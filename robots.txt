@@ -1,4 +1,4 @@
 User-agent: *
-Disallow: /user?login
+Disallow: /user/login/
 Allow: /report/$
 Disallow: /report/

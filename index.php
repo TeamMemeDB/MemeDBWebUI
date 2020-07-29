@@ -8,6 +8,7 @@ require('includes/template.php');
 require_once('browse.php');
 
 global $conn;
+global $user;
 global $filters;
 global $memevote;
 
@@ -50,10 +51,10 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	</div>
 	<div class="super-footer">
 		<?php if(!isset($_SESSION['access_token'])){?>
-			<a class="btn blurple-bg light login-discord" href="/user?login&return=/">Login</a>
-		<?php }else{?>
-			<a class="btn blurple-bg dark account" href="/user"><?php  echo $_SESSION['user']->username.'<span class="dim">#'.$_SESSION['user']->discriminator;?></span></a>
-		<?php } ?>
+			<a class="btn blurple-bg light login-discord" href="/user/login/?return=/">Login</a>
+		<?php }else{
+			echo "<a class=\"btn blurple-bg dark account\" href=\"$user->account_url\">$user->username<span class=\"dim\">$user->discriminator</span></a>";
+		} ?>
 		<a class="btn float-right till-small" href="/meme/1741">Relevant Meme</a>
   </div>
 	<div class="super-bg" style="background:linear-gradient(to bottom, #33373a 0%,#13171a 100%);">

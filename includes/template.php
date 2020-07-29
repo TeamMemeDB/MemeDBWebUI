@@ -1,12 +1,32 @@
 <?php 
 session_start();
 
+class User{
+	public $id;
+	public $account_url = "/user/";
+	public $avatar = "";
+	public $username = "Not logged in";
+	public $discriminator = "";
+	public $email = "";
+}
+
+$user = new User();
+if(isset($_SESSION['access_token'])){
+	$user->id = $_SESSION['user']->id;
+	$user->account_url .= $user->id . '/';
+	$user->avatar = $_SESSION['user']->avatar;
+	$user->username = $_SESSION['user']->username;
+	$user->discriminator = '#'.$_SESSION['user']->discriminator;
+	$user->email = $_SESSION['user']->email;
+}
+
 function safeurl($url){
 	// generates a safe url at all costs
 	return urlencode(str_replace(':','',str_replace('?','',str_replace('"','',strtolower($url)))));
 }
 
 function headr($data,$conn){
+	global $user;
 ?>
 <!DOCTYPE html>
 <html>
@@ -111,13 +131,13 @@ function headr($data,$conn){
 				</a>
 				<div class="float-right">
 					<?php if(!isset($_SESSION['access_token'])){?>
-						<a class="menu-btn float-right blurple-bg login-discord" href="/user?login">Login</a>
+						<a class="menu-btn float-right blurple-bg login-discord" href="/user/login/">Login</a>
 					<?php }else{?>
-						<a class="menu-btn float-right account" href="/user?logout" title="Logout">Logout</a>
+						<a class="menu-btn float-right account" href="/user/login/?logout" title="Logout">Logout</a>
 						<br class="hide-xl">
-						<a class="menu-btn float-right account" href="/user"><?php  echo $_SESSION['user']->username.'<span class="dim">#'.$_SESSION['user']->discriminator;?></span></a>
+						<?php echo "<a class=\"menu-btn float-right account\" href=\"$user->account_url\">$user->username<span class=\"dim\">$user->discriminator</span></a>"; ?>
 						<br class="show-tiny">
-						<a class="menu-btn float-right account accent" href="/user/favourites" title="View a list of all the memes you've favourited.">★</a>
+						<?php echo "<a class=\"menu-btn float-right account accent\" href=\"{$user->account_url}favourites/\" title=\"View a list of all the memes you've favourited.\">★</a>"; ?>
 					<?php }?>
 				</div>
 				<br class="till-tiny">
@@ -166,10 +186,13 @@ function headr($data,$conn){
 				<h2>Tags #</h2>
 				<input type="text" placeholder="Search tags" onkeyup="FilterTags();" id="tagfilter"/>
 				<span id="filtertags">
-					<?php 
+					<?php
 					$result = $conn->query("SELECT Id,Name,COUNT(tagId) AS count FROM tag LEFT JOIN tagvote ON tag.Id=tagvote.tagId GROUP BY Id;");
+					$result2 = $conn->query("SELECT SUM(Value), COUNT(DISTINCT tagId) FROM tagvote;");
+					$row2 = $result2->fetch_row();
+					$avgvotes = $row2[0]/$row2[1];
 					while($row = $result->fetch_assoc()){
-						print("<a class='tag' ".(($row['count']<2)?'style="display:none;"':'')." href='/tag/".safeurl($row['Name']).'/'.$row['Id']."'>#".$row['Name']."<i class='votes'> (".$row['count'].")</i></a> ");
+						print("<a class='tag' ".(($row['count']<$avgvotes)?'style="display:none;"':'')." href='/tag/".safeurl($row['Name']).'/'.$row['Id']."'>#".$row['Name']."<i class='votes'> (".$row['count'].")</i></a> ");
 					}
 					?>
 				</span>
@@ -205,7 +228,7 @@ function footer($meme=false){
 		</footer>
 		<script src="//cdn.yiays.com/jquery-3.4.1.min.js" type="text/javascript"></script>
 		<script src="/js/autocomplete.js?v=1" type="text/javascript"></script>
-		<script src="/js/main.js" type="text/javascript"></script>
+		<script src="/js/main.js?v=1" type="text/javascript"></script>
 		<script src="/js/video.js" type="text/javascript"></script>
 		<?php 
 		if($meme){
