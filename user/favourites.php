@@ -25,7 +25,7 @@ if(isset($_SESSION['access_token'])){
         WHERE '.$filters.' AND favourites.userId='.$_SESSION['user']->id.'
         GROUP BY meme.Id
         HAVING IFNULL(AVG(edge.Rating),4)<='.strval($_SESSION['spice']+0.5).'
-        ORDER BY Votes DESC
+        ORDER BY dateAdded DESC
         LIMIT '.$limit.';'
     );
 }else{
