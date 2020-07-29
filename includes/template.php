@@ -39,8 +39,8 @@ function headr($data,$conn){
 		<meta name="theme-color" content="f9ca24">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=25" type="text/css">
-		<link rel="stylesheet" href="/css/video.css" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=29" type="text/css">
+		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>
 				.meme{
@@ -147,7 +147,7 @@ function headr($data,$conn){
 				</a>
 				<a class="menu-btn" href="#tags" onclick="$('#tags').toggle();$(this).toggleClass('active');return false;">
 					<span class="from-small">Tags</span>
-					<span class="hide-big">#</span>
+					<span class="hide-big">#️⃣</span>
 					&#9662;
 				</a>
 			</nav>
@@ -209,7 +209,7 @@ function footer($meme=false){
 		<script src="/js/video.js" type="text/javascript"></script>
 		<?php 
 		if($meme){
-			echo '<script src="/js/meme.js?v=1" type="text/javascript"></script>';
+			echo '<script src="/js/meme.js?v=2" type="text/javascript"></script>';
 		}
 		?>
 		<?php  if(isset($_SESSION['return'])){ ?>

@@ -505,16 +505,13 @@ nav .menu-btn.blurple-bg:hover::after{
 	border-bottom: white 1px solid;
 	margin-bottom: 0;
 }
-@media screen and (max-width: 34em){
-	.super-content{
-		min-width: calc(100% - 4em);
-	}
-}
 .super-footer{
 	position: absolute;
 	bottom:2em;
 	left:2em;
 	right:2em;
+	min-width: 30em;
+	max-width: 45%;
 	z-index: 1;
 }
 .super-footer .btn{
@@ -550,6 +547,17 @@ nav .menu-btn.blurple-bg:hover::after{
 .super .btn, .super .btn>*{
 	color:#000;
 }
+
+@media screen and (max-width: 56.26em){
+	.super-content{
+		min-width: calc(100% - 4em);
+	}
+	.super-footer{
+		min-width: unset;
+		max-width: unset;
+	}
+}
+
 .dropdown-menu{
 	position: absolute;
 	list-style: none;

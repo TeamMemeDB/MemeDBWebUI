@@ -22,10 +22,10 @@ if(root==='/search/'){
 }
 
 // Scale all memes depending on the user's preferences
-$('.memewrapper').css('font-size',(parseInt(getCookie('zoom'))/100).toString()+'em');
+$('.memewrapper:not(.no-size)').css('font-size',(parseInt(getCookie('zoom'))/100).toString()+'em');
 $('#scale').val(getCookie('zoom'));
 $('#scale').on('input',function(){
-	$('.memewrapper').css('font-size',(parseInt($('#scale').val())/100).toString()+'em');
+	$('.memewrapper:not(.no-size)').css('font-size',(parseInt($('#scale').val())/100).toString()+'em');
 	setCookie('zoom',$('#scale').val().toString(),30);
 });
 

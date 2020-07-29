@@ -12,7 +12,7 @@
     color: #f0f0f0;
     position: absolute;
     bottom: 0;
-    z-index: 100;
+    z-index: 1;
     opacity: 0;
     transition: opacity 125ms;
     width: 100%;

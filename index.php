@@ -1,7 +1,15 @@
-<?php 
+<?php
+/*
+	Landing page for new users
+*/
 require('../meme.conn.php');
 require('includes/template.php');
 
+require_once('browse.php');
+
+global $conn;
+global $filters;
+global $memevote;
 
 headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!",'tags'=>['meme','memes','database','search','find']],$conn);
 ?>
@@ -38,18 +46,32 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 <div class="super">
 	<div class="super-content" style="color: #c3c7ca!important;">
 		<h3 style="border-bottom-color: #c3c7ca;">Login with Discord</h3>
-		<p>You can browse the site freely without an account and, by linking your discord account with MemeDB, you can make changes and form your own collection!</p>
+		<p>You can browse the site freely without an account and, by linking your Discord account with MemeDB, you can make changes and form your own collection of favourites!</p>
 	</div>
 	<div class="super-footer">
 		<?php if(!isset($_SESSION['access_token'])){?>
 			<a class="btn blurple-bg light login-discord" href="/user?login&return=/">Login</a>
 		<?php }else{?>
-			<a class="btn blurple-bg light account" href="/user"><?php  echo $_SESSION['user']->username.'<span class="dim">#'.$_SESSION['user']->discriminator;?></span></a>
+			<a class="btn blurple-bg dark account" href="/user"><?php  echo $_SESSION['user']->username.'<span class="dim">#'.$_SESSION['user']->discriminator;?></span></a>
 		<?php } ?>
+		<a class="btn float-right till-small" href="/meme/1741">Relevant Meme</a>
   </div>
 	<div class="super-bg" style="background:linear-gradient(to bottom, #33373a 0%,#13171a 100%);">
 		<div class="super-bg-inner"></div>
-    	<img alt="login with discord" src="/img/super-bg/discord.png" style="opacity:0.6;position:absolute;bottom:0;right:2em;">
+		<div class="memewrapper no-size from-small" style="position:absolute;bottom:0.5rem;right:0.5em;width:auto;max-width:40%;padding-bottom:0;font-size:0.8rem;">
+			<?php
+			$meme = $conn->query(
+				'SELECT Id,Color,Width,Height,Hash,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+				(SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=Id) AS Votes
+				FROM meme
+				WHERE '.$filters.' AND Id = 1741
+				GROUP BY Id
+				LIMIT 1;'
+			);
+			printmemes($meme, '0,1', $conn);
+			?>
+			<!--END-->
+		</div>
 	</div>
 </div>
 <div class="super">
@@ -58,12 +80,24 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 		<p>Vote on memes and watch the best memes rise to the top! If no one upvotes a meme, it is deleted.</p>
 	</div>
 	<div class="super-footer">
-		<a class="btn" href="/sort/top">Top🔥</a>
+		<a class="btn" href="/sort/top">Top 🔥</a>
+		<a class="btn float-right till-small" href="/meme/2376">Relevant Meme</a>
   </div>
 	<div class="super-bg" style="background:linear-gradient(to bottom, #737c88 0%,#333c48 100%);">
 		<div class="super-bg-inner"></div>
-		<div class="bg-aside">
-			<img alt="vote on memes" src="/img/super-bg/voting.jpg" style="position:absolute;bottom:0;right:0;">
+		<div class="memewrapper no-size from-small" style="position:absolute;bottom:0.5rem;right:0.5em;width:auto;max-width:40%;padding-bottom:0;font-size:0.8rem;">
+			<?php
+			$meme = $conn->query(
+				'SELECT Id,Color,Width,Height,Hash,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+				(SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=Id) AS Votes
+				FROM meme
+				WHERE '.$filters.' AND Id = 2376
+				GROUP BY Id
+				LIMIT 1;'
+			);
+			printmemes($meme, '0,1', $conn);
+			?>
+			<!--END-->
 		</div>
 	</div>
 </div>
@@ -74,12 +108,23 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	</div>
 	<div class="super-footer">
 		<a class="btn" href="/sort/new">New ✨</a>
+		<a class="btn float-right till-small" href="/meme/247">Relevant Meme</a>
 	</div>
   <div class="super-bg" style="background:linear-gradient(to bottom, #b5931b 0%,#705908 100%);">
 		<div class="super-bg-inner"></div>
-		<div class="bg-aside">
-			<img class="from-small" alt="edit memes" src="/img/super-bg/editing.jpg" style="position:absolute;top:0;right:0;">
-			<img class="till-small" alt="edit memes" src="/img/super-bg/editing-mini.jpg" style="position:absolute;bottom:0;right:0;max-width:calc(100% - 10em);">
+		<div class="memewrapper no-size from-small" style="position:absolute;bottom:0.5rem;right:0.5em;width:auto;max-width:40%;padding-bottom:0;font-size:0.8rem;">
+			<?php
+			$meme = $conn->query(
+				'SELECT Id,Color,Width,Height,Hash,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+				(SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=Id) AS Votes
+				FROM meme
+				WHERE '.$filters.' AND Id = 247
+				GROUP BY Id
+				LIMIT 1;'
+			);
+			printmemes($meme, '0,1', $conn);
+			?>
+			<!--END-->
 		</div>
 	</div>
 </div>
@@ -90,12 +135,23 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	</div>
 	<div class="super-footer">
 		<a class="btn" href="/search">Search 🔍</a>
+		<a class="btn float-right till-small" href="/meme/380">Relevant Meme</a>
 	</div>
   <div class="super-bg" style="background:linear-gradient(to bottom, #7289AA 0%,#42697A 100%);">
 		<div class="super-bg-inner"></div>
-		<div class="bg-aside">
-			<img class="from-small" alt="search for memes" src="/img/super-bg/search.jpg" style="position:absolute;top:0;right:0;">
-			<img class="till-small" alt="search for memes" src="/img/super-bg/search-mini.jpg" style="position:absolute;top:0;left:0;width:100%;">
+		<div class="memewrapper no-size from-small" style="position:absolute;bottom:0.5rem;right:0.5em;width:auto;max-width:40%;padding-bottom:0;font-size:0.8rem;">
+			<?php
+			$meme = $conn->query(
+				'SELECT Id,Color,Width,Height,Hash,Type,CollectionParent,Url,OriginalUrl,Nsfw,'.$memevote.',
+				(SELECT COALESCE(SUM(memevote.Value),0) FROM memevote WHERE memeId=Id) AS Votes
+				FROM meme
+				WHERE '.$filters.' AND Id = 380
+				GROUP BY Id
+				LIMIT 1;'
+			);
+			printmemes($meme, '0,1', $conn);
+			?>
+			<!--END-->
 		</div>
 	</div>
 </div>
@@ -103,5 +159,5 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	This site is still a work in progress. Reporting and User account settings aren't yet fully functional.
 </div>
 <?php 
-footer();
+footer(true);
 ?>
