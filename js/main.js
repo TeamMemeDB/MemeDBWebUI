@@ -75,7 +75,7 @@ function LoginAndReturn(){
 
 function StayLoggedIn(){
 	$.ajax({
-		url:'/user/?rememberme',
+		url:'/user/login/?rememberme',
 		success:function(data){
 			if(data=='1'){
 				PopUp(false);
@@ -122,6 +122,24 @@ $(document).ready(function(){
 		$('.control-panel>.page').hide();
 		$('#'+$(this).data('page')+'-page').show();
 		$(this).addClass('active');
+	});
+	
+	$('#favouritesprivacy').on('click', (e)=>{
+		e.preventDefault();
+		$.ajax({
+			url: '?togglefavouritesprivacy',
+			success: (data)=>{
+				data = data.substr(1);
+				if(data.length == 1){
+					document.getElementById('favouritesprivacy').checked = (data=="1");
+				}else{
+					alert(data);
+				}
+			},
+			error:()=>{
+				alert("The server failed to send a response.");
+			}
+		});
 	});
 });
 

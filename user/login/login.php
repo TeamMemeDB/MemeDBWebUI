@@ -38,7 +38,7 @@ if(get('code')) { // When Discord redirects the user back here, there will be a 
     $_SESSION['access_token'] = $token->access_token;
     $user = apiRequest($apiURLBase);
     $_SESSION['user'] = $user;
-    if(!$conn->query("CALL AddUser(".strval($user->id).",'".$conn->escape_string($user->username)."',".strval($user->discriminator).")")){
+    if(!$conn->query("CALL AddUser($user->id, \"{$conn->escape_string($user->username)}\", $user->discriminator, \"$user->avatar\");")){
       $params = array(
         'access_token' => session('access_token')
       );

@@ -404,7 +404,7 @@ header>nav h1{
 	margin:0;
 	padding-top:0;
 }
-.btn,.menu-btn,.inbtn,.tag,.cat,a.btn,a.menu-btn,a.inbtn,a.tag,a.cat{
+.btn,.menu-btn,.inbtn,.tag,.cat,a.btn,a.menu-btn,a.inbtn,a.tag,a.cat,.badge{
 	display:inline-block;
 	padding:1.025em;
 	background:rgba(255,255,255,0.1);
@@ -433,6 +433,10 @@ header>nav h1{
 }
 .tag:hover,.menu-btn:hover,.btn:hover,.inbtn:hover,.active{
 	background:rgba(255,255,255,0.3);
+}
+.badge{
+	padding: 0.1em;
+	margin: 0.1em;
 }
 .votes{
 	opacity:0.5;

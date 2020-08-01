@@ -29,8 +29,8 @@ if(isset($_GET['get'])){
 
 //Setup universal filters for memes.
 if(isset($_SESSION['access_token'])){
-	$memevote='(SELECT Value FROM memevote WHERE memeId=meme.Id AND userId='.$_SESSION['user']->id.') AS MemeVote,
-						 (SELECT 1 FROM favourites WHERE memeId=meme.Id AND userId='.$_SESSION['user']->id.') AS MemeFav,
+	$memevote='(SELECT Value FROM memevote WHERE memeId=meme.Id AND userId='.$user->id.') AS MemeVote,
+						 (SELECT 1 FROM favourites WHERE memeId=meme.Id AND userId='.$user->id.') AS MemeFav,
 						 (SELECT COUNT(*) FROM meme child WHERE CollectionParent = meme.Id) AS Children';
 }
 
@@ -70,7 +70,7 @@ if(!isset($_SESSION['spice'])){
 }else{
 	if(ctype_digit($_SESSION['spice'])){
 		$edge=intval($_SESSION['spice']);
-		if(!($edge>=0&&$edge<=(isset($_SESSION['admin'])?4:1))){
+		if(!($edge>=0&&$edge<=(isset($user->admin)?4:1))){
 			$_SESSION['spice']='0';
 		}
 	}else{
@@ -204,6 +204,7 @@ function printmemes($memes,$limit,$conn){
 
 function browse(){
 	global $conn;
+	global $user;
 	global $memes;
 	global $memepreview;
 	global $limit;
@@ -247,7 +248,7 @@ function browse(){
 		<div class="browse-control">
 			<div id="setedge" class="edgecontainer <?php  echo $num2word[$_SESSION['spice']+1]; ?>">
 				<span>🌶</span><span>🌶</span>
-				<?php  if(isset($_SESSION['admin'])) echo '<span>🌶</span><span>🌶</span><span>🌶</span>';?>
+				<?php  if(isset($user->admin)) echo '<span>🌶</span><span>🌶</span><span>🌶</span>';?>
 			</div>
 			<div class="scalecontainer hide-tiny">
 				<input type="range" min="50" max="150" value="100" id="scale">

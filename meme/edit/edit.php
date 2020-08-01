@@ -26,7 +26,7 @@ if(strpos($id,'/')<strlen($id)){// remove anything before last slash
 
 if(isset($_SESSION['access_token'])){
     if(isset($_GET['nsfw'])){
-        if($_SESSION['admin']){
+        if($user->admin){
             $nsfw = $_GET['nsfw']=='1'?'1':'0'; //enforce binary
             if($conn->query('UPDATE meme SET Nsfw = '.$nsfw.' WHERE Id = '.$id.';')){
                 $conn->close();
@@ -42,7 +42,7 @@ if(isset($_SESSION['access_token'])){
     }
     else if(isset($_GET['webm'])){
         $conn->close();
-        if($_SESSION['admin']){
+        if($user->admin){
             die(json_encode(['success'=>0,'msg'=>'To be implemented...'])); //TODO
         }else{
             die(json_encode(['success'=>0,'msg'=>'Only admins can change this!']));
@@ -60,12 +60,12 @@ if(isset($_SESSION['access_token'])){
             die(json_encode(['success'=>0,'msg'=>'The provided transcripton is too short.']));
         }
         
-        $result = $conn->query("INSERT INTO transcription(userId,memeId,editId,Text) VALUES(".$_SESSION['user']->id.",$id,$editId,'$text');");
+        $result = $conn->query("INSERT INTO transcription(userId,memeId,editId,Text) VALUES(".$user->id.",$id,$editId,'$text');");
         if(!$result){
             //$conn->close();
             die(json_encode(['success'=>0,'msg'=>'Failed to submit your transcription! '.$conn->error]));
         }
-        $result = $conn->query("INSERT IGNORE INTO transvote(transId,userId,Value) VALUES((SELECT LAST_INSERT_ID()),".$_SESSION['user']->id.",1);");
+        $result = $conn->query("INSERT IGNORE INTO transvote(transId,userId,Value) VALUES((SELECT LAST_INSERT_ID()),".$user->id.",1);");
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Your transcription was added, but your automatic vote wasn\'t counted. Please refresh the page. '.$conn->error]));
@@ -92,12 +92,12 @@ if(isset($_SESSION['access_token'])){
             die(json_encode(['success'=>0,'msg'=>'The provided descripton is too short.']));
         }
         
-        $result = $conn->query("INSERT INTO description(userId,memeId,editId,Text) VALUES(".$_SESSION['user']->id.",$id,$editId,'$text');");
+        $result = $conn->query("INSERT INTO description(userId,memeId,editId,Text) VALUES(".$user->id.",$id,$editId,'$text');");
         if(!$result){
             //$conn->close();
             die(json_encode(['success'=>0,'msg'=>'Failed to submit your description! '.$conn->error]));
         }
-        $result = $conn->query("INSERT IGNORE INTO descvote(descId,userId,Value) VALUES((SELECT LAST_INSERT_ID()),".$_SESSION['user']->id.",1);");
+        $result = $conn->query("INSERT IGNORE INTO descvote(descId,userId,Value) VALUES((SELECT LAST_INSERT_ID()),".$user->id.",1);");
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Your description was added, but your automatic vote wasn\'t counted. Please refresh the page. '.$conn->error]));
@@ -127,7 +127,7 @@ if(isset($_SESSION['access_token'])){
             $tagid = $result->fetch_array()[0];
         }
         
-        $result = $conn->query('INSERT IGNORE INTO tagvote(tagId,memeId,userId,Value) VALUES('.$tagid.','.$id.','.$_SESSION['user']->id.',1);');
+        $result = $conn->query('INSERT IGNORE INTO tagvote(tagId,memeId,userId,Value) VALUES('.$tagid.','.$id.','.$user->id.',1);');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Voting for the tag failed! '.$conn->error]));
@@ -140,7 +140,7 @@ if(isset($_SESSION['access_token'])){
     else if(isset($_GET['unvotetag'])){
         $tag = $conn->real_escape_string($_GET['unvotetag']);
         
-        $result=$conn->query('DELETE IGNORE FROM tagvote WHERE tagId=(SELECT Id FROM tag WHERE Name LIKE "'.$tag.'" LIMIT 1) AND memeId='.$id.' AND userId='.$_SESSION['user']->id.';');
+        $result=$conn->query('DELETE IGNORE FROM tagvote WHERE tagId=(SELECT Id FROM tag WHERE Name LIKE "'.$tag.'" LIMIT 1) AND memeId='.$id.' AND userId='.$user->id.';');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Tag unvote failed! '.$conn->error]));
@@ -157,7 +157,7 @@ if(isset($_SESSION['access_token'])){
     else if(isset($_GET['rmtag'])){
         $tag = $conn->real_escape_string($_GET['rmtag']);
         
-        $result=$conn->query('INSERT INTO tagvote(tagId,memeId,userId,Value) VALUES((SELECT Id FROM tag WHERE Name LIKE "'.$tag.'" LIMIT 1),'.$id.','.$_SESSION['user']->id.',-1) ON DUPLICATE KEY UPDATE Value=-1');
+        $result=$conn->query('INSERT INTO tagvote(tagId,memeId,userId,Value) VALUES((SELECT Id FROM tag WHERE Name LIKE "'.$tag.'" LIMIT 1),'.$id.','.$user->id.',-1) ON DUPLICATE KEY UPDATE Value=-1');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Tag remove failed! '.$conn->error]));
@@ -172,7 +172,7 @@ if(isset($_SESSION['access_token'])){
         
         $result = $conn->query('SELECT Id FROM category WHERE Name LIKE "'.$cat.'" LIMIT 1;');
         if($result->num_rows==0){
-            $result = $conn->query('INSERT IGNORE INTO categorysuggestion(userId,Name) VALUE('.$_SESSION['user']->id.',"'.$cat.'");');
+            $result = $conn->query('INSERT IGNORE INTO categorysuggestion(userId,Name) VALUE('.$user->id.',"'.$cat.'");');
             if($result){
                 $conn->close();
                 die(json_encode(['success'=>0.5,'msg'=>'Your tag has been suggested, if it\'s approved, you will be notified. You can add a description for the category, or remove the suggestion, on your profile.']));
@@ -183,7 +183,7 @@ if(isset($_SESSION['access_token'])){
         }
         $catid = $result->fetch_array()[0];
         
-        $result = $conn->query('INSERT IGNORE INTO categoryvote(categoryId,memeId,userId,Value) VALUES('.$catid.','.$id.','.$_SESSION['user']->id.',1);');
+        $result = $conn->query('INSERT IGNORE INTO categoryvote(categoryId,memeId,userId,Value) VALUES('.$catid.','.$id.','.$user->id.',1);');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Voting for the category failed! '.$conn->error]));
@@ -196,7 +196,7 @@ if(isset($_SESSION['access_token'])){
     else if(isset($_GET['unvotecat'])){
         $cat = $conn->real_escape_string($_GET['unvotecat']);
         
-        $result=$conn->query('DELETE IGNORE FROM categoryvote WHERE categoryId=(SELECT Id FROM category WHERE Name LIKE "'.$cat.'" LIMIT 1) AND memeId='.$id.' AND userId='.$_SESSION['user']->id.';');
+        $result=$conn->query('DELETE IGNORE FROM categoryvote WHERE categoryId=(SELECT Id FROM category WHERE Name LIKE "'.$cat.'" LIMIT 1) AND memeId='.$id.' AND userId='.$user->id.';');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Category unvote failed! '.$conn->error]));
@@ -213,7 +213,7 @@ if(isset($_SESSION['access_token'])){
     else if(isset($_GET['rmcat'])){
         $cat = $conn->real_escape_string($_GET['rmcat']);
         
-        $result=$conn->query('INSERT INTO categoryvote(categoryId,memeId,userId,Value) VALUES((SELECT Id FROM category WHERE Name LIKE "'.$cat.'" LIMIT 1),'.$id.','.$_SESSION['user']->id.',-1) ON DUPLICATE KEY UPDATE Value=-1');
+        $result=$conn->query('INSERT INTO categoryvote(categoryId,memeId,userId,Value) VALUES((SELECT Id FROM category WHERE Name LIKE "'.$cat.'" LIMIT 1),'.$id.','.$user->id.',-1) ON DUPLICATE KEY UPDATE Value=-1');
         if(!$result){
             $conn->close();
             die(json_encode(['success'=>0,'msg'=>'Category remove failed! '.$conn->error]));
@@ -225,13 +225,13 @@ if(isset($_SESSION['access_token'])){
     }
     else if(isset($_GET['edge'])){
         $edge = intval($_GET['edge']);
-        if($edge>=0&&$edge<=(isset($_SESSION['admin'])?4:1)){
-            $result=$conn->query('INSERT INTO edge(memeId,userId,Rating) VALUES('.$id.','.$_SESSION['user']->id.','.$edge.') ON DUPLICATE KEY UPDATE Rating='.$edge);
+        if($edge>=0&&$edge<=(isset($user->admin)?4:1)){
+            $result=$conn->query('INSERT INTO edge(memeId,userId,Rating) VALUES('.$id.','.$user->id.','.$edge.') ON DUPLICATE KEY UPDATE Rating='.$edge);
             if(!$result){
                 $conn->close();
                 die(json_encode(['success'=>0,'msg'=>'Adding your edge vote failed! '.$conn->error]));
             }
-            $result = $conn->query('SELECT IFNULL(AVG(Rating),4) AS Edge,(SELECT Rating FROM edge WHERE memeId='.$id.' AND userId='.$_SESSION['user']->id.') AS EdgeVote FROM edge WHERE memeId='.$id);
+            $result = $conn->query('SELECT IFNULL(AVG(Rating),4) AS Edge,(SELECT Rating FROM edge WHERE memeId='.$id.' AND userId='.$user->id.') AS EdgeVote FROM edge WHERE memeId='.$id);
             $row = $result->fetch_assoc();
             $conn->close();
             die(json_encode(['success'=>1,'Edge'=>$row['Edge'],'EdgeVote'=>($row['EdgeVote']==null?-1:$row['EdgeVote'])]));
@@ -248,7 +248,7 @@ if(isset($_SESSION['access_token'])){
         category.Name AS category,
         tag.Name AS tag,
         IFNULL(AVG(edge.Rating),4) AS Edge,
-        (SELECT Rating FROM edge WHERE memeId='.$id.' AND userId='.$_SESSION['user']->id.') AS EdgeVote,
+        (SELECT Rating FROM edge WHERE memeId='.$id.' AND userId='.$user->id.') AS EdgeVote,
         (SELECT COALESCE(SUM(Value),0) FROM descvote WHERE descId=description.Id) AS DescVote,
         (SELECT COALESCE(SUM(Value),0) FROM transvote WHERE transId=transcription.Id) AS TransVote,
         (SELECT COALESCE(SUM(Value),0) FROM categoryvote WHERE categoryId=category.Id AND memeId=meme.Id) AS CategoryVote,

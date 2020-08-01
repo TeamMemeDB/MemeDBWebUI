@@ -2,12 +2,31 @@
 session_start();
 
 class User{
+	/* - Future code (for php 7.4)
+	public int $id;
+	public string $account_url = "/user/";
+	public string $avatar = null;
+	public string $username = "Not logged in";
+	public string $discriminator = "";
+	public string $email = null;
+	public bool $admin = false;
+	public bool $banned = false;
+	public bool $favouritesprivacy = false;
+	public bool $anon = true;
+	public bool $isme = false;
+	*/
+	
 	public $id;
 	public $account_url = "/user/";
-	public $avatar = "";
+	public $avatar = null;
 	public $username = "Not logged in";
 	public $discriminator = "";
-	public $email = "";
+	public $email = null;
+	public $admin = false;
+	public $banned = false;
+	public $favouritesprivacy = false;
+	public $anon = true;
+	public $isme = false;
 }
 
 $user = new User();
@@ -18,6 +37,9 @@ if(isset($_SESSION['access_token'])){
 	$user->username = $_SESSION['user']->username;
 	$user->discriminator = '#'.$_SESSION['user']->discriminator;
 	$user->email = $_SESSION['user']->email;
+	$user->admin = isset($_SESSION['admin']);
+	$user->anon = false;
+	$user->isme = true;
 }
 
 function safeurl($url){
@@ -59,7 +81,7 @@ function headr($data,$conn){
 		<meta name="theme-color" content="f9ca24">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=29" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=30" type="text/css">
 		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>
@@ -115,7 +137,7 @@ function headr($data,$conn){
 			<br><div id="memespice" class="edgecontainer">
 				<span>🌶</span>
 				<span>🌶</span>
-				<?php  if(isset($_SESSION['admin'])) echo '<span>🌶</span><span>🌶</span><span>🌶</span>';?>
+				<?php  if(isset($user->admin)) echo '<span>🌶</span><span>🌶</span><span>🌶</span>';?>
 			</div><br>
 			<sub>
 				<b><i>Note:</i></b> the values shown here have been voted as the most suitable for this meme by other users of the website.
@@ -177,13 +199,13 @@ function headr($data,$conn){
 				<?php 
 				$result = $conn->query("SELECT Id,Name,Description,COUNT(categoryId) AS count FROM category LEFT JOIN categoryvote ON category.Id=categoryvote.categoryId GROUP BY Id");
 				while($row =  $result->fetch_assoc()){
-					print("<a class='menu-btn cat' href='/category/".safeurl($row['Name']).'/'.$row['Id']."' title='".str_replace('*','',$row['Description'])."'>".$row['Name']."<i class='votes'> (".$row['count'].")</i></a> ");
+					print("<a class=\"menu-btn cat\" href=\"/category/".safeurl($row['Name']).'/'.$row['Id']."\" title=\"".str_replace('*','',$row['Description'])."\">".$row['Name']."<i class=\"votes\"> (".$row['count'].")</i></a> ");
 				}
 				?>
 				</span>
 			</div>
 			<div class="popdownmenu" id="tags" style="display:none;">
-				<h2>Tags #</h2>
+				<h2>Tags #️⃣</h2>
 				<input type="text" placeholder="Search tags" onkeyup="FilterTags();" id="tagfilter"/>
 				<span id="filtertags">
 					<?php
@@ -218,17 +240,17 @@ function footer($meme=false){
 ?>
 		</div>
 		<footer>
-			&copy; 2019 - Yiays
+			&copy; 2020, Yiays
 			<span class="float-right">
-				<a href="/terms">Terms</a> |
-				<a href="/report/">Report abuse</a> |
+				<a href="/terms/">Terms</a> |
+				<a href="/report/">Report</a> |
 				<a href="https://github.com/TeamMemeDB">GitHub</a> |
-				<a href="/dmca">DMCA</a>
+				<a href="/dmca/">DMCA</a>
 			</span>
 		</footer>
 		<script src="//cdn.yiays.com/jquery-3.4.1.min.js" type="text/javascript"></script>
 		<script src="/js/autocomplete.js?v=1" type="text/javascript"></script>
-		<script src="/js/main.js?v=1" type="text/javascript"></script>
+		<script src="/js/main.js?v=7" type="text/javascript"></script>
 		<script src="/js/video.js" type="text/javascript"></script>
 		<?php 
 		if($meme){
