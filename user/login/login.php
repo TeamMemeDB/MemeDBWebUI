@@ -1,6 +1,8 @@
 <?php
 require('../../../meme.conn.php');
 
+session_start();
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -22,6 +24,7 @@ if(get('code')) { // When Discord redirects the user back here, there will be a 
   if(isset($_SESSION['access_token'])){
     // This is an old request that has already been handled
     header('Location: https://meme.yiays.com/user/'.$_SESSION['user']->id.'/');
+    die("You are being redirected...");
   }
   // Exchange the auth code for a token
   $token = apiRequest($tokenURL, array(
@@ -44,13 +47,22 @@ if(get('code')) { // When Discord redirects the user back here, there will be a 
       printf("Error recording your login! Please try logging in later. ".$conn->error);
       $conn->close();
       die();
-    }else{
-      $_SESSION['admin']=($conn->query('SELECT Admin FROM user WHERE Id = '.strval($user->id).' AND Admin = 1')->num_rows==1);
-      if(isset($_SESSION['return'])){
-        header('Location: '.$_SESSION['return']);
-        $conn->close();
-        die('You are being redirected.');
-      }
+    }
+    if($conn->query('SELECT Banned FROM user WHERE Id = '.strval($user->id).' AND Banned = 1')->num_rows==1){
+      $params = array(
+        'access_token' => session('access_token')
+      );
+      apiRequest('https://discordapp.com/api/oauth2/token/revoke',$params);
+      session_destroy();
+      $conn->close();
+      die("You've been banned from MemeDB!");
+    }
+    
+    $_SESSION['admin']=($conn->query('SELECT Admin FROM user WHERE Id = '.strval($user->id).' AND Admin = 1')->num_rows==1);
+    if(isset($_SESSION['return'])){
+      header('Location: '.$_SESSION['return']);
+      $conn->close();
+      die('You are being redirected.');
     }
   }else{
     unset($_SESSION['return']);
