@@ -81,7 +81,7 @@ function headr($data,$conn){
 		<meta name="theme-color" content="f9ca24">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=30" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=39" type="text/css">
 		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>
@@ -182,12 +182,12 @@ function headr($data,$conn){
 					<span class="from-small">Random</span>
 					<span class="hide-big">❔</span>
 				</a>
-				<a class="menu-btn" href="#categories" onclick="$('#categories').toggle();$(this).toggleClass('active');return false;">
+				<a class="menu-btn dropdown" href="#categories" onclick="$('#categories').toggle();$(this).toggleClass('active');return false;">
 					<span class="from-small">Categories</span>
 					<span class="hide-big">📁</span>
 					&#9662;
 				</a>
-				<a class="menu-btn" href="#tags" onclick="$('#tags').toggle();$(this).toggleClass('active');return false;">
+				<a class="menu-btn dropdown" href="#tags" onclick="$('#tags').toggle();$(this).toggleClass('active');return false;">
 					<span class="from-small">Tags</span>
 					<span class="hide-big">#️⃣</span>
 					&#9662;

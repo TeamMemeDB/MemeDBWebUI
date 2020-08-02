@@ -434,6 +434,9 @@ header>nav h1{
 .tag:hover,.menu-btn:hover,.btn:hover,.inbtn:hover,.active{
 	background:rgba(255,255,255,0.3);
 }
+.menu-btn.dropdown{
+	padding-right: 0.2em;
+}
 .badge{
 	padding: 0.1em;
 	margin: 0.1em;
@@ -586,19 +589,22 @@ a:hover>.dropdown-menu-item{
 }
 
 .control-panel{
-	height:40vh;
-	min-height:20em;
+	display: grid;
+	grid-template-columns: 10em auto;
+	min-height:40em;
 	position: relative;
 	left:-1em;
 	width:calc(100% + 2em);
 	top:-1em;
 }
+@media only screen and (max-width: 37.5em){
+	.control-panel{
+		grid-template-columns: 4em auto;
+	}
+}
 .control-panel>nav{
-	position: absolute;
-	top:0;
-	bottom:0;
-	left:0;
-	width:15em;
+	grid-row: 1;
+	grid-column: 1;
 	background:#131c28;
 }
 .control-panel>nav a{
@@ -618,13 +624,33 @@ a:hover>.dropdown-menu-item{
 	padding:0;
 }
 .control-panel>.page{
-	position: absolute;
-	padding:1em;
-	left:15em;
-	right:0;
-	top:0;
-	bottom:0;
+	grid-row: 1;
+	grid-column: 2;
+	padding: 1em;
 	background:#111;
+}
+
+.bar{
+	display: flex;
+	flex-direction: row;
+	background: #232c38;
+	border-radius: 0.2em;
+	border: 0.1em solid #ccc;
+	margin: 0.2em;
+	margin-bottom: 0.5em;
+	overflow: hidden;
+}
+.bar>span{
+	display: inline-block;
+	border-radius: 0.1em;
+	white-space: nowrap;
+	padding: 0.25em;
+	z-index: 1;
+}
+.bar>span:last-child{
+	flex-grow: 1;
+	background: #7289DA;
+	z-index: 0;
 }
 
 /* MEME IN MAIN DOCUMENT */

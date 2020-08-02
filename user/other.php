@@ -5,7 +5,7 @@
 require_once('user.php');
 require_once('profile.php');
 
-function other(User $user = null){
+function other(?User $user = null){
 	global $conn, $header;
 	
 	if(is_null($user)){

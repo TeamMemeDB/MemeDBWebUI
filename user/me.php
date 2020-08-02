@@ -5,7 +5,7 @@
 require_once('user.php');
 require_once('profile.php');
 
-function me(User $user = null){
+function me(?User $user = null){
 	global $conn;
 	if(!is_null($user)) {
 		headr(['title'=>$user->username." | Account Settings"],$conn);

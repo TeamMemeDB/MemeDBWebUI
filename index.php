@@ -22,6 +22,7 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 	<div class="super-footer">
 		<br><a href="/sort/new" class="btn accentbg">Enter</a>
 		<a href="/tutorial" class="btn">Tutorial</a>
+		<a href="/user/0/stats/" class="btn">Stats</a>
 	</div>
 	<div class="super-bg" id="titlecardscroller">
 		<?php 
@@ -53,7 +54,7 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 		<?php if(!isset($_SESSION['access_token'])){?>
 			<a class="btn blurple-bg light login-discord" href="/user/login/?return=/">Login</a>
 		<?php }else{
-			echo "<a class=\"btn blurple-bg dark account\" href=\"$user->account_url\">$user->username<span class=\"dim\">$user->discriminator</span></a>";
+			echo "<a class=\"btn blurple-bg light account\" href=\"$user->account_url\">$user->username<span class=\"dim\">$user->discriminator</span></a>";
 		} ?>
 		<a class="btn float-right till-small" href="/meme/1741">Relevant Meme</a>
   </div>

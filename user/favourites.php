@@ -5,7 +5,7 @@
 require_once('user.php');
 require_once('../browse.php');
 
-function favourites(User $favuser){
+function favourites(?User $favuser){
     global $conn;
     global $user;
     global $header;
