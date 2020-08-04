@@ -31,6 +31,7 @@ function getuser($id): ?User{
       if(is_null($target->username)) $target->username = "Anonymous MemeDB User";
       else $target->anon = false;
       $target->discriminator = '#'.$row['Discriminator'];
+			if($target->discriminator == '#') $target->discriminator = '';
       $target->admin = $row['Admin'];
       $target->banned = $row['Banned'];
       $target->favouritesprivacy = $row['FavouritesPrivacy'];

@@ -49,26 +49,35 @@ WHERE CollectionParent IS NULL");
 	echo "<h3>Database completion</h3>
 	<p>This section celebrates users who dedicate their time to increasing metadata coverage of MemeDB. Greater coverage means more comprehensive search results.</p>";
 	
-	echo "<p><b>Total memes:</b> $row[Total]</p>";
+	if($user->id == 0)
+		echo "<p style=\"font-size: 1.5rem;\"><b>Total memes:</b> $row[Total]</p>";
+	else{
+		$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
+		echo "<p style=\"font-size: 1.5rem;\"><b>Total score:</b> $score</p>";
+	}
 	
-	echo "<b>Descriptions:</b>
+	echo "<b>Descriptions:</b> <a href=\"/leaderboard/described/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$descs%\">$row[Descriptions] ($descs%)</span>".($descs<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
-	echo "<b>Transcriptions:</b>
+	echo "<b>Transcriptions:</b> <a href=\"/leaderboard/transcribed/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$trans%\">$row[Transcriptions] ($trans%)</span>".($trans<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
-	echo "<b>Categoried memes:</b>
+	echo "<b>Categoried memes:</b> <a href=\"/leaderboard/categorized/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$cats%\">$row[Categories] ($cats%)</span>".($cats<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
-	echo "<b>Tagged memes:</b>
+	echo "<b>Tagged memes:</b> <a href=\"/leaderboard/tagged/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$tags%\">$row[Tags] ($tags%)</span>".($tags<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
-	echo "<b>Edge ratings:</b>
+	echo "<b>Edge ratings:</b> <a href=\"/leaderboard/edged/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$edge%\">$row[Edge] ($edge%)</span>".($edge<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
-	echo "<b>Meme ratings:</b>
+	echo "<b>Meme ratings:</b> <a href=\"/leaderboard/rated/\">Show Leaderboard</a>
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$rate%\">$row[Rating] ($rate%)</span>".($rate<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
 	footer();
+}
+
+function calculate_score($ratings, $edges, $tags, $cats, $trans, $descs){
+	return $ratings + $edges + $tags*2 + $cats*2 + $trans*5 + $descs*8;
 }
 ?>

@@ -81,7 +81,7 @@ function headr($data,$conn){
 		<meta name="theme-color" content="f9ca24">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=39" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=43" type="text/css">
 		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>

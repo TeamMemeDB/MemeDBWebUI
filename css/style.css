@@ -5,6 +5,7 @@ html{
 	overflow:overlay;
 	overflow-x:hidden;
 	position: relative;
+	font-size: 14px;
 }
 html,body{
 	height:calc(100% - 2em);
@@ -85,7 +86,7 @@ p{
 	line-height:1.2em;
 }
 table,table td,table th{
-	border: #fff 0.1em solid;
+	border: #fff 1px solid;
 	padding:0.2em;
 	border-collapse: collapse;
 }
@@ -435,7 +436,7 @@ header>nav h1{
 	background:rgba(255,255,255,0.3);
 }
 .menu-btn.dropdown{
-	padding-right: 0.2em;
+	padding-right: 0.4em;
 }
 .badge{
 	padding: 0.1em;
@@ -634,15 +635,15 @@ a:hover>.dropdown-menu-item{
 	display: flex;
 	flex-direction: row;
 	background: #232c38;
-	border-radius: 0.2em;
-	border: 0.1em solid #ccc;
+	border-radius: 0.3em;
+	border: 0.15em solid #ccc;
 	margin: 0.2em;
 	margin-bottom: 0.5em;
 	overflow: hidden;
 }
 .bar>span{
 	display: inline-block;
-	border-radius: 0.1em;
+	border-radius: 0.15em;
 	white-space: nowrap;
 	padding: 0.25em;
 	z-index: 1;
@@ -1069,14 +1070,14 @@ div:fullscreen>video,div:-webkit-fullscreen>video,div:-moz-fullscreen>video,div:
 }
 #memedesc,#memetrans{
 	background:#111;
-	border: 0.1em solid #ccc;
+	border: 0.15em solid #ccc;
 	border-radius: 1em;
 	margin-top:0.5em;
 	overflow:hidden;
 }
 #memedesc>.desc,#memetrans>.trans{
 	padding:0.3em;
-	border-bottom:0.1em solid #aaa;
+	border-bottom:1px solid #aaa;
 	padding-bottom:0.4em;
 	margin:0;
 }
