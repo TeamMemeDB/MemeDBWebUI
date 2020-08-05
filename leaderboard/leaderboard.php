@@ -9,7 +9,7 @@ $leaderboards = [
 	'tagged'=>"top contributors who have tagged memes with their trends, contents, people, and humour.",
 	'edged'=>"top contributors who help the database group memes up by their edginess, protecting innocent viewers.",
 	'rated'=>"top users who have upvoted or downvoted as many memes as possible.",
-	'overall'=>"top contributers overall - based on a weighted score favouring contributions that take more time."
+	'overall'=>"top contributors overall - based on a weighted score favouring contributions that take more time."
 ];
 $leaderboardtables = [
 	'described'=>'description',

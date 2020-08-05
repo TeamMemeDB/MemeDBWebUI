@@ -17,8 +17,6 @@ function stats(?User $user){
 	
 	if(!$header) $header = headr(['title'=>"$user->username's Stats", 'description'=>"$user->username's contribution statistics from their account on MemeDB."], $conn);
 	
-	superprofile($user);
-	
 	$result = $conn->query(
 "SELECT
 	COUNT(DISTINCT meme.Id) AS Total,
@@ -46,13 +44,20 @@ WHERE CollectionParent IS NULL");
 	$edge = round(($row['Edge']/$row['Total'])*100, 2);
 	$rate = round(($row['Rating']/$row['Total'])*100, 2);
 	
+	$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
+	if($conn->query("UPDATE user SET Points = $score WHERE Id = $user->id")){
+		$user->points = $score;
+		$user->level = ceil(sqrt($score));
+	}
+	
+	superprofile($user);
+	
 	echo "<h3>Database completion</h3>
 	<p>This section celebrates users who dedicate their time to increasing metadata coverage of MemeDB. Greater coverage means more comprehensive search results.</p>";
 	
 	if($user->id == 0)
 		echo "<p style=\"font-size: 1.5rem;\"><b>Total memes:</b> $row[Total]</p>";
 	else{
-		$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
 		echo "<p style=\"font-size: 1.5rem;\"><b>Total score:</b> $score</p>";
 	}
 	

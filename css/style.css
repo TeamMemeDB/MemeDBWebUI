@@ -441,6 +441,7 @@ header>nav h1{
 .badge{
 	padding: 0.1em;
 	margin: 0.1em;
+	margin-right: 0.3em;
 }
 .votes{
 	opacity:0.5;
