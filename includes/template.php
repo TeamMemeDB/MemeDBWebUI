@@ -224,6 +224,7 @@ function headr($data,$conn){
 		</header>
 		<div class="wrapper">
 			<div class="push push-header"></div>
+			<?php /*
 			<div class="panel warning hide">
 					<p>
 						<b>Warning:</b> MemeDB is currently in emergency mode, you will not be able to log in or make changes. The latest status on the situation is below.
@@ -234,6 +235,7 @@ function headr($data,$conn){
 					</ul>
 			</div>
 			<noscript><b>Warning:</b> Many features on this website may not work without enabling JavaScript.</noscript>
+			*/ ?>
 <?php 
 return true;
 }
@@ -256,7 +258,7 @@ function footer($meme=false){
 		<script src="/js/video.js" type="text/javascript"></script>
 		<?php 
 		if($meme){
-			echo '<script src="/js/meme.js?v=2" type="text/javascript"></script>';
+			echo '<script src="/js/meme.js?v=7" type="text/javascript"></script>';
 		}
 		?>
 		<?php  if(isset($_SESSION['return'])){ ?>

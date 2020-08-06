@@ -303,8 +303,8 @@ $(document).ready(function(){
 			else{
 				var text = '';
 				if(typeof src.data('id')!=='undefined'){
-					text = src.clone().children().remove().end().text();
-					text = text.substring(0,text.length-2);
+					text = src.clone().children().remove(':not(br)').end().html();
+					text = text.substring(0,text.length-7).replace(/<br>/g,'\n');
 				}
 				src.append("<div class='editor' data-id='"+src.data('id')+"'><textarea rows='4' maxlength='10000'>"+text+"</textarea>"+
 					"<sub> - press ctrl+enter or double-tap to save.</sub></div>");
@@ -343,8 +343,8 @@ $(document).ready(function(){
 			else{
 				var text = '';
 				if(typeof src.data('id')!=='undefined'){
-					text = src.clone().children().remove().end().text();
-					text = text.substring(0,text.length-2);
+					text = src.clone().children().remove(':not(br)').end().html();
+					text = text.substring(0,text.length-7).replace(/<br>/g,'\n');
 				}
 				src.append("<div class='editor' data-id='"+src.data('id')+"'><textarea rows='4' maxlength='10000'>"+text+"</textarea>"+
 					"<sub> - press ctrl+enter or double-tap to save.<br> - use newlines frequently.</sub></div>");
