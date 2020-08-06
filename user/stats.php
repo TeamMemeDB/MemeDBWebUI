@@ -44,10 +44,12 @@ WHERE CollectionParent IS NULL");
 	$edge = round(($row['Edge']/$row['Total'])*100, 2);
 	$rate = round(($row['Rating']/$row['Total'])*100, 2);
 	
-	$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
-	if($conn->query("UPDATE user SET Points = $score WHERE Id = $user->id")){
-		$user->points = $score;
-		$user->level = ceil(sqrt($score));
+	if($user->id !== 0){
+		$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
+		if($conn->query("UPDATE user SET Points = $score WHERE Id = $user->id")){
+			$user->points = $score;
+			$user->level = ceil(sqrt($score));
+		}
 	}
 	
 	superprofile($user);

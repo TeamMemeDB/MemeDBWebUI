@@ -7,7 +7,8 @@ $level_roles = [
 	9800 => '👅 Thot', // Lvl 75-99
 	22500 => '💯 100', // Lvl 100-149
 	40000 => '👨‍❤️‍💋‍👨 gay', // Lvl 150-199
-	999999999999 => '👌 Ok Hand' // Lvl 200+
+	62001 => '👌 Ok', // Lvl 200-249
+	9999999 => '😎 Epic' // Lvl 250+
 ];
 
 function getuser($id): ?User{
@@ -68,10 +69,12 @@ function superprofile(User $user){
 	}
 	
 	$badges = "";
-	foreach($level_roles as $scorereq=>$role){
-		if($user->points < $scorereq){
-			$badges .= "<a href=\"/leaderboard/overall/\" class=\"badge\" title=\"".($user->points-($user->level-1)*($user->level-1)-1).' / '.($user->level*$user->level-($user->level-1)*($user->level-1)-1)." Points until leveling up!\">$role (level $user->level)</a>";
-			break;
+	if($user->id !== 0){
+		foreach($level_roles as $scorereq=>$role){
+			if($user->points < $scorereq){
+				$badges .= "<a href=\"/leaderboard/overall/\" class=\"badge\" title=\"".($user->points-($user->level-1)*($user->level-1)-1).' / '.($user->level*$user->level-($user->level-1)*($user->level-1)-1)." Points until leveling up!\">$role (level $user->level)</a>";
+				break;
+			}
 		}
 	}
 	if($user->admin) $badges .= "<span class=\"badge\" title=\"This user is an administrator, responsible for moderating and maintaining MemeDB.\">🚨 Admin</span>";
