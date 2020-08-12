@@ -1,13 +1,13 @@
 <?php
 
 $level_roles = [
-	576 => '✨ Youngling', // Lvl 0-24
-	2401 => '🐸 Pepe', // Lvl 25-49
-	5476 => '🐍 Tread', // Lvl 50-74
-	9800 => '👅 Thot', // Lvl 75-99
-	22500 => '💯 100', // Lvl 100-149
-	40000 => '👨‍❤️‍💋‍👨 gay', // Lvl 150-199
-	62001 => '👌 Ok', // Lvl 200-249
+	1152 => '✨ Youngling', // Lvl 0-24
+	4802 => '🐸 Pepe', // Lvl 25-49
+	10952 => '🐍 Tread', // Lvl 50-74
+	19600 => '👅 Thot', // Lvl 75-99
+	45000 => '💯 100', // Lvl 100-149
+	80000 => '👨‍❤️‍💋‍👨 gay', // Lvl 150-199
+	124002 => '👌 Ok', // Lvl 200-249
 	9999999 => '😎 Epic' // Lvl 250+
 ];
 
@@ -27,7 +27,7 @@ function getuser($id): ?User{
       $row = $result->fetch_assoc();
 			$target->favouritesprivacy = $row['FavouritesPrivacy'];
 			$target->points = $row['Points'];
-			$target->level = ceil(sqrt($target->points));
+			$target->level = ceil(sqrt($target->points/2));
     }
   }else{
     $result = $conn->query("SELECT Id,Username,Discriminator,Avatar,Admin,Banned,FavouritesPrivacy,Points FROM user WHERE Id = ".$id);
@@ -49,7 +49,7 @@ function getuser($id): ?User{
       $target->banned = $row['Banned'];
       $target->favouritesprivacy = $row['FavouritesPrivacy'];
 			$target->points = $row['Points'];
-			$target->level = ceil(sqrt($target->points));
+			$target->level = ceil(sqrt($target->points/2));
     }
 	}
 	
@@ -72,7 +72,10 @@ function superprofile(User $user){
 	if($user->id !== 0){
 		foreach($level_roles as $scorereq=>$role){
 			if($user->points < $scorereq){
-				$badges .= "<a href=\"/leaderboard/overall/\" class=\"badge\" title=\"".($user->points-($user->level-1)*($user->level-1)-1).' / '.($user->level*$user->level-($user->level-1)*($user->level-1)-1)." Points until leveling up!\">$role (level $user->level)</a>";
+				$levelbase = (($user->level-1)*($user->level-1))*2+1;
+				$levelupbase = ($user->level*$user->level)*2;
+				
+				$badges .= "<a href=\"/leaderboard/overall/\" class=\"badge\" title=\"".($user->points - $levelbase).' / '.($levelupbase - $levelbase)." Points until leveling up!\">$role (level $user->level)</a>";
 				break;
 			}
 		}

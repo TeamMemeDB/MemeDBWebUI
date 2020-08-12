@@ -44,14 +44,6 @@ WHERE CollectionParent IS NULL");
 	$edge = round(($row['Edge']/$row['Total'])*100, 2);
 	$rate = round(($row['Rating']/$row['Total'])*100, 2);
 	
-	if($user->id !== 0){
-		$score = calculate_score($row['Rating'], $row['Edge'], $row['Tags'], $row['Categories'], $row['Transcriptions'], $row['Descriptions']);
-		if($conn->query("UPDATE user SET Points = $score WHERE Id = $user->id")){
-			$user->points = $score;
-			$user->level = ceil(sqrt($score));
-		}
-	}
-	
 	superprofile($user);
 	
 	echo "<h3>Database completion</h3>
@@ -60,7 +52,7 @@ WHERE CollectionParent IS NULL");
 	if($user->id == 0)
 		echo "<p style=\"font-size: 1.5rem;\"><b>Total memes:</b> $row[Total]</p>";
 	else{
-		echo "<p style=\"font-size: 1.5rem;\"><b>Total score:</b> $score</p>";
+		echo "<p style=\"font-size: 1.5rem;\"><b>Total score:</b> $user->points</p>";
 	}
 	
 	echo "<b>Descriptions:</b> <a href=\"/leaderboard/described/\">Show Leaderboard</a>
@@ -82,9 +74,5 @@ WHERE CollectionParent IS NULL");
 	<div class=\"bar\"><span class=\"accentbg\" style=\"width:$rate%\">$row[Rating] ($rate%)</span>".($rate<100?"<span class=\"remainder\"></span>":'')."</div>";
 	
 	footer();
-}
-
-function calculate_score($ratings, $edges, $tags, $cats, $trans, $descs){
-	return $ratings + $edges + $tags*2 + $cats*2 + $trans*5 + $descs*8;
 }
 ?>

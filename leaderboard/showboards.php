@@ -1,5 +1,6 @@
 <?php
 require_once('leaderboard.php');
+require_once('../user/profile.php');
 
 function show_boards(){
 	global $conn, $leaderboards;
@@ -30,7 +31,7 @@ function show_boards(){
 }
 
 function show_board($board){
-	global $conn, $leaderboards, $leaderboardtables;
+	global $conn, $leaderboards, $leaderboardtables, $level_roles;
 	
 	$boarddesc = $leaderboards[$board];
 	$boardtable = $leaderboardtables[$board];
@@ -101,12 +102,23 @@ function show_board($board){
 		if(strlen($username) == 1) $username = "Anonymous MemeDB User";
 		
 		if($boardtable == 'overall'){
-			$level = ceil(sqrt($row['Points']));
+			$level = ceil(sqrt($row['Points']/2));
+			$levelbase = (($level-1)*($level-1))*2+1;
+			$levelupbase = ($level*$level)*2;
+			
+			$role = "";
+			foreach($level_roles as $scorereq=>$rrole){
+				if(($row['Points']+0) < $scorereq){
+					$role = substr($rrole, 0, 4);
+					break;
+				}
+			}
+			
 			echo "
 				<tr>
 					<td><a href=\"/user/$row[Id]/stats/\">$username</a></td>
 					<td>$row[Points]</td>
-					<td>🔼 $level<br><sub>".($row['Points']-($level-1)*($level-1)-1).' / '.($level*$level-($level-1)*($level-1)-1)."</sub></td>
+					<td>$role $level<br><sub>".($row['Points']-$levelbase).' / '.($levelupbase - $levelbase)."</sub></td>
 				</tr>
 			";
 		}else{
