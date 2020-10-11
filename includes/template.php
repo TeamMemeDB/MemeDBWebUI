@@ -63,7 +63,8 @@ function headr($data,$conn){
 		<meta name="description" content="<?php echo isset($data['description'])?$data['description']:'Meme is a database that is designed with the intention of making it far easier to find that meme you were thinking of.';?>">
 		<meta name="og:description" content="<?php echo isset($data['description'])?$data['description']:'Meme is a database that is designed with the intention of making it far easier to find that meme you were thinking of.';?>">
 		<meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index<?php echo isset($data['tags'])?','.join(',',$data['tags']):'';?>">
-		<?php  if(isset($data['image'])) echo '<meta name="og:image" content="'.$data['image'].'">';?>
+		<?php if(isset($data['image'])) echo '<meta name="og:image" content="'.$data['image'].'">';?>
+		<?php if(isset($data['noindex'])&&$data['noindex']) echo '<meta name="robots" content="noindex">';?>
 		
 		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">

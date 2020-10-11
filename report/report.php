@@ -27,7 +27,7 @@ if(array_key_exists('PATH_INFO',$_SERVER)){
     if(!in_array($type,['meme','user','desc','trans','tag','ticket'])) $type=NULL;
 }
 
-$header = headr(['title'=>"Report",'description'=>"MemeDB moderators take misuse of MemeDB very seriously. Report memes here and we will consider them for deletion as soon as possible.",'tags'=>['report','memedb','misuse']],$conn);
+$header = headr(['title'=>"Report",'description'=>"MemeDB moderators take misuse of MemeDB very seriously. Report memes here and we will consider them for deletion as soon as possible.",'tags'=>['report','memedb','misuse'],'noindex'=>!is_null($id)],$conn);
 
 ?>
 <h1>Report</h1>
