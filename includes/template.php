@@ -72,7 +72,7 @@ function headr($data,$conn){
 		<link rel="manifest" href="/site.webmanifest">
 		
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=46" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=51" type="text/css">
 		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>

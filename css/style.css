@@ -1120,35 +1120,34 @@ div:fullscreen>video,div:-webkit-fullscreen>video,div:-moz-fullscreen>video,div:
 
 #titlecardscroller{
 	animation-name: titlecardscroller;
-	animation-duration: 120s;
+	animation-duration: 30s;
 	animation-iteration-count: infinite;
 	animation-fill-mode: backwards;
 	filter: blur(5px);
-	width:200%;
-	height:200%;
+	width:1920px;
+	height:1152px;
 	opacity:0.3;
 	overflow: hidden;
 }
-@media only screen and (min-width: 160em){
+@media only screen and (min-width: 1920px){
 	#titlecardscroller{
 		animation-name: titlecardscroller4k;
-		animation-duration: 30s;
+		animation-duration: 20s;
 	}
 }
 @keyframes titlecardscroller{
-	0%		{top:0%;left:0%;}
-	25%		{top:-100%;left:-95%;}
-	37.5%	{top:-50%;left:-50%;}
-	50%		{top:-100%;left:0%;}
-	75%		{top:0%;left:-95%;}
+	0%		{top:0px;left:0px;}
+	25%		{top:calc(100% - 1152px);left:calc(100% - 1920px);}
+	50%		{top:calc(100% - 1152px);left:0%;}
+	75%		{top:0%;left:calc(100% - 1920px);}
 	100%	{top:0%;left:0%;}
 }
 @keyframes titlecardscroller4k{
-	0%		{left:0%;opacity:0;}
+	0%		{top:0%;opacity:0;}
 	5%		{opacity:0.3;}
 	94%		{opacity:0.3;}
-	99%		{left:-90%;opacity:0;}
-	100%	{left:0%;opacity:0;}
+	99%		{top:calc(100% - 1152px);opacity:0;}
+	100%	{top:0%;opacity:0;}
 }
 
 /* Responsive Stuff */

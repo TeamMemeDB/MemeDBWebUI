@@ -24,25 +24,8 @@ headr(['title'=>"What is MemeDB?",'description'=>"MemeDB is a massive database o
 		<a href="/tutorial" class="btn">Tutorial</a>
 		<a href="/user/0/stats/" class="btn">Stats</a>
 	</div>
-	<div class="super-bg" id="titlecardscroller">
-		<?php 
-		$memes = $conn->query('
-			SELECT Id,Hash,Color
-			FROM meme LEFT JOIN edge ON meme.Id=edge.memeId
-			WHERE Nsfw=0 AND Type = "image"
-			GROUP BY Id
-			HAVING IFNULL(AVG(edge.Rating),4)<=1
-			ORDER BY Id DESC
-			LIMIT 75;
-		');
-		if($memes){
-			while($row=$memes->fetch_assoc()){
-				$style = ($row['Color']?' style="background:'.$row['Color'].';"':'');
-				echo '<img'.$style.' src="https://cdn.yiays.com/meme/'.$row['Id'].'x'.$row['Hash'].'.mini.jpg" width="192" height="192">';
-			}
-		}
-
-		?>
+	<div class="super-bg" id="titlecardscroller" style="min-width:100%;">
+		<img src="https://cdn.yiays.com/meme/minimontage.php" width="1920" height="1152" style="min-width:100%;">
 	</div>
 </div>
 <div class="super">
