@@ -25,6 +25,9 @@ nav .btn:hover, nav input:hover{
 nav>a:first-child{
   padding-left: 0em;
 }
+nav>.usernav{
+  margin-left: auto;
+}
 nav img{
   height: 3em;
   width: auto;
@@ -59,5 +62,10 @@ nav form>input[type=text]{
   }
   nav>form>input[type=text]{
     width: 100%;
+  }
+  nav>.usernav{
+    margin: 0;
+    grid-column-start: 2;
+    grid-column-end: 4;
   }
 }

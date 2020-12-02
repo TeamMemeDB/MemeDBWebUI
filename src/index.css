@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  font-size: 14px;
   font-family: Lato, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -12,8 +13,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* Colours */
 .accent {
   color: #f9ca24!important;
+}
+.blurple-bg {
+  background-color: #7289DA!important;
 }
 
 a[href] {

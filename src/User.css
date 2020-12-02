@@ -1,0 +1,9 @@
+.usernav{
+  display:flex;
+}
+.usernav>a:nth-child(2){
+  flex-grow: 1;
+}
+.usernav>.btn.blurple-bg{
+  flex-grow: 1;
+}

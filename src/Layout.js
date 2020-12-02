@@ -1,6 +1,8 @@
 import React from 'react';
 import './Layout.css';
 
+import {User,UserNav} from './User';
+
 export class Header extends React.Component {
   render(){
     return <header><Nav></Nav></header>
@@ -19,25 +21,26 @@ export class Nav extends React.Component {
       </NavItem>
       <form action="/search" method="GET">
         <input type="text" name="q" placeholder="Search MemeDB"></input>
-        <input type="submit" className="btn" value="🔍"></input>
+        <button type="submit" className="btn" value=""><i className='fas fa-search'/></button>
       </form>
       <NavItem href="/sort/top">
-        Top 🔥
+        Top <i className='fas fa-fire'/>
       </NavItem>
       <NavItem href="/sort/new">
-        New ✨
+        New <i className='fas fa-meteor'/>
       </NavItem>
       <NavItem href="/categories">
-        Categories 📂
+        Categories <i className='fas fa-folder'/>
       </NavItem>
       <NavItem href="/tags">
-        Tags #️⃣
+        Tags <i className='fas fa-tag'/>
       </NavItem>
+      <UserNav user={<User username="Yiays"/>}/>
     </nav>
   }
 }
 
-class NavItem extends React.Component {
+export class NavItem extends React.Component {
   render(){
     return <a href={this.props.href} className="btn">{this.props.children}</a>
   }
