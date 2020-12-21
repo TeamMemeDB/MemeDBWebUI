@@ -6,7 +6,7 @@ export class UserNav extends React.Component {
     super(props);
   }
   render(){
-    return <div className='usernav'>
+    return <div className='navbutton navbutton-usernav'>
     { this.props.user?
     <>
       <a href='/user/favourites' className='btn'><i className="fas fa-star accent"/></a>

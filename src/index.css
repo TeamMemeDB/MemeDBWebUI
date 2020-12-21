@@ -9,18 +9,60 @@ body {
   overflow-x: hidden;
 }
 
+/* Accessibility */
+.sr-only {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
+/* Code presentation */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 /* Colours */
-.accent {
+.accent, .yellow {
   color: #f9ca24!important;
+}
+.accent-bg, .yellow-bg {
+  background-color: #f9ca24!important;
+}
+.red {
+  color: #F7630C!important;
+}
+.red-bg {
+  background-color: #F7630C!important;
+}
+.blue {
+  color: #31D2F7!important;
+}
+.blue-bg {
+  background-color: #31D2F7!important;
+}
+.pink {
+  color: #F495BF!important;
+}
+.pink-bg {
+  background-color: #F495BF!important;
+}
+.brown {
+  color: #725B08!important;
+}
+.brown-bg {
+  background-color: #725B08!important;
+}
+.blurple {
+  color: #7289DA!important;
 }
 .blurple-bg {
   background-color: #7289DA!important;
 }
 
+/* Links styling */
 a[href] {
   color: #f9ca24;
 }
@@ -29,6 +71,7 @@ a, a:link, a:visited {
   text-decoration: none;
 }
 
+/* Forms styling */
 input{
   border: none;
   font-size: 1em;
@@ -40,5 +83,13 @@ input:hover{
   background-color: rgba(255,255,255,0.8);
 }
 input[type=submit]{
+  cursor: pointer;
+}
+.nobutton {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*input has OS specific font-family*/
+  color: #f0f0f0;
   cursor: pointer;
 }

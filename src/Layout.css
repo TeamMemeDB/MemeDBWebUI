@@ -22,10 +22,24 @@ nav .btn, nav input{
 nav .btn:hover, nav input:hover{
   box-shadow: inset 0 0 0 0em rgba(255,255,255,0.2);
 }
-nav>a:first-child{
-  padding-left: 0em;
+nav>.navbutton-title-search{
+  display: flex;
+  max-width: 100%;
 }
-nav>.usernav{
+nav>.navbutton-title-search.searchfocus{
+  width: 40em;
+}
+nav>.navbutton-title-search>a{
+  padding-left: 0em;
+  flex-grow: 1;
+}
+nav>.navbutton-title-search.searchfocus>a{
+  flex-grow: 0;
+}
+nav>.navbutton-title-search>form{
+  flex-grow: 2;
+}
+nav>.navbutton-usernav{
   margin-left: auto;
 }
 nav img{
@@ -44,28 +58,24 @@ nav form{
 }
 nav form>input[type=text]{
   text-align: left;
+  flex-grow: 1;
+}
+nav i.fas {
+  text-shadow: #000 0 0 2px;
 }
 
 @media screen and (max-width: 60em){
   nav{
-    height: 12em;
+    height: 6em;
     display: grid;
-    grid-template: repeat(4, 1fr) / repeat(3, 1fr);
+    grid-template: repeat(2, 1fr) / 1fr;
   }
-  nav>a:first-child{
-    grid-column-start: 1;
-    grid-column-end: 4;
+  nav>.navbutton-title-search{
+    width: 100%!important;
   }
-  nav>form{
-    grid-column-start: 1;
-    grid-column-end: 4;
-  }
-  nav>form>input[type=text]{
-    width: 100%;
-  }
-  nav>.usernav{
+  nav>.navbutton-usernav{
     margin: 0;
-    grid-column-start: 2;
-    grid-column-end: 4;
+    grid-column-start: 1;
+    grid-column-end: 7;
   }
 }

@@ -1,10 +1,13 @@
 import React from 'react';
 import './App.css';
-import {Header} from './Layout';
+import {Browse, Header} from './Layout';
 
 class App extends React.Component {
   render(){
-    return <Header/>;
+    return <>
+      <Header/>
+      <Browse/>
+    </>;
   }
 }
 
