@@ -4,7 +4,7 @@ import './Control.css';
 export class Control extends React.Component {
   constructor(props){
     super(props);
-    this.state = {open: true};
+    this.state = {open: props.closed?false:true};
   }
 
   render(){

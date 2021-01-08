@@ -3,6 +3,11 @@ header,footer{
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 100;
 }
+footer{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
 
 nav{
   height: 3em;
@@ -16,11 +21,11 @@ nav .btn, nav input{
   padding: 1em 0.75em;
   box-sizing: content-box;
   line-height: 1em;
-  box-shadow: inset 0 0 0 0.1em rgba(255,255,255,0.2);
-  transition: box-shadow 0s;
 }
-nav .btn:hover, nav input:hover{
-  box-shadow: inset 0 0 0 0em rgba(255,255,255,0.2);
+nav .navbutton-spacer {
+  background: none !important;
+  box-shadow: none !important;
+  flex-grow: 10;
 }
 nav>.navbutton-title-search{
   display: flex;
@@ -38,9 +43,6 @@ nav>.navbutton-title-search.searchfocus>a{
 }
 nav>.navbutton-title-search>form{
   flex-grow: 2;
-}
-nav>.navbutton-usernav{
-  margin-left: auto;
 }
 nav img{
   height: 3em;
@@ -70,12 +72,25 @@ nav i.fas {
     display: grid;
     grid-template: repeat(2, 1fr) / 1fr;
   }
+  footer>nav{
+    grid-template: repeat(2, 1fr) / repeat(3, 1fr);
+  }
   nav>.navbutton-title-search{
     width: 100%!important;
+  }
+  nav>.navbutton-title-search.searchfocus>a:first-child{
+    display: none;
   }
   nav>.navbutton-usernav{
     margin: 0;
     grid-column-start: 1;
     grid-column-end: 7;
+  }
+  footer>nav>a:first-child{
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+  nav .navbutton-spacer{
+    display: none;
   }
 }

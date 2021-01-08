@@ -6,11 +6,11 @@ import {User,UserNav} from './User';
 
 export class Header extends React.Component {
   render(){
-    return <header><Nav></Nav></header>
+    return <header><HeaderNav></HeaderNav></header>;
   }
 }
 
-export class Nav extends React.Component {
+export class HeaderNav extends React.Component {
   constructor(props){
     super(props);
     this.state = {searchfocus: false};
@@ -19,19 +19,39 @@ export class Nav extends React.Component {
   render(){
     return <nav>
       <div className={"navbutton navbutton-title-search"+(this.state.searchfocus?' searchfocus':'')}>
-        <a href="/" className="btn">
+        <NavItem href="/">
           <img src="/img/icon.png" alt="MemeDB Icon"/>
           <h1>
             <span color='#fafafa'>Meme</span>
             <span className="accent">DB</span>
           </h1>
-        </a>
+        </NavItem>
         <form action="" method="GET">
           <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>this.setState({searchfocus: true})} onBlur={()=>this.setState({searchfocus: false})}></input>
           <button type="submit" className="btn" value=""><i className='fas fa-search'/></button>
         </form>
       </div>
+      <NavItem type="spacer"></NavItem>
       <UserNav user={<User username="Yiays"/>}/>
+    </nav>;
+  }
+}
+
+export class Footer extends React.Component {
+  render(){
+    return <footer><FooterNav></FooterNav></footer>;
+  }
+}
+
+export class FooterNav extends React.Component {
+  render(){
+    return <nav>
+      <NavItem href="https://yiays.com">Created by Yiays</NavItem>
+      <NavItem type="spacer"></NavItem>
+      <NavItem href="/terms">Terms</NavItem>
+      <NavItem href="/report">Report Abuse</NavItem>
+      <NavItem href="https://github.com/TeamMemeDB">GitHub</NavItem>
+      <NavItem href="/dmca">DMCA</NavItem>
     </nav>
   }
 }
