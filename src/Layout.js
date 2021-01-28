@@ -1,5 +1,5 @@
 import React from 'react';
-import { Control } from './Control';
+import { Panel, DropDown } from './Control';
 import './Layout.css';
 
 import {User,UserNav} from './User';
@@ -70,6 +70,19 @@ export class Browse extends React.Component {
   }
 }
 
+const sorts = [
+  {name: 'new', displayname: <>New <i className='fas fa-meteor pink'/></>, href: '/sort/new'}, // 0
+  {name: 'old', displayname: <>Old <i className='fas fa-calendar blue'/></>, href: '/sort/old'}, // 1
+  {name: 'top', displayname: <>Top <i className='fas fa-fire red'/></>, href: '/sort/top'}, // 2
+  {name: 'bottom', displayname: <>Bottom <i className='fas fa-poop brown'/></>, href: '/sort/bottom'} // 3
+];
+
+const filters = [
+  {name: 'categories', displayname: <>Categories <i className='fas fa-folder yellow'/></>, href: '/categories'}, // 0
+  {name: 'tags', displayname: <>Tags <i className='fas fa-tag blue'/></>, href: '/tags'}, // 1
+  {name: 'edge', displayname: <>Edge <i className='fas fa-pepper-hot red'/></>, href: '/edge'} // 2
+]
+
 class BrowseControls extends React.Component {
   constructor(props){
     super(props);
@@ -77,38 +90,9 @@ class BrowseControls extends React.Component {
   }
 
   render(){
-    return <Control type="browse" title="Search Tools">
-      <NavItem href="/sort" type="sub">
-        Sort <i className="fas fa-sort"></i>
-        <div className="popup">
-          <NavItem href="/sort/new">
-            New <i className='fas fa-meteor pink'/>
-          </NavItem>
-          <NavItem href="/sort/old">
-            Old <i className='fas fa-calendar blue'/>
-          </NavItem>
-          <NavItem href="/sort/top">
-            Top <i className='fas fa-fire red'/>
-          </NavItem>
-          <NavItem href="/sort/bottom">
-            Bottom <i className='fas fa-poop brown'/>
-          </NavItem>
-        </div>
-      </NavItem>
-      <NavItem href="/sort" type="sub">
-        Filter <i className="fas fa-filter"></i>
-        <div className="popup">
-          <NavItem href="/categories">
-            Categories <i className='fas fa-folder yellow'/>
-          </NavItem>
-          <NavItem href="/tags">
-            Tags <i className='fas fa-tag blue'/>
-          </NavItem>
-        </div>
-      </NavItem>
-      <NavItem href="/edge">
-        Edge <i className='fas fa-pepper-hot red'/>
-      </NavItem>
-    </Control>;
+    return <Panel type="browse" title="Search Tools">
+      <DropDown name={<>Sort <i className="fas fa-sort"></i></>} values={sorts} default={0}/>
+      <DropDown name={<>Filter <i className="fas fa-filter"></i></>} values={filters} default={2}/>
+    </Panel>;
   }
 }

@@ -36,7 +36,6 @@ nav>.navbutton-title-search.searchfocus{
 }
 nav>.navbutton-title-search>a{
   padding-left: 0em;
-  flex-grow: 1;
 }
 nav>.navbutton-title-search.searchfocus>a{
   flex-grow: 0;
