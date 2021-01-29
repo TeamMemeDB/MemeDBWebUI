@@ -95,3 +95,9 @@ input[type=submit]{
   color: #f0f0f0;
   cursor: pointer;
 }
+
+/* Font awesome fix */
+.fas {
+  width: 1em;
+  text-align: center;
+}

@@ -22,9 +22,9 @@
   margin-right: 0.5em;
 }
 .dropbtn {
-  padding: 0 1em;
+  padding: 0.5em 1em;
   text-align: left;
-  min-width: 8em;
+  min-width: 12em;
   z-index: 100;
 }
 .dropdown-content {
@@ -32,10 +32,11 @@
   position: absolute;
   flex-direction: column;
   visibility: hidden;
-  min-width: 8em;
+  min-width: 12em;
   background: #2B333E;
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 99;
+  padding: 0.5em 0;
 }
 .dropdown:hover .dropdown-content {
   visibility: visible;

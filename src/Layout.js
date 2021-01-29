@@ -71,16 +71,16 @@ export class Browse extends React.Component {
 }
 
 const sorts = [
-  {name: 'new', displayname: <>New <i className='fas fa-meteor pink'/></>, href: '/sort/new'}, // 0
-  {name: 'old', displayname: <>Old <i className='fas fa-calendar blue'/></>, href: '/sort/old'}, // 1
-  {name: 'top', displayname: <>Top <i className='fas fa-fire red'/></>, href: '/sort/top'}, // 2
-  {name: 'bottom', displayname: <>Bottom <i className='fas fa-poop brown'/></>, href: '/sort/bottom'} // 3
+  {name: 'new', displayname: <><i className='fas fa-meteor pink'/> New</>, href: '/sort/new'}, // 0
+  {name: 'old', displayname: <><i className='fas fa-calendar blue'/> Old</>, href: '/sort/old'}, // 1
+  {name: 'top', displayname: <><i className='fas fa-fire red'/> Top</>, href: '/sort/top'}, // 2
+  {name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom</>, href: '/sort/bottom'} // 3
 ];
 
 const filters = [
-  {name: 'categories', displayname: <>Categories <i className='fas fa-folder yellow'/></>, href: '/categories'}, // 0
-  {name: 'tags', displayname: <>Tags <i className='fas fa-tag blue'/></>, href: '/tags'}, // 1
-  {name: 'edge', displayname: <>Edge <i className='fas fa-pepper-hot red'/></>, href: '/edge'} // 2
+  {name: 'categories', displayname: <><i className='fas fa-folder yellow'/> Categories</>, href: '/categories'}, // 0
+  {name: 'tags', displayname: <><i className='fas fa-tag blue'/> Tags</>, href: '/tags'}, // 1
+  {name: 'edge', displayname: <><i className='fas fa-pepper-hot red'/> Edge</>, href: '/edge'} // 2
 ]
 
 class BrowseControls extends React.Component {
@@ -91,8 +91,8 @@ class BrowseControls extends React.Component {
 
   render(){
     return <Panel type="browse" title="Search Tools">
-      <DropDown name={<>Sort <i className="fas fa-sort"></i></>} values={sorts} default={0}/>
-      <DropDown name={<>Filter <i className="fas fa-filter"></i></>} values={filters} default={2}/>
+      <DropDown name={<><i className="fas fa-sort"/> Sort</>} values={sorts} default={0}/>
+      <DropDown name={<><i className="fas fa-filter"/> Filter</>} values={filters} default={2}/>
     </Panel>;
   }
 }
