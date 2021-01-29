@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import '../styles/App.css';
 import {Browse, Header, Footer} from './Layout';
 
 class App extends React.Component {

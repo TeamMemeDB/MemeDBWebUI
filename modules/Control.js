@@ -1,5 +1,4 @@
 import React from 'react';
-import './Control.css';
 
 export class Panel extends React.Component {
   constructor(props){
@@ -30,7 +29,7 @@ export class DropDown extends React.Component {
   }
 
   render(){
-    this.menu = this.props.values.map((item) => <button className="btn" href={item.href}>{item.displayname}</button>);
+    this.menu = this.props.values.map((item) => <button key={item.name} className="btn" href={item.href}>{item.displayname}</button>);
 
     return <div className="dropdown">
       <button className="dropbtn btn">{this.props.name}<br/><sub>{this.state.stringrep}</sub></button>

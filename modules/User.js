@@ -1,5 +1,4 @@
 import React from 'react';
-import './User.css';
 
 export class UserNav extends React.Component {
   constructor(props){

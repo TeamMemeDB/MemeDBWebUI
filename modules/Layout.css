@@ -26,6 +26,7 @@ nav .navbutton-spacer {
   background: none !important;
   box-shadow: none !important;
   flex-grow: 10;
+  cursor: auto;
 }
 nav>.navbutton-title-search{
   display: flex;

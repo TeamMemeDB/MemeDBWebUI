@@ -1,6 +1,5 @@
 import React from 'react';
 import { Panel, DropDown } from './Control';
-import './Layout.css';
 
 import {User,UserNav} from './User';
 
