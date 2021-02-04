@@ -61,37 +61,35 @@ class NavItem extends React.Component {
   }
 }
 
-export class Browse extends React.Component {
-  render(){
-    return <div>
-      <BrowseControls/>
-    </div>;
-  }
-}
-
-const sorts = [
-  {name: 'new', displayname: <><i className='fas fa-meteor pink'/> New</>, href: '/sort/new'}, // 0
-  {name: 'old', displayname: <><i className='fas fa-calendar blue'/> Old</>, href: '/sort/old'}, // 1
-  {name: 'top', displayname: <><i className='fas fa-fire red'/> Top</>, href: '/sort/top'}, // 2
-  {name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom</>, href: '/sort/bottom'} // 3
+const defaultsorts = [
+  {name: 'new', displayname: <><i className='fas fa-meteor pink'/> Newest</>, href: '/sort/new'}, // 0
+  {name: 'old', displayname: <><i className='fas fa-calendar blue'/> Oldest</>, href: '/sort/old'}, // 1
+  {name: 'top', displayname: <><i className='fas fa-fire red'/> Top rated</>, href: '/sort/top'}, // 2
+  {name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom rated</>, href: '/sort/bottom'} // 3
 ];
 
-const filters = [
-  {name: 'categories', displayname: <><i className='fas fa-folder yellow'/> Categories</>, href: '/categories'}, // 0
-  {name: 'tags', displayname: <><i className='fas fa-tag blue'/> Tags</>, href: '/tags'}, // 1
-  {name: 'edge', displayname: <><i className='fas fa-pepper-hot red'/> Edge</>, href: '/edge'} // 2
-]
+const defaultedge = [
+  {name: 'safe', displayname: <><i className='fas fa-pepper-hot red'/></>}, // 0
+  {name: 'nsfw', displayname: <><i className='fas fa-pepper-hot red'/><i className='fas fa-pepper-hot red'/></>}, // 1
+];
 
-class BrowseControls extends React.Component {
+export class Browse extends React.Component {
   constructor(props){
     super(props);
-    this.state = {};
+    this.state = {
+      sorts: (props.sorts)? props.sorts: defaultsorts,
+      categories: (props.categories)? props.categories: [{name: '', displayname: <><i className='fas fa-exclamation-triangle red'/> Categories missing!</> }],
+      tags: (props.tags)? props.tags: [{name: '', displayname: <><i className='fas fa-exclamation-triangle red'/> Tags missing!</>}],
+      edge: (props.edge)? props.edge: defaultedge
+    };
   }
 
   render(){
     return <Panel type="browse" title="Search Tools">
-      <DropDown name={<><i className="fas fa-sort"/> Sort</>} values={sorts} default={0}/>
-      <DropDown name={<><i className="fas fa-filter"/> Filter</>} values={filters} default={2}/>
+      <DropDown name={<><i className="fas fa-sort"/> Sort</>} values={this.state.sorts} default={0}/>
+      <DropDown name={<><i className="fas fa-filter"/> Categories</>} values={this.state.categories} default={-1}/>
+      <DropDown name={<><i className="fas fa-tags"/> Tags</>} values={this.state.tags} default={-1}/>
+      <DropDown name={<><i className="fas fa-pepper-hot"/> Edge</>} values={this.state.edge} default={0}/>
     </Panel>;
   }
 }

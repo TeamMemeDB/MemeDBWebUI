@@ -37,6 +37,8 @@
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 99;
   padding: 0.5em 0;
+  max-height: 10em;
+  overflow-y: auto;
 }
 .dropdown:hover .dropdown-content {
   visibility: visible;

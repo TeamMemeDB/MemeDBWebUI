@@ -8,3 +8,19 @@ export const db = mysql.createPool({
   password: "password",
   database: 'meme'
 });
+
+export function fetch(query, callback) {
+  return new Promise((resolve, reject) => {
+    db.getConnection((err, conn) => {
+      if(err){
+        callback(err);
+        resolve();
+      }else{
+        conn.query(query, (err, results, fields) => {
+          callback(err, results, fields);
+          resolve();
+        });
+      }
+    })
+  });
+}
