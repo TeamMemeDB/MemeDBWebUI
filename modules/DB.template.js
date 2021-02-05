@@ -6,7 +6,8 @@ export const db = mysql.createPool({
   port: 3306,
   user: 'meme',
   password: "password",
-  database: 'meme'
+  database: 'meme',
+  charset: 'utf8mb4'
 });
 
 export function fetch(query, callback) {

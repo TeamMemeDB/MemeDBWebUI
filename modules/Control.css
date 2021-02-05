@@ -24,8 +24,18 @@
 .dropbtn {
   padding: 0.5em 1em;
   text-align: left;
-  min-width: 12em;
+  width: 12em;
   z-index: 100;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dropbtn sub {
+  display: inline-block;
+  width: 12em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dropdown-content {
   display: flex;
@@ -37,7 +47,7 @@
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 99;
   padding: 0.5em 0;
-  max-height: 10em;
+  max-height: 30em;
   overflow-y: auto;
 }
 .dropdown:hover .dropdown-content {
@@ -46,4 +56,13 @@
 .dropdown-content .btn {
   padding: 1em;
   text-align: left;
+}
+.dropdown-content .btn.selected {
+  background: rgba(255,255,255,0.15);
+}
+.dropdown-content .btn.selected:hover {
+  background: rgba(255,255,255,0.25);
+}
+.dropdown-content .btn.hidden {
+  display: none;
 }

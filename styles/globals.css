@@ -63,6 +63,9 @@ code {
 .blurple-bg {
   background-color: #7289DA!important;
 }
+.dim {
+  opacity: 0.5;
+}
 
 /* Links styling */
 a[href] {

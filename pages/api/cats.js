@@ -1,7 +1,10 @@
 import { fetch } from "../../modules/DB";
 
 export async function getcats(callback) {
-  return fetch(`SELECT * from category`, callback);
+  return fetch(`SELECT category.*,IFNULL(COUNT(memeId),0) AS Votes
+                FROM category
+                LEFT JOIN categoryvote ON category.Id = categoryvote.categoryId
+                GROUP BY Id`, callback);
 }
 
 export default async (req, res) => {

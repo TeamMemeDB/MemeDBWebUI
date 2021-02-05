@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, DropDown } from './Control';
+import { Panel, DropDown, MultiDropDown } from './Control';
 
 import {User,UserNav} from './User';
 
@@ -62,15 +62,15 @@ class NavItem extends React.Component {
 }
 
 const defaultsorts = [
-  {name: 'new', displayname: <><i className='fas fa-meteor pink'/> Newest</>, href: '/sort/new'}, // 0
-  {name: 'old', displayname: <><i className='fas fa-calendar blue'/> Oldest</>, href: '/sort/old'}, // 1
-  {name: 'top', displayname: <><i className='fas fa-fire red'/> Top rated</>, href: '/sort/top'}, // 2
-  {name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom rated</>, href: '/sort/bottom'} // 3
+  {id:0, name: 'new', displayname: <><i className='fas fa-meteor pink'/> Newest</>, href: '/sort/new', description:"Newest memes first"},
+  {id:1, name: 'old', displayname: <><i className='fas fa-calendar blue'/> Oldest</>, href: '/sort/old', description:"Oldest memes first"},
+  {id:2, name: 'top', displayname: <><i className='fas fa-fire red'/> Top rated</>, href: '/sort/top', description:"Most upvoted memes first"},
+  {id:3, name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom rated</>, href: '/sort/bottom', description:"Least upvoted memes first"}
 ];
 
 const defaultedge = [
-  {name: 'safe', displayname: <><i className='fas fa-pepper-hot red'/></>}, // 0
-  {name: 'nsfw', displayname: <><i className='fas fa-pepper-hot red'/><i className='fas fa-pepper-hot red'/></>}, // 1
+  {id:0, name: 'safe', displayname: <><i className='fas fa-pepper-hot red'/></>, description:"Regular content, safe for everyone"}, // 0
+  {id:1, name: 'nsfw', displayname: <><i className='fas fa-pepper-hot red'/><i className='fas fa-pepper-hot red'/></>, description:"NSFW or edgy, not for children"}, // 1
 ];
 
 export class Browse extends React.Component {
@@ -87,9 +87,9 @@ export class Browse extends React.Component {
   render(){
     return <Panel type="browse" title="Search Tools">
       <DropDown name={<><i className="fas fa-sort"/> Sort</>} values={this.state.sorts} default={0}/>
-      <DropDown name={<><i className="fas fa-filter"/> Categories</>} values={this.state.categories} default={-1}/>
-      <DropDown name={<><i className="fas fa-tags"/> Tags</>} values={this.state.tags} default={-1}/>
-      <DropDown name={<><i className="fas fa-pepper-hot"/> Edge</>} values={this.state.edge} default={0}/>
+      <MultiDropDown name={<><i className="fas fa-filter"/> Categories</>} values={this.state.categories} default={[-1]}/>
+      <MultiDropDown name={<><i className="fas fa-tags"/> Tags</>} values={this.state.tags} default={[-1]}/>
+      <MultiDropDown name={<><i className="fas fa-pepper-hot"/> Edge</>} values={this.state.edge} default={[0]}/>
     </Panel>;
   }
 }
