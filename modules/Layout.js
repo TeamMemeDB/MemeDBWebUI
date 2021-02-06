@@ -27,7 +27,7 @@ export class HeaderNav extends React.Component {
         </NavItem>
         <form action="" method="GET">
           <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>this.setState({searchfocus: true})} onBlur={()=>this.setState({searchfocus: false})}></input>
-          <button type="submit" className="btn" value=""><i className='fas fa-search'/></button>
+          <button type="submit" className="btn" value=""><i className='icon-search'/></button>
         </form>
       </div>
       <NavItem type="spacer"></NavItem>
@@ -62,15 +62,15 @@ class NavItem extends React.Component {
 }
 
 const defaultsorts = [
-  {id:0, name: 'new', displayname: <><i className='fas fa-meteor pink'/> Newest</>, href: '/sort/new', description:"Newest memes first"},
-  {id:1, name: 'old', displayname: <><i className='fas fa-calendar blue'/> Oldest</>, href: '/sort/old', description:"Oldest memes first"},
-  {id:2, name: 'top', displayname: <><i className='fas fa-fire red'/> Top rated</>, href: '/sort/top', description:"Most upvoted memes first"},
-  {id:3, name: 'bottom', displayname: <><i className='fas fa-poop brown'/> Bottom rated</>, href: '/sort/bottom', description:"Least upvoted memes first"}
+  {id:0, name: 'newest first', displayname: <><i className='icon-sparkle pink'/> Newest</>, href: '/sort/new', description:"Newest memes first"},
+  {id:1, name: 'oldest first', displayname: <><i className='icon-calendar blue'/> Oldest</>, href: '/sort/old', description:"Oldest memes first"},
+  {id:2, name: 'top rated first', displayname: <><i className='icon-fire red'/> Top rated</>, href: '/sort/top', description:"Most upvoted memes first"},
+  {id:3, name: 'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, href: '/sort/bottom', description:"Least upvoted memes first"}
 ];
 
 const defaultedge = [
-  {id:0, name: 'safe', displayname: <><i className='fas fa-pepper-hot red'/></>, description:"Regular content, safe for everyone"}, // 0
-  {id:1, name: 'nsfw', displayname: <><i className='fas fa-pepper-hot red'/><i className='fas fa-pepper-hot red'/></>, description:"NSFW or edgy, not for children"}, // 1
+  {id:0, name: 'safe for everyone', displayname: <><i className='icon-pepper red'/></>, description:"Regular content, safe for everyone"}, // 0
+  {id:1, name: 'nsfw/edgy', displayname: <><i className='icon-pepper red'/><i className='icon-pepper red'/></>, description:"NSFW or edgy, not for children"}, // 1
 ];
 
 export class Browse extends React.Component {
@@ -78,18 +78,18 @@ export class Browse extends React.Component {
     super(props);
     this.state = {
       sorts: (props.sorts)? props.sorts: defaultsorts,
-      categories: (props.categories)? props.categories: [{name: '', displayname: <><i className='fas fa-exclamation-triangle red'/> Categories missing!</> }],
-      tags: (props.tags)? props.tags: [{name: '', displayname: <><i className='fas fa-exclamation-triangle red'/> Tags missing!</>}],
+      categories: (props.categories)? props.categories: [{name: '', displayname: <><i className='icon-warning red'/> Categories missing!</> }],
+      tags: (props.tags)? props.tags: [{name: '', displayname: <><i className='icon-warning red'/> Tags missing!</>}],
       edge: (props.edge)? props.edge: defaultedge
     };
   }
 
   render(){
-    return <Panel type="browse" title="Search Tools">
-      <DropDown name={<><i className="fas fa-sort"/> Sort</>} values={this.state.sorts} default={0}/>
-      <MultiDropDown name={<><i className="fas fa-filter"/> Categories</>} values={this.state.categories} default={[-1]}/>
-      <MultiDropDown name={<><i className="fas fa-tags"/> Tags</>} values={this.state.tags} default={[-1]}/>
-      <MultiDropDown name={<><i className="fas fa-pepper-hot"/> Edge</>} values={this.state.edge} default={[0]}/>
+    return <Panel type="toolbelt" title="Search Tools">
+      <DropDown name={<><i className="icon-menu2"/> Sort</>} values={this.state.sorts} default={0}/>
+      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true}/>
+      <MultiDropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
     </Panel>;
   }
 }

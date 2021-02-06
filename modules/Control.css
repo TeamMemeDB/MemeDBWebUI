@@ -15,16 +15,24 @@
   font-size: 1.5em;
   text-decoration: none;
 }
+.panel-toolbelt>.panel-content{
+  display: flex;
+  flex-direction: row;
+  flex-basis: 0;
+  flex-wrap: wrap;
+}
 
 .dropdown {
   display: inline-block;
   position: relative;
   margin-right: 0.5em;
+  width: 12em;
+  flex-grow: 1;
 }
 .dropbtn {
   padding: 0.5em 1em;
   text-align: left;
-  width: 12em;
+  width: 100%;
   z-index: 100;
   white-space: nowrap;
   overflow: hidden;
@@ -32,7 +40,7 @@
 }
 .dropbtn sub {
   display: inline-block;
-  width: 12em;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,18 +50,42 @@
   position: absolute;
   flex-direction: column;
   visibility: hidden;
-  min-width: 12em;
+  min-width: 100%;
   background: #2B333E;
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 99;
-  padding: 0.5em 0;
   max-height: 30em;
-  overflow-y: auto;
 }
 .dropdown:hover .dropdown-content {
   visibility: visible;
 }
-.dropdown-content .btn {
+.dropdown-content>.scroll {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0.5em 0;
+}
+.dropdown-content>.dropdown-content-toolbar {
+  display: flex;
+  flex-direction: row;
+}
+.dropdown-content>.dropdown-content-toolbar>.btn{
+  text-align: center;
+  width: 0;
+  flex-grow: 1;
+}
+.dropdown-content>.dropdown-content-toolbar>.btn>i{
+  margin: 0;
+}
+.dropdown-content>.dropdown-content-toolbar>.btn>sub{
+  display: inline-block;
+  width: calc(100% + 1rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 -0.5rem;
+}
+.dropdown-content .btn, .dropdown-content input {
   padding: 1em;
   text-align: left;
 }

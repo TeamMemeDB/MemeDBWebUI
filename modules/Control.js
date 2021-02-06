@@ -9,11 +9,13 @@ export class Panel extends React.Component {
   render(){
     return <div className={"panel panel-"+this.props.type}>
       <h3>{this.props.title}</h3>
-      <button className="nobutton close-button fas fa-window-close" onClick={()=>{this.setState({open:!this.state.open})}}><span className="sr-only">Close</span></button>
+      <button className="nobutton close-button icon-cross" onClick={()=>{this.setState({open:!this.state.open})}}><span className="sr-only">Close</span></button>
       {this.state.open?
         <>
         <hr/>
-        {this.props.children}
+        <div className="panel-content">
+          {this.props.children}
+        </div>
         </>
       :
         <></>
@@ -86,6 +88,7 @@ export class DropDown extends React.Component {
 export class MultiDropDown extends DropDown {
   constructor(props) {
     super(props);
+    this.state = { selection: props.default, inclusive: (props.inclusive!==undefined)?props.inclusive:true };
 
     this.find = this.find.bind(this);
     this.select = this.select.bind(this);
@@ -115,20 +118,32 @@ export class MultiDropDown extends DropDown {
       if(this.state.selection[0] == -1 || this.state.selection.length == this.props.values.length) {
         stringrep = 'All';
       }else{
-        if(this.state.selection.length > 5 && this.props.values.length-this.state.selection.length < 3){
-          var unselected = this.find(this.props.values.map((x) => x.id).filter((i) => this.state.selection.indexOf(i) == -1))
+        if(!this.state.inclusive){
+          if(this.state.selection.length <= 5){
+            var selected = this.find(this.state.selection);
 
-          let names = [];
-          for(var id in unselected){
-            if(names.length == 5){
-              names.push('...');
-              break;
+            let names = [];
+            for(var id in selected){
+              var select = selected[id];
+              names.push(select.name[0].toUpperCase()+select?.name.substring(1));
             }
-            var select = unselected[id];
-            names.push(select.name[0].toUpperCase()+select?.name.substring(1));
-          }
 
-          stringrep = "All but "+names.join(' and ');
+            stringrep = "Only "+names.join(', ');
+          }else{
+            var unselected = this.find(this.props.values.map((x) => x.id).filter((i) => this.state.selection.indexOf(i) == -1))
+
+            let names = [];
+            for(var id in unselected){
+              if(names.length == 5){
+                names.push('...');
+                break;
+              }
+              var select = unselected[id];
+              names.push(select.name[0].toUpperCase()+select?.name.substring(1));
+            }
+
+            stringrep = "All but "+names.join(', ');
+          }
         }else{
           var selected = this.find(this.state.selection);
   
@@ -154,7 +169,40 @@ export class MultiDropDown extends DropDown {
     return <div className="dropdown">
       <button className="dropbtn btn">{this.props.name}<br/><sub className="dim">{stringrep}</sub></button>
       <div className="dropdown-content">
-        {menu}
+        {(this.props.values.length > 10)?
+          <input className="dropdown-search" type="text" placeholder="Search..."/>
+        :
+          <></>
+        }
+        <div className="scroll">
+          {menu}
+        </div>
+        {(this.props.inclusivityeditor)?
+          <div className="dropdown-content-toolbar">
+            <button className="btn" title="Select all" onClick={this.select.bind(this, -1)}>
+              <i className="icon-select-all"/>
+              <br/>
+              <sub className="dim">All</sub>
+            </button>
+            <button className="btn" title="Select none" onClick={this.select.bind(this, -2)}>
+              <i className="icon-select-none"/>
+              <br/>
+              <sub className="dim">None</sub>
+            </button>
+            <button className={"btn"+(this.state.inclusive?' selected':'')} title="Inclusive" onClick={()=>{this.setState({inclusive:true})}}>
+              <i className="icon-plus"/>
+              <br/>
+              <sub className="dim">Inclusive</sub>
+            </button>
+            <button className={"btn"+(this.state.inclusive?'':' selected')} title="Exclusive" onClick={()=>{this.setState({inclusive:false})}}>
+              <i className="icon-minus"/>
+              <br/>
+              <sub className="dim">Exclusive</sub>
+            </button>
+          </div>
+        :
+          <></>
+        }
       </div>
     </div>
   }

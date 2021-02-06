@@ -62,7 +62,7 @@ nav form>input[type=text]{
   text-align: left;
   flex-grow: 1;
 }
-nav i.fas {
+nav i[class^="icon-"], nav i[class*=" icon-"] {
   text-shadow: #000 0 0 2px;
 }
 

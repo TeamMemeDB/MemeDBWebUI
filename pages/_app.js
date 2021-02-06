@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
       <link rel="manifest" href="/manifest.json" />
 
       <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
-      <script src="https://kit.fontawesome.com/0004d1f3f6.js" crossOrigin="anonymous"></script>
+      <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     </Head>
     <noscript>You need to enable JavaScript to access MemeDB.</noscript>
     <Header/>

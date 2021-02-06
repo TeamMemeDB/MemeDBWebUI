@@ -99,8 +99,12 @@ input[type=submit]{
   cursor: pointer;
 }
 
-/* Font awesome fix */
-.fas {
-  width: 1em;
-  text-align: center;
+/* Yiaycons fixes */
+[class^="icon-"], [class*=" icon-"] {
+  font-size: 1.15em;
+}
+
+/* General helpful classes */
+.scroll {
+  overflow: auto;
 }
