@@ -1,12 +1,13 @@
+#__next {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 header,footer{
   background: #535c68;
   box-shadow: rgba(0,0,0,0.4) 0 0 0.5em;
   z-index: 100;
-}
-footer{
-  position: absolute;
-  bottom: 0;
-  width: 100%;
 }
 
 nav{
@@ -93,4 +94,9 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   nav .navbutton-spacer{
     display: none;
   }
+}
+
+.page {
+  min-height: 35rem;
+  flex-grow: 1;
 }

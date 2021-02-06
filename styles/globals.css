@@ -1,5 +1,9 @@
-body {
+html,body {
   min-height: 100vh;
+  height: 100%;
+  overflow: auto;
+}
+body {
   margin: 0;
   font-size: 14px;
   font-family: Lato, sans-serif;
@@ -101,7 +105,8 @@ input[type=submit]{
 
 /* Yiaycons fixes */
 [class^="icon-"], [class*=" icon-"] {
-  font-size: 1.15em;
+  font-size: 1.15em;position: relative;
+  top: -0.075em;
 }
 
 /* General helpful classes */

@@ -31,7 +31,7 @@ export async function getStaticProps() {
           displayname: '#'+tag.Name,
           counter: tag.Votes,
           href: '/tag/'+encodeURIComponent(tag.Name.toLowerCase())+'/'+tag.Id,
-          hidden: (tag.Votes < 3)
+          hidden: (tag.Votes < 1)
         });
       }
     }else{

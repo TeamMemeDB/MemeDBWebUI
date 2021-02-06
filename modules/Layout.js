@@ -69,7 +69,7 @@ const defaultsorts = [
 ];
 
 const defaultedge = [
-  {id:0, name: 'safe for everyone', displayname: <><i className='icon-pepper red'/></>, description:"Regular content, safe for everyone"}, // 0
+  {id:0, name: 'family friendly', displayname: <><i className='icon-pepper red'/></>, description:"Regular content, safe for everyone"}, // 0
   {id:1, name: 'nsfw/edgy', displayname: <><i className='icon-pepper red'/><i className='icon-pepper red'/></>, description:"NSFW or edgy, not for children"}, // 1
 ];
 
@@ -85,11 +85,13 @@ export class Browse extends React.Component {
   }
 
   render(){
-    return <Panel type="toolbelt" title="Search Tools">
-      <DropDown name={<><i className="icon-menu2"/> Sort</>} values={this.state.sorts} default={0}/>
-      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true}/>
-      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true}/>
-      <MultiDropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
-    </Panel>;
+    return <div className="page">
+      <Panel type="toolbelt" title="Search Tools">
+        <DropDown name={<><i className="icon-menu2"/> Sort</>} values={this.state.sorts} default={0}/>
+        <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true}/>
+        <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true}/>
+        <MultiDropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
+      </Panel>
+    </div>;
   }
 }

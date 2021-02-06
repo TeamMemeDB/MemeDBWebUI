@@ -29,6 +29,9 @@
   width: 12em;
   flex-grow: 1;
 }
+.dropdown i[class^="icon-"], .dropdown i[class*=" icon-"]{
+  top: 0.075em;
+}
 .dropbtn {
   padding: 0.5em 1em;
   text-align: left;
@@ -74,6 +77,21 @@
   width: 0;
   flex-grow: 1;
 }
+.dropdown>.dropdown-content>.scroll>.btn:not(.noselect)::before {
+  font-family: 'yiaycons';
+  font-size: 1.1em;
+  margin-right: 0.5em;
+  content: "\ea56";
+}
+.dropdown>.dropdown-content>.scroll>.btn:not(.noselect).selected::before {
+  content: "\ea54";
+}
+.dropdown.dropdown-multi>.dropdown-content>.scroll>.btn:not(.noselect)::before {
+  content: "\ea53";
+}
+.dropdown.dropdown-multi>.dropdown-content>.scroll>.btn:not(.noselect).selected::before {
+  content: "\ea52";
+}
 .dropdown-content>.dropdown-content-toolbar>.btn>i{
   margin: 0;
 }
@@ -90,11 +108,14 @@
   text-align: left;
 }
 .dropdown-content .btn.selected {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
 }
 .dropdown-content .btn.selected:hover {
   background: rgba(255,255,255,0.25);
 }
 .dropdown-content .btn.hidden {
   display: none;
+}
+.dropdown-content .btn.searched {
+  background: rgba(252, 255, 84, 0.05);
 }

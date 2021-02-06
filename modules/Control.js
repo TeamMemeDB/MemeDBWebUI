@@ -67,7 +67,9 @@ export class DropDown extends React.Component {
     return <div className="dropdown">
       <button className="dropbtn btn">{this.props.name}<br/><sub className="dim">{stringrep}</sub></button>
       <div className="dropdown-content">
-        {menu}
+        <div className="scroll">
+          {menu}
+        </div>
       </div>
     </div>
   }
@@ -88,7 +90,7 @@ export class DropDown extends React.Component {
 export class MultiDropDown extends DropDown {
   constructor(props) {
     super(props);
-    this.state = { selection: props.default, inclusive: (props.inclusive!==undefined)?props.inclusive:true };
+    this.state = { selection: props.default, inclusive: (props.inclusive!==undefined)?props.inclusive:true, search: '', maxlength: 100 };
 
     this.find = this.find.bind(this);
     this.select = this.select.bind(this);
@@ -99,18 +101,36 @@ export class MultiDropDown extends DropDown {
     for(var id in this.props.values) {
       var item = this.props.values[id];
 
-      var selected = (this.state.selection.indexOf(item.id) >= 0 || this.state.selection[0] == -1);
-      var searched = false;
-
       var classes = ['btn'];
-      if(item.hidden && !searched) classes.push('hidden');
-      else if(selected) classes.push('selected');
+
+      if(this.state.selection.indexOf(item.id) >= 0 || this.state.selection[0] == -1){
+        classes.push('selected');
+      }
+
+      if(this.state.search.length > 2){
+        if(item.name.includes(this.state.search) || item.description?.includes(this.state.search)){
+          classes.push('searched');
+        }else{
+          classes.push('hidden');
+        }
+      }else if(item.hidden){
+        classes.push('hidden');
+      }else if(menu.length >= this.state.maxlength){
+        classes.push('hidden');
+      }
 
       classes = classes.join(' ');
 
       menu.push(<button onClick={this.select.bind(this,item.id)} key={item.name} className={classes} title={item.description}>
                   {item.displayname}{(item.counter!==undefined)?<>&nbsp;<i className="dim">({item.counter})</i></>:''}
                 </button>);
+    }
+
+    if(this.state.maxlength > 100){
+      menu.push(<button onClick={()=>{this.setState({maxlength: 100})}} key={-1} className='btn noselect'>Show less...</button>);
+    }
+    else if(menu.length > this.state.maxlength){
+      menu.push(<button onClick={()=>{this.setState({maxlength: 1000})}} key={-1} className='btn noselect'>Show all...</button>);
     }
 
     var stringrep;
@@ -166,11 +186,11 @@ export class MultiDropDown extends DropDown {
       stringrep = 'None';
     }
 
-    return <div className="dropdown">
+    return <div className="dropdown dropdown-multi">
       <button className="dropbtn btn">{this.props.name}<br/><sub className="dim">{stringrep}</sub></button>
       <div className="dropdown-content">
         {(this.props.values.length > 10)?
-          <input className="dropdown-search" type="text" placeholder="Search..."/>
+          <input className="dropdown-search" type="text" onInput={(e)=>{this.setState({search: e.target.value})}} placeholder="Search..."/>
         :
           <></>
         }
