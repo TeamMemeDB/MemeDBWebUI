@@ -1,0 +1,14 @@
+{
+  "name": "memedb-migrater",
+  "version": "1.0.0",
+  "description": "Migrate a v1.x MemeDB (MariaDB-based) to v2.0",
+  "main": "migrate-memedb1.x-2.0.js",
+  "scripts": {
+    "run": "node migrate-memedb1.x-2.0.js"
+  },
+  "author": "Yiays",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.6.4"
+  }
+}
