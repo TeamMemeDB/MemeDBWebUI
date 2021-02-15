@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import fetch from 'isomorphic-unfetch';
 import {Browse} from '../modules/Layout';
 import { getcats } from './api/cats';
 import { gettags } from './api/tags';
@@ -6,37 +7,27 @@ import { gettags } from './api/tags';
 export async function getStaticProps() {
   var props = {categories: [], tags: []};
 
-  await getcats((err, results, fields) => {
-    if(!err){
-      results.forEach(cat => {
-        props.categories.push({
-          id: cat.Id, name:cat.Name.toLowerCase(),
-          displayname:cat.Name,
-          counter: cat.Votes,
-          href:'/category/'+encodeURIComponent(cat.Name.toLowerCase())+'/'+cat.Id,
-          description: cat.Description
-        });
-      });
-    }else{
-      console.error(err);
-    }
+  const res = await fetch('http://localhost:3000/api/cats');
+  res.json().forEach(cat => {
+    props.categories.push({
+      id: cat.Id, name:cat.Name.toLowerCase(),
+      displayname:cat.Name,
+      counter: cat.Votes,
+      href:'/category/'+encodeURIComponent(cat.Name.toLowerCase())+'/'+cat.Id,
+      description: cat.Description
+    });
   });
   
-  await gettags((err, results, fields) => {
-    if(!err){
-      for(let tag of results) {
-        props.tags.push({
-          id: tag.Id,
-          name: tag.Name.toLowerCase(),
-          displayname: '#'+tag.Name,
-          counter: tag.Votes,
-          href: '/tag/'+encodeURIComponent(tag.Name.toLowerCase())+'/'+tag.Id,
-          hidden: (tag.Votes < 1)
-        });
-      }
-    }else{
-      console.error(err);
-    }
+  const res = await fetch('http://localhost:3000/api/tags');
+  res.json().forEach(tag => {
+    props.tags.push({
+      id: tag.Id,
+      name: tag.Name.toLowerCase(),
+      displayname: '#'+tag.Name,
+      counter: tag.Votes,
+      href: '/tag/'+encodeURIComponent(tag.Name.toLowerCase())+'/'+tag.Id,
+      hidden: (tag.Votes < 1)
+    });
   });
 
   return { props: props };

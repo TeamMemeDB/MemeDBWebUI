@@ -6,7 +6,7 @@ handler.use(middleware);
 
 handler.get(async (req, res) => {
   try{
-    const results = await req.db.collection('tag').find({}).toArray((err, row)=>{if(err) throw err;req.dbClient.close();});
+    const results = await req.db.collection('meme').find({}).toArray((err, row)=>{if(err) throw err;req.dbClient.close();});
     res.status(200).json(results);
   }
   catch{

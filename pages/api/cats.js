@@ -1,23 +1,17 @@
-import { fetch } from "../../modules/DB";
+import nextConnect from 'next-connect';
+import middleware from '../../middleware/mongodb';
 
-export async function getcats(callback) {
-  return fetch(`SELECT category.*,IFNULL(COUNT(memeId),0) AS Votes
-                FROM category
-                LEFT JOIN categoryvote ON category.Id = categoryvote.categoryId
-                GROUP BY Id`, callback);
-}
+const handler = nextConnect();
+handler.use(middleware);
 
-export default async (req, res) => {
-  return new Promise((resolve, reject) => {
-    getcats((err, results, fields) => {
-      if(err){
-        res.status(500);
-        resolve();
-      }
-      else{
-        res.status(200).json(results);
-        resolve();
-      }
-    })
-  });
-};
+handler.get(async (req, res) => {
+  try{
+    const results = await req.db.collection('category').find({}).toArray((err, row)=>{if(err) throw err;req.dbClient.close();});
+    res.status(200).json(results);
+  }
+  catch{
+    res.status(500);
+  }
+});
+
+export default handler;

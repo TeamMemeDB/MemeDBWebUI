@@ -1,13 +1,18 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import nextConnect from 'next-connect';
+import middleware from '../../middleware/mongodb';
 
-import { fetch } from "../../modules/DB";
+const handler = nextConnect();
+handler.use(middleware);
 
-export default async (req, res) => {
-  return fetch(`SELECT COUNT(Id) FROM meme`, (err, results=null, fields=null) => {
-    if(err){
-      res.status(500).json({status:'down', err:err});
-    }else{
-      res.status(200).json({status:'up', memes:results[0]['COUNT(Id)']});
-    }
-  });
-}
+handler.get(async (req, res) => {
+  try {
+    var result = await req.db.collection('meme').estimatedDocumentCount();
+    res.status(200).json({status:'up', count:result});
+  }
+  catch {
+    res.status(500).json({status:'down'});
+  }
+  req.dbClient.close();
+});
+
+export default handler;

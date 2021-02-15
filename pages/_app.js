@@ -4,6 +4,7 @@ import '../modules/App.css';
 import '../modules/Layout.css';
 import '../modules/Control.css';
 import '../modules/User.css';
+import '../modules/Meme.css';
 import {Header, Footer} from '../modules/Layout';
 
 function MyApp({ Component, pageProps }) {
