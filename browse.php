@@ -263,7 +263,7 @@ function browse(){
 
 if(str_replace('\\', '/', __FILE__)==$_SERVER['SCRIPT_FILENAME']){
 	//browse();
-	header('Location: /category/new',true,301);
+	header('Location: /sort/new',true,301);
 	exit();
 }
 ?> 

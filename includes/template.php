@@ -66,9 +66,9 @@ function headr($data,$conn){
 		<?php if(isset($data['image'])) echo '<meta name="og:image" content="'.$data['image'].'">';?>
 		<?php if(isset($data['noindex'])&&$data['noindex']) echo '<meta name="robots" content="noindex">';?>
 		
-		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/icon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/icon/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
 		
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
@@ -121,7 +121,7 @@ function headr($data,$conn){
 				<input id="memetagsearch" name="newtag" placeholder="new tag"/>
 			</form>
 			<br>
-			<sub><i>Click on the best categories and tags and remove innapropriate ones.</i></sub>
+			<sub><i>Click on the best categories and tags and remove inapropriate ones.</i></sub>
 			<br><br><label>Edginess average:</label>
 			<span id="averagespice">0.00</span>
 			<br><label>Your rating:</label>
