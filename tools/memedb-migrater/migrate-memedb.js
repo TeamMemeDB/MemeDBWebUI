@@ -1,28 +1,61 @@
-const { MongoClient } = require('mongodb');
+import fs from 'fs';
+import dotenv from 'dotenv';
+dotenv.config({'path': '/home/yiays/memebeta/.env.local'});
+
+import { MongoClient } from 'mongodb'
+
+const uri = process.env.MONGODB_URI
+const options = {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+}
+
+let client
+let clientPromise
+
+if (!process.env.MONGODB_URI) {
+  throw new Error('Add Mongo URI to .env.local')
+}
+
+if (process.env.NODE_ENV === 'development') {
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options)
+    global._mongoClientPromise = client.connect()
+  }
+  clientPromise = global._mongoClientPromise
+} else {
+  client = new MongoClient(uri, options)
+  clientPromise = client.connect()
+}
+
 const config = {
   clean: true,
-  category: false,
-  tag: false,
-  user: false,
-  meme: false,
+  category: true,
+  tag: true,
+  user: true,
+  meme: true,
   favourites: true
 };
-const dburl = "mongodb+srv://memedb:RvhGDJwl1llaZ9C5@merelyservices.saaan.mongodb.net/memedb?retryWrites=true&w=majority";
-const client = new MongoClient(dburl);
 
-const fs = require('fs');
-var rawdata = fs.readFileSync("memedb-export-v1.0.json");
+let rawdata = fs.readFileSync("memedb-export.json");
 const data = JSON.parse(rawdata);
+
+function findtable(name) {
+  for(let index in data){
+    if(data[index].type == "table" && data[index].name == name) return data[index];
+  }
+  throw new Error(`Failed to find ${name} table!`);
+}
 
 async function main() {
   try {
-    await client.connect();
+    await clientPromise;
 
     // Verify connection
     await client.db("admin").command({ ping: 1 });
     console.log("Connected successfully to MongoDB");
 
-    var db = client.db('memedb');
+    let db = client.db('memedb');
 
     if(config.category) {
       console.log("Migrating categories...");
@@ -30,9 +63,9 @@ async function main() {
         console.log("Clearing table first...\nDeleted "+(await db.collection('category').deleteMany({})).deletedCount+" rows.");
       }
       
-      var dbobj = findtable('category');
+      let dbobj = findtable('category');
 
-      var rows = [];
+      let rows = [];
       dbobj.data.forEach(row => {
         rows.push({
           id: parseInt(row.Id),
@@ -50,9 +83,9 @@ async function main() {
         console.log("Clearing table first...\nDeleted "+(await db.collection('tag').deleteMany({})).deletedCount+" rows.");
       }
 
-      var dbobj = findtable('tag');
+      let dbobj = findtable('tag');
 
-      var rows = [];
+      let rows = [];
       dbobj.data.forEach(row => {
         rows.push({
           id: parseInt(row.Id),
@@ -69,9 +102,9 @@ async function main() {
         console.log("Clearing table first...\nDeleted "+(await db.collection('user').deleteMany({})).deletedCount+" rows.");
       }
 
-      var dbobj = findtable('user');
+      let dbobj = findtable('user');
 
-      var rows = [];
+      let rows = [];
       dbobj.data.forEach(row => {
         rows.push({
           discordId: row.Id,
@@ -100,23 +133,23 @@ async function main() {
       }
 
       // Create neoId converters
-      var userConverter = {};
+      let userConverter = {};
       var cursor = db.collection('user').find({});
       await cursor.forEach(user => {userConverter[user.discordId] = user._id});
 
-      var catConverter = {};
+      let catConverter = {};
       var cursor = db.collection('category').find({});
       await cursor.forEach(cat => {catConverter[cat.id] = cat._id});
 
-      var tagConverter = {};
+      let tagConverter = {};
       var cursor = db.collection('tag').find({});
       await cursor.forEach(tag => {tagConverter[tag.id] = tag._id});
 
-      // Create vote counters for all transcriptions and descriptions
-      var dbtransvote = findtable('transvote').data;
-      var transdata = {};
+      // Create vote counters for all transcriptions, descriptions, and edge ratings
+      let dbtransvote = findtable('transvote').data;
+      let transdata = {};
       dbtransvote.forEach(transvote => {
-        var data = {user: userConverter[transvote.userId], value: parseInt(transvote.Value)};
+        let data = {user: userConverter[transvote.userId], value: parseInt(transvote.Value)};
 
         if(transdata[transvote.transId] === undefined){
           transdata[transvote.transId] = [data];
@@ -125,10 +158,10 @@ async function main() {
         }
       });
       
-      var dbdescvote = findtable('descvote').data;
-      var descdata = {};
+      let dbdescvote = findtable('descvote').data;
+      let descdata = {};
       dbdescvote.forEach(descvote => {
-        var data = {user: userConverter[descvote.userId], value: parseInt(descvote.Value)};
+        let data = {user: userConverter[descvote.userId], value: parseInt(descvote.Value)};
         
         if(descdata[descvote.descId] === undefined){
           descdata[descvote.descId] = [data];
@@ -137,17 +170,29 @@ async function main() {
         }
       });
 
-      // Generate list of meme objects
-      var dbmemes = findtable('meme').data;
+      let dbedgevote = findtable('edge').data;
+      let edgedata = {};
+      dbedgevote.forEach(edgevote => {
+        let data = {user: userConverter[edgevote.userId], value: parseInt(edgevote.Rating)};
 
-      var rows = [];
+        if(edgedata[edgevote.memeId] === undefined){
+          edgedata[edgevote.memeId] = [data];
+        }else{
+          edgedata[edgevote.memeId].push(data);
+        }
+      })
+
+      // Generate list of meme objects
+      let dbmemes = findtable('meme').data;
+
+      let rows = [];
       dbmemes.forEach(meme => {
         // Generate list of memevote objects
-        var dbvotes = findtable('memevote').data;
-        var votes = [];
+        let dbvotes = findtable('memevote').data;
+        let memevotes = [];
         dbvotes.forEach(vote => {
           if(vote.memeId == meme.Id){
-            votes.push({
+            memevotes.push({
               user: userConverter[vote.userId],
               value: parseInt(vote.Value)
             });
@@ -155,33 +200,33 @@ async function main() {
         });
 
         // Generate list of categoryvote objects
-        var dbcats = findtable('categoryvote').data;
-        var catdata = {};
+        let dbcats = findtable('categoryvote').data;
+        let catdata = {};
         dbcats.forEach(cat => {
           if(cat.memeId == meme.Id){
             if(catdata[cat.categoryId] === undefined) catdata[cat.categoryId] = [];
             catdata[cat.categoryId].push({user: userConverter[cat.userId], value: parseInt(cat.Value)});
           }
         });
-        var categories = [];
-        for(var [catid, catvotes] of Object.entries(catdata)) {
-          categories.push({
+        let memecategories = [];
+        for(let [catid, catvotes] of Object.entries(catdata)) {
+          memecategories.push({
             category: catConverter[catid],
             votes: catvotes
           });
         }
 
         // Generate list of tagvote objects
-        var dbtags = findtable('tagvote').data;
-        var tagdata = {};
+        let dbtags = findtable('tagvote').data;
+        let tagdata = {};
         dbtags.forEach(tag => {
           if(tag.memeId == meme.Id){
             if(tagdata[tag.tagId] === undefined) tagdata[tag.tagId] = [];
             tagdata[tag.tagId].push({user: userConverter[tag.userId], value: parseInt(tag.Value)});
           }
         });
-        var tags = [];
-        for(var [tagid, tagvotes] of Object.entries(tagdata)) {
+        let tags = [];
+        for(let [tagid, tagvotes] of Object.entries(tagdata)) {
           tags.push({
             tag: tagConverter[tagid],
             votes: tagvotes
@@ -189,8 +234,8 @@ async function main() {
         }
 
         // Generate list of transcription objects
-        var dbtrans = findtable('transcription').data;
-        transcriptions = [];
+        let dbtrans = findtable('transcription').data;
+        let transcriptions = [];
         dbtrans.forEach(transcription => {
           if(transcription.memeId == meme.Id){
             transcriptions.push({
@@ -204,8 +249,8 @@ async function main() {
         });
 
         // Generate list of description objects
-        var dbdesc = findtable('description').data;
-        descriptions = [];
+        let dbdesc = findtable('description').data;
+        let descriptions = [];
         dbdesc.forEach(description => {
           if(description.memeId == meme.Id){
             descriptions.push({
@@ -235,11 +280,12 @@ async function main() {
               hash: meme.Hash,
               downloadable: (meme.Downloadable)? true: false
             },
-            votes: votes,
-            categories: categories,
+            votes: memevotes,
+            categories: memecategories,
             tags: tags,
             descriptions: descriptions,
             transcriptions: transcriptions,
+            edgevotes: edgedata[meme.Id],
             flags: {
               hidden: (meme.Hidden)? true: false,
               nsfw: (meme.Nsfw)? true: false,
@@ -247,9 +293,9 @@ async function main() {
             }
           });
         }else{
-          var found = false;
-          for(rowid in rows){
-            var row = rows[rowid];
+          let found = false;
+          for(let rowid in rows){
+            let row = rows[rowid];
             if(parseInt(meme.CollectionParent) == row.id){
               if(row.url){
                 row.urls = [row.url, meme.Url];
@@ -278,8 +324,8 @@ async function main() {
       if(config.clean) console.log("Existing favourites will be erased.");
 
       // Create neoId converters
-      var userConverter = {};
-      var userFavourites = {};
+      let userConverter = {};
+      let userFavourites = {};
       var cursor = db.collection('user').find({});
       await cursor.forEach(user => {
         userConverter[user.discordId] = user._id;
@@ -287,13 +333,13 @@ async function main() {
         else userFavourites[user.discordId] = user.lists[0];
       });
 
-      var memeConverter = {};
+      let memeConverter = {};
       var cursor = db.collection('meme').find({});
       await cursor.forEach(meme => {
         memeConverter[meme.id] = meme._id;
       });
 
-      var dbfavourites = findtable('favourites').data;
+      let dbfavourites = findtable('favourites').data;
       dbfavourites.forEach(favourite => {
         userFavourites[favourite.userId].memes.push({
           meme: memeConverter[favourite.memeId],
@@ -301,7 +347,7 @@ async function main() {
         });
       });
 
-      for(var [discordId, favourites] of Object.entries(userFavourites)){
+      for(let [discordId, favourites] of Object.entries(userFavourites)){
         await db.collection('user').updateOne({_id: userConverter[discordId]}, {$set: {"lists.0": favourites}});
       }
     }
@@ -311,13 +357,6 @@ async function main() {
   finally {
     await client.close();
   }
-}
-
-function findtable(name) {
-  for(index in data){
-    if(data[index].type == "table" && data[index].name == name) return data[index];
-  }
-  throw new Error(`Failed to find ${name} table!`);
 }
 
 main().catch(console.dir);

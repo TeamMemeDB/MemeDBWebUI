@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "migrate": "node tools/memedb-migrater/migrate-memedb.js"
+    "migrate": "cd tools/memedb-migrater && node migrate-memedb.js"
   },
   "dependencies": {
     "mongodb": "^4.1",

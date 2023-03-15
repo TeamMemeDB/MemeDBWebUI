@@ -1,8 +1,10 @@
+tools/memedb-migrater/memedb-export.json
+
 # secrets
 /middleware/mongodb.js
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
