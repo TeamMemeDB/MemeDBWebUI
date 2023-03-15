@@ -61,26 +61,35 @@ class NavItem extends React.Component {
   }
 }
 
-const defaultsorts = [
+function Pepper(props){
+  return <> {
+    Array.from({length: props.count}, (_, i) => <i key={i} className='icon-pepper red' title={(props.count) + ' pepper(s)'}/>)
+  } </>;
+}
+
+export const sortModes = [
   {id:0, name: 'newest first', displayname: <><i className='icon-sparkle pink'/> Newest</>, href: '/sort/new', description:"Newest memes first"},
   {id:1, name: 'oldest first', displayname: <><i className='icon-calendar blue'/> Oldest</>, href: '/sort/old', description:"Oldest memes first"},
   {id:2, name: 'top rated first', displayname: <><i className='icon-fire red'/> Top rated</>, href: '/sort/top', description:"Most upvoted memes first"},
   {id:3, name: 'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, href: '/sort/bottom', description:"Least upvoted memes first"}
 ];
 
-const defaultedge = [
-  {id:0, name: 'family friendly', displayname: <><i className='icon-pepper red'/></>, description:"Regular content, safe for everyone"}, // 0
-  {id:1, name: 'nsfw/edgy', displayname: <><i className='icon-pepper red'/><i className='icon-pepper red'/></>, description:"NSFW or edgy, not for children"}, // 1
+export const edgeLevels = [
+  {id:5, name: 'Unrated', displayname: <><i className='icon-notification'/></>, description: "Currently unclassified"},
+  {id:0, name: 'Family friendly', displayname: <Pepper count={1}/>, description: "Regular content, safe for everyone"},
+  {id:1, name: 'NSFW/Edgy', displayname: <Pepper count={2}/>, description: "NSFW or edgy, not for children"},
+  {id:2, name: 'Turbo Edgy', displayname: <Pepper count={3}/>, description: "Very NSFW or politically edgy"},
+  {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
 export class Browse extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      sorts: (props.sorts)? props.sorts: defaultsorts,
+      sorts: (props.sorts)? props.sorts: sortModes,
       categories: (props.categories)? props.categories: [{name: '', displayname: <><i className='icon-warning red'/> Categories missing!</> }],
       tags: (props.tags)? props.tags: [{name: '', displayname: <><i className='icon-warning red'/> Tags missing!</>}],
-      edge: (props.edge)? props.edge: defaultedge
+      edge: (props.edge)? props.edge: edgeLevels
     };
   }
 

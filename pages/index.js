@@ -9,7 +9,7 @@ export async function getStaticProps() {
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
 
-  const memes = await db.collection('meme').find({}).toArray();
+  /*const memes = await db.collection('meme').find({}).toArray();
   memes.forEach(meme => {
     props.memes.push({
       id: meme.id,
@@ -24,7 +24,7 @@ export async function getStaticProps() {
       hidden: meme.flags.hidden,
       
     })
-  });
+  });*/
 
   const cats = await db.collection('category').find({}).toArray();
   cats.forEach(cat => {
@@ -58,7 +58,7 @@ export default function Home(props) {
     <Head>
       <title>What is MemeDB?</title>
       <meta name="author" content="Yiays"/>
-      <meta name="og:title" content="What is MemeDB?"/>
+      <meta name="og:title" content="MemeDB Browser"/>
       <meta name="description" content="MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!"/>
       <meta name="og:description" content="MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!"/>
       <meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index,meme,memes,database,search,find"/>
