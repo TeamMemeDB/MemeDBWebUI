@@ -4,7 +4,7 @@ import '../modules/App.css';
 import '../modules/Layout.css';
 import '../modules/Control.css';
 import '../modules/User.css';
-import '../modules/Meme.css';
+//import '../modules/Meme.css';
 import {Header, Footer} from '../modules/Layout';
 
 function MyApp({ Component, pageProps }) {
@@ -18,12 +18,11 @@ function MyApp({ Component, pageProps }) {
       <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png"/>
       <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png"/>
       <link rel="manifest" href="/manifest.json" />
-
-      <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
-      <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     </Head>
     <noscript>You need to enable JavaScript to access MemeDB.</noscript>
     <Header/>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     <Component {...pageProps} />
     <Footer/>
   </>)

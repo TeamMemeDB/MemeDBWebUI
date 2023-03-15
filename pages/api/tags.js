@@ -1,17 +1,12 @@
-import nextConnect from 'next-connect';
-import middleware from '../../middleware/mongodb';
+import clientPromise from "../../lib/mongodb";
 
-const handler = nextConnect();
-handler.use(middleware);
-
-handler.get(async (req, res) => {
-  try{
-    const results = await req.db.collection('tag').find({}).toArray((err, row)=>{if(err) throw err;req.dbClient.close();});
-    res.status(200).json(results);
+export default async function handler(req, res) {
+  const client = await clientPromise;
+  const db = client.db("memedb");
+  switch (req.method) {
+    case "GET":
+      const tags = await db.collection("tag").find({}).toArray();
+      res.json(tags);
+      break;
   }
-  catch{
-    res.status(500);
-  }
-});
-
-export default handler;
+}
