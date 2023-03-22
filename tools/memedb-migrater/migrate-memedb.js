@@ -287,8 +287,8 @@ async function main() {
             transcriptions: transcriptions,
             edgevotes: edgedata[meme.Id],
             flags: {
-              hidden: (meme.Hidden)? true: false,
-              nsfw: (meme.Nsfw)? true: false,
+              hidden: (meme.Hidden == '1')? true: false,
+              nsfw: (meme.Nsfw == '1')? true: false,
               silent: (meme.Type == 'video')? true: (meme.Type == 'webm')? false: null
             }
           });
