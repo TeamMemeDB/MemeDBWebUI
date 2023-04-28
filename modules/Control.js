@@ -90,7 +90,14 @@ export class DropDown extends React.Component {
 export class MultiDropDown extends DropDown {
   constructor(props) {
     super(props);
-    this.state = { selection: props.default, inclusive: (props.inclusive!==undefined)?props.inclusive:true, search: '', maxlength: 100 };
+    this.state = {
+      selection: props.default,
+      inclusive: (props.inclusive!==undefined)? props.inclusive:true,
+      search: '',
+      maxlength: 100,
+      displayname: (props.displayname)? props.displayname: (s)=>s,
+      counter: props.counter
+    };
 
     this.find = this.find.bind(this);
     this.select = this.select.bind(this);
@@ -122,7 +129,7 @@ export class MultiDropDown extends DropDown {
       classes = classes.join(' ');
 
       menu.push(<button onClick={this.select.bind(this,item.id)} key={item.name} className={classes} title={item.description}>
-                  {item.displayname}{(item.counter!==undefined)?<>&nbsp;<i className="dim">({item.counter})</i></>:''}
+                  {this.state.displayname(item.name)}{(this.state.counter!==undefined)?<>&nbsp;<i className="dim">({this.state.counter(item)})</i></>:''}
                 </button>);
     }
 
@@ -259,7 +266,7 @@ export class MultiDropDown extends DropDown {
         selection.push(id);
       }
     }
-    console.log(selection);
+    //console.log(selection);
     this.setState({selection: selection});
   }
 }
