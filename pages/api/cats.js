@@ -5,8 +5,12 @@ export default async function handler(req, res) {
   const db = client.db("memedb");
   switch (req.method) {
     case "GET":
-      const cats = await db.collection("category").find({}).toArray();
+      const cats = await getCats(db);
       res.json(cats);
       break;
   }
+}
+
+export async function getCats(db) {
+  return await db.collection("category").find({}, {_id: 0}).toArray();
 }
