@@ -82,14 +82,48 @@ export const edgeLevels = [
   {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
+class MemeView extends React.Component {}
+
+class GridMeme extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      meme: props.meme
+    }
+  }
+
+  render() {
+    return <div className='meme' href={'/meme/'+this.state.meme.id}>
+      <img src={this.state.meme.thumbUrl}/>
+    </div>
+  }
+}
+
+class MemeGrid extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      memes: (props.memes?.memes)? props.memes.memes: [],
+      stats: (props.memes?.stats)? props.memes.stats[0]: {count: 0}
+    }
+  }
+
+  render(){
+    return <div className='memegrid'>{this.state.memes.map((meme, i) =>
+      <GridMeme key={i} meme={meme}/>
+    )}</div>
+  }
+}
+
 export class Browse extends React.Component {
   constructor(props){
     super(props);
     this.state = {
       sorts: (props.sorts)? props.sorts: sortModes,
-      categories: (props.categories)? props.categories: [{name: '', displayname: <><i className='icon-warning red'/> Categories missing!</> }],
-      tags: (props.tags)? props.tags: [{name: '', displayname: <><i className='icon-warning red'/> Tags missing!</>}],
-      edge: (props.edge)? props.edge: edgeLevels
+      categories: (props.categories)? props.categories: [{name: <><i className='icon-warning red'/> Categories missing!</> }],
+      tags: (props.tags)? props.tags: [{name: <><i className='icon-warning red'/> Tags missing!</>}],
+      edge: (props.edge)? props.edge: edgeLevels,
+      memes: (props.preloadMemes)? props.preloadMemes: []
     };
   }
 
@@ -97,10 +131,11 @@ export class Browse extends React.Component {
     return <div className="page">
       <Panel type="toolbelt" title="Search Tools">
         <DropDown name={<><i className="icon-menu2"/> Sort</>} values={this.state.sorts} default={0}/>
-        <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true}/>
-        <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true}/>
-        <MultiDropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
+        <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true} counter={(t) => t.count}/>
+        <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true} displayname={(s) => '#'+s} counter={(t) => t.count}/>
+        <DropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
       </Panel>
+      <MemeGrid memes={this.state.memes}/>
     </div>;
   }
 }
