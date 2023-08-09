@@ -87,7 +87,7 @@ export async function getMemes(db, query={}) {
     {
       // Exclude irrelevant data to decrease data usage and latency
       // urls and originalUrls are excluded to help reduce vulnerability to scraping
-      $unset: ['downloader', '_id', 'votes', 'edgevotes', 'descriptions', 'transcriptions', 'tags', 'categories', 'discordOrigin', 'originalUrl', 'url', 'originalUrls', 'urls']
+      $unset: ['downloader', 'votes', 'edgevotes', 'descriptions', 'transcriptions', 'tags', 'categories', 'discordOrigin', 'originalUrl', 'originalUrls']
     },
     {
       $match: {
@@ -109,7 +109,7 @@ export async function getMemes(db, query={}) {
         // Include a result count for pagination
         stats: [{$count: 'matches'}],
         // Pagination with a hardcoded 50 meme limit
-        memes: [{$skip: Number(from)},{$limit: 50}]
+        memes: [{$skip: Number(from)}, {$limit: 50}]
       }
     }
   ];

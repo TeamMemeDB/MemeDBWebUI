@@ -100,3 +100,29 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   min-height: 35rem;
   flex-grow: 1;
 }
+
+.memegrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: stretch;
+}
+.memegrid > .meme {
+  min-width: 20em;
+  max-width: calc(100vw - 1em);
+  height: 20em;
+  border: 0.5em solid #131c28;
+  flex-grow: 1;
+}
+
+.meme {
+  display: flex;
+  background: black;
+  align-items: center;
+  justify-content: center;
+}
+.meme > img, .meme > video {
+  max-height: 20em;
+  width: auto;
+  max-width: 40em;
+}

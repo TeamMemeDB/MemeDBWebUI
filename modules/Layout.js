@@ -82,39 +82,6 @@ export const edgeLevels = [
   {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
-class MemeView extends React.Component {}
-
-class GridMeme extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      meme: props.meme
-    }
-  }
-
-  render() {
-    return <div className='meme' href={'/meme/'+this.state.meme.id}>
-      <img src={this.state.meme.thumbUrl}/>
-    </div>
-  }
-}
-
-class MemeGrid extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      memes: (props.memes?.memes)? props.memes.memes: [],
-      stats: (props.memes?.stats)? props.memes.stats[0]: {count: 0}
-    }
-  }
-
-  render(){
-    return <div className='memegrid'>{this.state.memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme}/>
-    )}</div>
-  }
-}
-
 export class Browse extends React.Component {
   constructor(props){
     super(props);
@@ -139,3 +106,68 @@ export class Browse extends React.Component {
     </div>;
   }
 }
+
+class MemeGrid extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      memes: (props.memes?.memes)? props.memes.memes: [],
+      stats: (props.memes?.stats)? props.memes.stats[0]: {count: 0}
+    }
+  }
+
+  render(){
+    return <div className='memegrid'>{this.state.memes.map((meme, i) =>
+      <GridMeme key={i} meme={meme}/>
+    )}</div>
+  }
+}
+
+class GridMeme extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      meme: props.meme
+    }
+
+  }
+
+  render() {
+    var media;
+    if(this.state.meme.type=='image')
+      media = <img src={this.state.meme.thumbUrl} alt={this.state.meme.transcription?this.state.meme.transcription:'Meme number '+this.state.meme._id} width={this.state.meme.width} height={this.state.meme.height}/>;
+    else if(this.state.meme.type=='gif')
+      media = <HoverImg src={this.state.meme.thumbUrl} gifSrc={this.state.meme.url} alt={this.state.meme.transcription?this.state.meme.transcription:'Meme number '+this.state.meme._id} width={this.state.meme.width} height={this.state.meme.height}/>;
+    else if(this.state.meme.type=='video')
+      media = <video width={this.state.meme.width} height={this.state.meme.height} controls poster={this.state.meme.thumbUrl} preload='none'><source src={this.state.meme.url}></source></video>;
+    else
+      media = <p style={{color:'red'}}>Unsupported media type {this.state.meme.type}</p>
+
+    return <div className='meme' href={'/meme/'+this.state.meme._id} style={{'background-color':this.state.meme.color}}>
+      {media}
+      <div className='info'>
+        
+      </div>
+    </div>
+  }
+}
+
+class MemeView extends React.Component {}
+
+const HoverImg = ({ imageSrc, gifSrc, width, height, alt }) => {
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseEnter = () => setIsHovering(true);
+  const handleMouseLeave = () => setIsHovering(false);
+
+  return (
+    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <img
+        src={isHovering ? gifSrc : imageSrc}
+        width={width}
+        height={height}
+        alt={alt}
+      />
+    </div>
+  );
+};
