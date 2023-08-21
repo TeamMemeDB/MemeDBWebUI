@@ -70,6 +70,7 @@ function headr($data,$conn){
 		<link rel="icon" type="image/png" sizes="32x32" href="/icon/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/icon/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
+		<meta name="theme-color" content="#535C68">
 		
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
 		<link rel="stylesheet" href="/css/style.css?v=51" type="text/css">

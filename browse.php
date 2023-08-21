@@ -130,7 +130,7 @@ function printmemes($memes,$limit,$conn){
 				}
 				
 				$youtube = '';
-				if(strpos($row['OriginalUrl'],'ttps://youtu.be/')==1||strpos($row['OriginalUrl'],'ttps://www.youtube.com/')==1){
+				if(!is_null($row['OriginalUrl']) && (strpos($row['OriginalUrl'],'ttps://youtu.be/')==1||strpos($row['OriginalUrl'],'ttps://www.youtube.com/')==1)){
 					$youtube = '<a class="youtube-button" href="'.$row['OriginalUrl'].'" target="_blank">▶</a>';
 				}
 				$videotemplate='
