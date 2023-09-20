@@ -6,7 +6,7 @@ import { getTags } from './api/tags';
 import { getMemes } from './api/memes';
 
 export async function getStaticProps() {
-  var props = {categories: [], tags: [], memes: []};
+  let props = {categories: [], tags: [], memes: []};
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
 

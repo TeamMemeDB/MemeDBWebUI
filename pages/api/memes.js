@@ -55,7 +55,7 @@ export async function getMemes(db, query={}) {
     {
       $addFields: {
         // An average of all upvotes and downvotes for this meme
-        avgVotes: {$avg: "$votes.value"},
+        totalVotes: {$sum: "$votes.value"},
         // An average of all edge ratings for this meme
         avgEdgevotes: {$avg: "$edgevotes.value"},
         // Take the best description and provide it for search

@@ -1,64 +1,46 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Panel, DropDown, MultiDropDown } from './Control';
-
 import {User,UserNav} from './User';
 
-export class Header extends React.Component {
-  render(){
-    return <header><HeaderNav></HeaderNav></header>;
-  }
+let tags,categories;
+
+export const Header = (props) => {
+  const [searchFocus, setSearchFocus] = useState(false);
+
+  return <header><nav>
+    <div className={"navbutton navbutton-title-search"+(searchFocus?' searchfocus':'')}>
+      <NavItem href="/">
+        <img src="/img/icon.png" alt="MemeDB Icon"/>
+        <h1>
+          <span color='#fafafa'>Meme</span>
+          <span className="accent">DB</span>
+        </h1>
+      </NavItem>
+      <form action="" method="GET">
+        <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(true)}></input>
+        <button type="submit" className="btn" value=""><i className='icon-search'/></button>
+      </form>
+    </div>
+    <NavItem type="spacer"></NavItem>
+    <UserNav user={<User username="Yiays"/>}/>
+  </nav></header>;
 }
 
-export class HeaderNav extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {searchfocus: false};
-  }
-
-  render(){
-    return <nav>
-      <div className={"navbutton navbutton-title-search"+(this.state.searchfocus?' searchfocus':'')}>
-        <NavItem href="/">
-          <img src="/img/icon.png" alt="MemeDB Icon"/>
-          <h1>
-            <span color='#fafafa'>Meme</span>
-            <span className="accent">DB</span>
-          </h1>
-        </NavItem>
-        <form action="" method="GET">
-          <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>this.setState({searchfocus: true})} onBlur={()=>this.setState({searchfocus: false})}></input>
-          <button type="submit" className="btn" value=""><i className='icon-search'/></button>
-        </form>
-      </div>
-      <NavItem type="spacer"></NavItem>
-      <UserNav user={<User username="Yiays"/>}/>
-    </nav>;
-  }
+export const Footer = (props) => {
+  return <footer><nav>
+    <NavItem href="https://yiays.com">Created by Yiays</NavItem>
+    <NavItem type="spacer"></NavItem>
+    <NavItem href="/terms">Terms</NavItem>
+    <NavItem href="/report">Report Abuse</NavItem>
+    <NavItem href="https://github.com/TeamMemeDB">GitHub</NavItem>
+    <NavItem href="/dmca">DMCA</NavItem>
+  </nav></footer>;
 }
 
-export class Footer extends React.Component {
-  render(){
-    return <footer><FooterNav></FooterNav></footer>;
-  }
-}
-
-export class FooterNav extends React.Component {
-  render(){
-    return <nav>
-      <NavItem href="https://yiays.com">Created by Yiays</NavItem>
-      <NavItem type="spacer"></NavItem>
-      <NavItem href="/terms">Terms</NavItem>
-      <NavItem href="/report">Report Abuse</NavItem>
-      <NavItem href="https://github.com/TeamMemeDB">GitHub</NavItem>
-      <NavItem href="/dmca">DMCA</NavItem>
-    </nav>
-  }
-}
-
-class NavItem extends React.Component {
-  render(){
-    return <a href={this.props.href} className={"btn navbutton"+(this.props.type?' navbutton-'+this.props.type:'')}>{this.props.children}</a>
-  }
+const NavItem = (props) => {
+  return <a href={props.href} className={"btn navbutton"+(props.type?' navbutton-'+props.type:'')}>
+    {props.children}
+  </a>
 }
 
 function Pepper(props){
@@ -82,86 +64,77 @@ export const edgeLevels = [
   {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
-export class Browse extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      sorts: (props.sorts)? props.sorts: sortModes,
-      categories: (props.categories)? props.categories: [{name: <><i className='icon-warning red'/> Categories missing!</> }],
-      tags: (props.tags)? props.tags: [{name: <><i className='icon-warning red'/> Tags missing!</>}],
-      edge: (props.edge)? props.edge: edgeLevels,
-      memes: (props.preloadMemes)? props.preloadMemes: []
-    };
-  }
+export const Browse = (props) => {
+  const sorts = props.sorts? props.sorts: sortModes;
+  const edge = props.edge? props.edge: edgeLevels;
+  tags = props.tags;
+  categories = props.categories;
 
-  render(){
-    return <div className="page">
-      <Panel type="toolbelt" title="Search Tools">
-        <DropDown name={<><i className="icon-menu2"/> Sort</>} values={this.state.sorts} default={0}/>
-        <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={this.state.categories} default={[-1]} inclusivityeditor={true} counter={(t) => t.count}/>
-        <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={this.state.tags} default={[-1]} inclusivityeditor={true} displayname={(s) => '#'+s} counter={(t) => t.count}/>
-        <DropDown name={<><i className="icon-pepper"/> Edge</>} values={this.state.edge} default={[0]} inclusive={false}/>
-      </Panel>
-      <MemeGrid memes={this.state.memes}/>
-    </div>;
-  }
+  return <div className="page">
+    <Panel type="toolbelt" title="Search Tools">
+      <DropDown name={<><i className="icon-menu2"/> Sort</>} values={sorts} default={0}/>
+      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={props.categories} default={[-1]} inclusivityeditor={true} counter={(t) => t.memes}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={props.tags} default={[-1]} inclusivityeditor={true} displayname={(s) => '#'+s} counter={(t) => t.memes}/>
+      <DropDown name={<><i className="icon-pepper"/> Edge</>} values={edge} default={[0]} inclusive={false}/>
+    </Panel>
+    <MemeGrid memes={props.preloadMemes}/>
+  </div>;
 }
 
-class MemeGrid extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      memes: (props.memes?.memes)? props.memes.memes: [],
-      stats: (props.memes?.stats)? props.memes.stats[0]: {count: 0}
-    }
-  }
+const MemeGrid = (props) => {
+  const memes = props.memes?.memes? props.memes.memes: [];
+  const stats = props.memes?.stats? props.memes.stats[0]: {count: 0};
 
-  render(){
-    return <div className='memegrid'>{this.state.memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme}/>
-    )}</div>
-  }
+  return <div className='memegrid'>{memes.map((meme, i) =>
+    <GridMeme key={i} meme={meme}/>
+  )}</div>;
 }
 
-class GridMeme extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      meme: props.meme
-    }
+const GridMeme = (props) => {
+  const meme = props.meme;
 
-  }
+  let media;
+  if(meme.type=='image')
+    media = <img src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+  else if(meme.type=='gif')
+    media = <HoverImg src={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+  else if(meme.type=='video')
+    media = <video width={meme.width} height={meme.height} controls poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></video>;
+  else
+    media = <p style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
-  render() {
-    var media;
-    if(this.state.meme.type=='image')
-      media = <img src={this.state.meme.thumbUrl} alt={this.state.meme.transcription?this.state.meme.transcription:'Meme number '+this.state.meme._id} width={this.state.meme.width} height={this.state.meme.height}/>;
-    else if(this.state.meme.type=='gif')
-      media = <HoverImg src={this.state.meme.thumbUrl} gifSrc={this.state.meme.url} alt={this.state.meme.transcription?this.state.meme.transcription:'Meme number '+this.state.meme._id} width={this.state.meme.width} height={this.state.meme.height}/>;
-    else if(this.state.meme.type=='video')
-      media = <video width={this.state.meme.width} height={this.state.meme.height} controls poster={this.state.meme.thumbUrl} preload='none'><source src={this.state.meme.url}></source></video>;
-    else
-      media = <p style={{color:'red'}}>Unsupported media type {this.state.meme.type}</p>
+  let bio;
+  if(meme.description)
+    bio = meme.description;
+  else if(meme.transcription)
+    bio = meme.transcription;
+  else if(meme.topTags)
+    bio = meme.topTags.map((tid) => tags[tid].name).join(', ');
+  else if(meme.topCategories)
+    bio = meme.topCategories.map((cid) => categories[cid].name).join(', ');
+  else
+    bio = 'Meme #'+meme._id;
 
-    return <div className='meme' href={'/meme/'+this.state.meme._id} style={{'background-color':this.state.meme.color}}>
-      {media}
-      <div className='info'>
-        
-      </div>
+  return <div className='meme' href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
+    {media}
+    <div className='info'>
+      {bio}
+      <span className='dooter'>
+        <button className='updoot'></button>
+        {meme.totalVotes}
+        <button className='downdoot'></button>
+      </span>
     </div>
-  }
+  </div>
 }
 
-class MemeView extends React.Component {}
+// TODO: fullscreen meme view
 
 const HoverImg = ({ imageSrc, gifSrc, width, height, alt }) => {
   const [isHovering, setIsHovering] = useState(false);
 
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
-
   return (
-    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
       <img
         src={isHovering ? gifSrc : imageSrc}
         width={width}
