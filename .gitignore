@@ -1,4 +1,4 @@
-tools/memedb-migrater/memedb-export.json
+tools/memedb-migrator/memedb-export.json
 
 # secrets
 /middleware/mongodb.js
