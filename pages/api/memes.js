@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 }
 
 export async function getMemes(db, query={}) {
-  const { sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0 } = query;
+  const { sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0, filter='' } = query;
 
   // Sort through tag ids, if they start with a minus, exclude them from results
   const inclusivetags = [];
@@ -43,7 +43,6 @@ export async function getMemes(db, query={}) {
     });
   }
 
-  //console.log(`Retrieving edge-${edge} memes with ${tags} tags, ${categories} categories, sort mode ${sort}, skipping ${from} results`);
   // The actual query sent to MongoDB
   const pipeline = [
     {
@@ -98,6 +97,11 @@ export async function getMemes(db, query={}) {
         ...(tags=='all' ? {}: (inclusivetags.length ? {topTags: {$in: inclusivetags}} : {topTags: {$nin: exclusivetags}})),
         // Category filtering
         ...(categories=='all' ? {} : (inclusivecats.length ? {topCategories: {$in: inclusivecats}} : {topCategories: {$nin: exclusivecats}})),
+        // Text search
+        $or: [
+          { description: { $regex: filter, $options: 'i' } },
+          { transcription: { $regex: filter, $options: 'i' } },
+        ]
       }
     },
     {
