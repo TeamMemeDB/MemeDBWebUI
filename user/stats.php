@@ -37,12 +37,12 @@ WHERE CollectionParent IS NULL");
 	
 	$row = $result->fetch_assoc();
 	
-	$descs = round(($row['Descriptions']/$row['Total'])*100, 2);
-	$trans = round(($row['Transcriptions']/$row['Total'])*100, 2);
-	$cats = round(($row['Categories']/$row['Total'])*100, 2);
-	$tags = round(($row['Tags']/$row['Total'])*100, 2);
-	$edge = round(($row['Edge']/$row['Total'])*100, 2);
-	$rate = round(($row['Rating']/$row['Total'])*100, 2);
+	$descs = round(($row['Descriptions']/max($row['Total'],1))*100, 2);
+	$trans = round(($row['Transcriptions']/max($row['Total'],1))*100, 2);
+	$cats = round(($row['Categories']/max($row['Total'],1))*100, 2);
+	$tags = round(($row['Tags']/max($row['Total'],1))*100, 2);
+	$edge = round(($row['Edge']/max($row['Total'],1))*100, 2);
+	$rate = round(($row['Rating']/max($row['Total'],1))*100, 2);
 	
 	superprofile($user);
 	

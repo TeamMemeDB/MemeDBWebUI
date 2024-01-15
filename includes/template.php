@@ -204,7 +204,7 @@ function headr($data,$conn){
 					$result = $conn->query("SELECT Id,Name,COUNT(tagId) AS count FROM tag LEFT JOIN tagvote ON tag.Id=tagvote.tagId GROUP BY Id;");
 					$result2 = $conn->query("SELECT SUM(Value), COUNT(DISTINCT tagId) FROM tagvote;");
 					$row2 = $result2->fetch_row();
-					$avgvotes = $row2[0]/$row2[1];
+					$avgvotes = $row2[0]/max($row2[1], 1);
 					while($row = $result->fetch_assoc()){
 						print("<a class='tag' ".(($row['count']<$avgvotes)?'style="display:none;"':'')." href='/tag/".safeurl($row['Name']).'/'.$row['Id']."'>#".$row['Name']."<i class='votes'> (".$row['count'].")</i></a> ");
 					}
