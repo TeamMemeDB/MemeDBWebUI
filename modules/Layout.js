@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Panel, DropDown, MultiDropDown } from './Control';
 import {User,UserNav} from './User';
+import {getContrastYIQ} from '../lib/colour.js';
 
 let tags,categories;
 
@@ -17,7 +18,7 @@ export const Header = (props) => {
         </h1>
       </NavItem>
       <form action="" method="GET">
-        <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(true)}></input>
+        <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}></input>
         <button type="submit" className="btn" value=""><i className='icon-search'/></button>
       </form>
     </div>
@@ -95,52 +96,66 @@ const GridMeme = (props) => {
 
   let media;
   if(meme.type=='image')
-    media = <img src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <img className='content' src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='gif')
-    media = <HoverImg src={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <HoverImg className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='video')
-    media = <video width={meme.width} height={meme.height} controls poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></video>;
+    media = <video className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></video>;
   else
-    media = <p style={{color:'red'}}>Unsupported media type {meme.type}</p>
+    media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
-  let bio;
-  if(meme.description)
+  let bio, biotype;
+  if(meme.description) {
     bio = meme.description;
-  else if(meme.transcription)
+    biotype = "Description";
+  }
+  else if(meme.transcription) {
     bio = meme.transcription;
-  else if(meme.topTags)
+    biotype = "Transcription";
+  }
+  else if(meme.topTags) {
     bio = meme.topTags.map((tid) => tags[tid].name).join(', ');
-  else if(meme.topCategories)
+    biotype = "Tags";
+  }
+  else if(meme.topCategories) {
     bio = meme.topCategories.map((cid) => categories[cid].name).join(', ');
-  else
+    biotype = "Categories";
+  }
+  else {
     bio = 'Meme #'+meme._id;
+    biotype = "More information needed";
+  }
+  
+  bio = bio.replaceAll('<br />', '');
 
-  return <div className='meme' href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
+  return <div className='meme' href={'/meme/'+meme._id} style={{'backgroundColor':meme.color, 'color':getContrastYIQ(meme.color)}}>
     {media}
     <div className='info'>
-      {bio}
-      <span className='dooter'>
-        <button className='updoot'></button>
-        {meme.totalVotes}
-        <button className='downdoot'></button>
-      </span>
+      <p className='bio'>{bio}</p>
+      <p className='biotype'>{biotype}</p>
+    </div>
+    <div className='dooter'>
+      <button className='updoot'><i className='icon-arrow-up'></i></button>
+      <div className='doots'>{meme.totalVotes}</div>
+      <button className='downdoot'><i className='icon-arrow-down'></i></button>
     </div>
   </div>
 }
 
 // TODO: fullscreen meme view
 
-const HoverImg = ({ imageSrc, gifSrc, width, height, alt }) => {
+const HoverImg = ({ className, imageSrc, gifSrc, width, height, alt }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
-    <div onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-      <img
-        src={isHovering ? gifSrc : imageSrc}
-        width={width}
-        height={height}
-        alt={alt}
-      />
-    </div>
+    <img
+      className={className + ' ' + (isHovering ? '' : 'gif')}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      src={isHovering ? gifSrc : imageSrc}
+      width={width}
+      height={height}
+      alt={alt}
+    />
   );
 };

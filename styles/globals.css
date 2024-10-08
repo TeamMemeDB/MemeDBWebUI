@@ -94,19 +94,20 @@ input:hover{
 input[type=submit]{
   cursor: pointer;
 }
-.nobutton {
-  background: none!important;
+button, .nobutton {
+  background: none;
   border: none;
-  padding: 0!important;
+  padding: none;
+  cursor: pointer;
+}
+.nobutton {
   /*input has OS specific font-family*/
   color: #f0f0f0;
-  cursor: pointer;
 }
 
 /* Yiaycons fixes */
 [class^="icon-"], [class*=" icon-"] {
-  font-size: 1.15em;position: relative;
-  top: -0.075em;
+  font-size: 1.25em;
 }
 
 /* General helpful classes */

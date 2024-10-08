@@ -7,10 +7,9 @@ export const Panel = (props) => {
     <div className={"panel panel-" + props.type}>
       <h3>{props.title}</h3>
       <button
-        className="nobutton close-button icon-cross"
-        onClick={() => {
-          setOpen(!open);
-        }}
+        className={"nobutton close-button " + (open? 'icon-circle-up' : 'icon-circle-down')}
+        onClick={() => {setOpen(!open);}}
+        style={{scale: "90%"}}
       >
         <span className="sr-only">Close</span>
       </button>
