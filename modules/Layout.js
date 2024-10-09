@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Panel, DropDown, MultiDropDown } from './Control';
+import { Panel, DropDown, MultiDropDown, VideoControl } from './Control';
 import {User,UserNav} from './User';
 import {getContrastYIQ} from '../lib/colour.js';
 
@@ -74,8 +74,8 @@ export const Browse = (props) => {
   return <div className="page">
     <Panel type="toolbelt" title="Search Tools">
       <DropDown name={<><i className="icon-menu2"/> Sort</>} values={sorts} default={0}/>
-      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={props.categories} default={[-1]} inclusivityeditor={true} counter={(t) => t.memes}/>
-      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={props.tags} default={[-1]} inclusivityeditor={true} displayname={(s) => '#'+s} counter={(t) => t.memes}/>
+      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={props.categories} default={[-1]} inclusivityeditor={true} inclusive={true} counter={(t) => t.memes}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={props.tags} default={[-1]} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s} counter={(t) => t.memes}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} values={edge} default={[0]} inclusive={false}/>
     </Panel>
     <MemeGrid memes={props.preloadMemes}/>
@@ -100,7 +100,7 @@ const GridMeme = (props) => {
   else if(meme.type=='gif')
     media = <HoverImg className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='video')
-    media = <video className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></video>;
+    media = <VideoControl className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></VideoControl>;
   else
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
@@ -128,7 +128,8 @@ const GridMeme = (props) => {
   
   bio = bio.replaceAll('<br />', '');
 
-  return <div className='meme' href={'/meme/'+meme._id} style={{'backgroundColor':meme.color, 'color':getContrastYIQ(meme.color)}}>
+  let contrast = getContrastYIQ(meme.color);
+  return <div className={'meme ' + (contrast=='white'?'dark':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
     {media}
     <div className='info'>
       <p className='bio'>{bio}</p>

@@ -119,3 +119,27 @@
 .dropdown-content .btn.searched {
   background: rgba(252, 255, 84, 0.05);
 }
+
+.video-control {
+  position: relative;
+}
+.video-control .paused {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 5rem;
+  padding: 1rem;
+  color: inherit;
+  z-index: 1;
+  text-shadow: #fff 0 0 0.5em;
+}
+.dark .video-control .paused {
+  text-shadow: #000 0 0 0.5em;
+}
+.video-control video {
+  transition: filter 1s;
+}
+.video-control .paused + video {
+  filter: brightness(70%);
+}

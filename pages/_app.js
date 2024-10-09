@@ -17,9 +17,9 @@ function MyApp({ Component, pageProps }) {
       <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png"/>
       <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png"/>
       <link rel="manifest" href="/manifest.json" />
-      <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
-      <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     </Head>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     <noscript>You need to enable JavaScript to access MemeDB.</noscript>
     <Header/>
     <Component {...pageProps} />

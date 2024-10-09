@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 
 export const Panel = (props) => {
   const [open, setOpen] = useState(props.closed ? false : true);
@@ -218,12 +218,12 @@ export const MultiDropDown = (props) => {
             <br/>
             <sub className="dim">None</sub>
           </button>
-          <button className={"btn"+(inclusive?' selected':'')} title="Inclusive" onClick={() => setInclusive(true)}>
+          <button className={"btn"+(inclusive?' selected':'')} title="Results can have the selected properties" onClick={() => setInclusive(true)}>
             <i className="icon-plus"/>
             <br/>
             <sub className="dim">Inclusive</sub>
           </button>
-          <button className={"btn"+(inclusive?'':' selected')} title="Exclusive" onClick={() => setInclusive(false)}>
+          <button className={"btn"+(inclusive?'':' selected')} title="Results must have the selected properties" onClick={() => setInclusive(false)}>
             <i className="icon-minus"/>
             <br/>
             <sub className="dim">Exclusive</sub>
@@ -233,5 +233,43 @@ export const MultiDropDown = (props) => {
         <></>
       }
     </div>
+  </div>
+}
+
+export const VideoControl = (props) => {
+  // Simple video controller for videos in small places
+  const videoRef = useRef(null);
+  const [paused, setPaused] = useState(true);
+  const playPause = () => {
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setPaused(false);
+    } else {
+      videoRef.current.pause();
+      setPaused(true);
+    }
+  }
+  const onEnded = () => {
+    setPaused(true);
+  }
+
+  useEffect(() => {
+    videoRef.current.addEventListener('ended', onEnded);
+    videoRef.current.addEventListener('click', playPause);
+    return () => {
+      videoRef.current?.removeEventListener('ended', onEnded);
+      videoRef.current?.removeEventListener('click', playPause);
+    }
+  }, []);
+
+  return <div className={"video-control " + props.className || ''}>
+    {(paused)?
+      <button className="paused" title="Play video" onClick={playPause}><i className="icon-play"></i></button>
+    :
+      <></>
+    }
+    <video ref={videoRef} className={props.className} width={props.width} height={props.height} poster={props.poster} preload={props.preload}>
+      {props.children}
+    </video>
   </div>
 }
