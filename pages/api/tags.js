@@ -12,5 +12,5 @@ export default async function handler(req, res) {
 }
 
 export async function getTags(db) {
-  return await db.collection("tag").find({}, {id: 1, name:1, memes:1, _id:0}).toArray();
+  return await db.collection("tag").find({}).toArray();
 }

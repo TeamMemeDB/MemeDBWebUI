@@ -26,13 +26,11 @@ export const Panel = (props) => {
 };
 
 export const DropDown = (props) => {
-  const [selection, setSelection] = useState(props.default);
-
   let menu = [];
-  for(let i in props.values) {
-    let item = props.values[i];
+  for(let i in props.choices) {
+    let item = props.choices[i];
 
-    let selected = (selection == i);
+    let selected = (props.value == item.id);
     let searched = false;
 
     let classes = ['btn'];
@@ -41,21 +39,21 @@ export const DropDown = (props) => {
 
     classes = classes.join(' ');
 
-    menu.push(<button onClick={() => setSelection(i)} key={item.name} className={classes} title={item.description}>
-                {item.displayname}{(item.counter!==undefined)?<>&nbsp;<i className="dim">({item.counter})</i></>:''}
+    menu.push(<button onClick={() => props.setter(item.id)} key={item.id} className={classes} title={item.description}>
+                {item.displayname}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
               </button>);
   }
 
   let stringrep;
-  if(selection >= 0) {
-    let selected = props.values[selection];
-    stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
-  }
-  else if(selection == -1) {
+  if(props.value == -1) {
     stringrep = 'All';
   }
-  else if(selection == -2) {
+  else if(props.value == -2) {
     stringrep = 'None';
+  }
+  else {
+    let selected = props.choices.filter((item) => item.id == props.value)[0];
+    stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
   }
 
   return <div className="dropdown">
@@ -72,7 +70,6 @@ export const MultiDropDown = (props) => {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
 
-  const [selection, setSelection] = useState(props.default);
   const [inclusive, setInclusive] = useState(props.inclusive);
   const [search, setSearch] = useState('');
   const [maxlength, setMaxlength] = useState(minMaxlength);
@@ -83,8 +80,8 @@ export const MultiDropDown = (props) => {
   }
   
   const find = (tids) => {
-    if(tids[0] == -1) return props.values;
-    return tids.map(i => props.values[i])
+    if(tids[0] == -1) return props.choices;
+    return props.choices.filter((item) => tids.indexOf(item.id) >= 0);
   }
 
   const select = (id) => {
@@ -92,8 +89,8 @@ export const MultiDropDown = (props) => {
     if(id === -1) newSelection = [-1];
     else if(id === -2) newSelection = [];
     else{
-      if(selection[0] == -1) newSelection = Object.keys(props.values);
-      else newSelection = selection.map((x) => x);
+      if(props.value[0] == -1) newSelection = props.choices.map(item => item.id);
+      else newSelection = props.value.map(a => a); // Clone object so that it can be changed
 
       const index = newSelection.indexOf(id);
       if(index > -1){
@@ -101,17 +98,20 @@ export const MultiDropDown = (props) => {
       }else{
         newSelection.push(id);
       }
+      if(newSelection.length == props.choices.length) {
+        newSelection = [-1];
+      }
     }
-    setSelection(newSelection);
+    props.setter(newSelection);
   }
   
   let menu = [];
-  for(let i in props.values) {
-    let item = props.values[i];
+  for(let i in props.choices) {
+    let item = props.choices[i];
 
     let classes = ['btn'];
 
-    if(selection.indexOf(i) >= 0 || selection[0] == -1){
+    if(props.value.indexOf(item.id) >= 0 || props.value[0] == -1){
       classes.push('selected');
     }
 
@@ -129,8 +129,8 @@ export const MultiDropDown = (props) => {
 
     classes = classes.join(' ');
 
-    menu.push(<button onClick={() => select(i)} key={item.name} className={classes} title={item.description}>
-                {displayname(item.name)}{(props.counter!==undefined)?<>&nbsp;<i className="dim">({props.counter(item)})</i></>:''}
+    menu.push(<button onClick={() => select(item.id)} key={item.id} className={classes} title={item.id/*item.description*/}>
+                {displayname(item.name)}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
               </button>);
   }
 
@@ -142,50 +142,47 @@ export const MultiDropDown = (props) => {
   }
 
   let stringrep;
-  if(selection.length >= 1) {
-    if(selection[0] == -1 || selection.length == props.values.length) {
+  if(props.value.length >= 1) {
+    if(props.value[0] == -1) {
       stringrep = 'All';
     }else{
       if(!inclusive){
-        if(selection.length <= 5){
-          let selected = find(selection);
+        if(props.value.length <= 5){
+          let selected = find(props.value);
 
           let names = [];
-          for(let i in selected){
-            let selection = selected[i];
-            names.push(selection.name[0].toUpperCase()+selection.name.substring(1));
-          }
+          selected.forEach(option => {
+            names.push(option.name[0].toUpperCase()+option.name.substring(1));
+          });
 
           stringrep = "Only "+names.join(', ');
         }else{
-          let j = 0;
-          let unselected = find(Object.keys(props.values).filter((i) => selection.indexOf(i) == -1))
+          let unselected = find(props.choices.filter(item => props.value.indexOf(item.id) == -1).map(item => item.id))
 
           let names = [];
-          for(let i in unselected){
+          unselected.some(option => {
             if(names.length == 5){
               names.push('...');
-              break;
+              return true;
             }
-            let selection = unselected[i];
-            names.push(selection.name[0].toUpperCase()+selection.name.substring(1));
-          }
+            names.push(option.name[0].toUpperCase()+option.name.substring(1));
+            return false;
+          });
 
           stringrep = "All but "+names.join(', ');
         }
       }else{
-        let selected = find(selection);
+        let selected = find(props.value);
 
         let names = [];
-        for(let i in selected){
+        selected.some(option => {
           if(names.length == 5){
             names.push('...');
-            break;
+            return true;
           }
-
-          let selection = selected[i];
-          names.push(selection.name[0].toUpperCase()+selection.name.substring(1));
-        }
+          names.push(option.name[0].toUpperCase()+option.name.substring(1));
+          return false;
+        });
 
         stringrep = names.join(', ');
       }
@@ -198,7 +195,7 @@ export const MultiDropDown = (props) => {
   return <div className="dropdown dropdown-multi">
     <button className="dropbtn btn">{props.name}<br/><sub className="dim">{stringrep}</sub></button>
     <div className="dropdown-content">
-      {(props.values.length > 10)?
+      {(props.choices.length > 10)?
         <input className="dropdown-search" type="text" onInput={(e) => setSearch(e.target.value)} placeholder="Search..."/>
       :
         <></>
@@ -223,7 +220,7 @@ export const MultiDropDown = (props) => {
             <br/>
             <sub className="dim">Inclusive</sub>
           </button>
-          <button className={"btn"+(inclusive?'':' selected')} title="Results must have the selected properties" onClick={() => setInclusive(false)}>
+          <button className={"btn"+(inclusive?'':' selected')} title="Results must not have unselected properties" onClick={() => setInclusive(false)}>
             <i className="icon-minus"/>
             <br/>
             <sub className="dim">Exclusive</sub>

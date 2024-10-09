@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import '../styles/globals.css';
-import '../modules/App.css';
 import '../modules/Layout.css';
 import '../modules/Control.css';
 import '../modules/User.css';

@@ -131,6 +131,7 @@
   font-size: 5rem;
   padding: 1rem;
   color: inherit;
+  opacity: 0.75;
   z-index: 1;
   text-shadow: #fff 0 0 0.5em;
 }

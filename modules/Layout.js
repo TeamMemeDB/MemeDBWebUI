@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Panel, DropDown, MultiDropDown, VideoControl } from './Control';
 import {User,UserNav} from './User';
 import {getContrastYIQ} from '../lib/colour.js';
@@ -51,10 +51,10 @@ function Pepper(props){
 }
 
 export const sortModes = [
-  {id:0, name: 'newest first', displayname: <><i className='icon-sparkle pink'/> Newest</>, href: '/sort/new', description:"Newest memes first"},
-  {id:1, name: 'oldest first', displayname: <><i className='icon-calendar blue'/> Oldest</>, href: '/sort/old', description:"Oldest memes first"},
-  {id:2, name: 'top rated first', displayname: <><i className='icon-fire red'/> Top rated</>, href: '/sort/top', description:"Most upvoted memes first"},
-  {id:3, name: 'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, href: '/sort/bottom', description:"Least upvoted memes first"}
+  {id:'new', name:'newest first', displayname: <><i className='icon-sparkle pink'/> Newest</>, description:"Newest memes first"},
+  {id:'old', name:'oldest first', displayname: <><i className='icon-calendar blue'/> Oldest</>, description:"Oldest memes first"},
+  {id:'top', name:'top rated first', displayname: <><i className='icon-fire red'/> Top rated</>, description:"Most upvoted memes first"},
+  {id:'bottom', name:'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, description:"Least upvoted memes first"}
 ];
 
 export const edgeLevels = [
@@ -65,30 +65,79 @@ export const edgeLevels = [
   {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
+const dropdownFormat = (item) => {
+  if('_id' in item) {
+    item['id'] = item['_id'];
+    delete item['_id'];
+  }
+  if('memes' in item) {
+    item['count'] = item['memes'];
+    delete item['memes'];
+  }
+  return item;
+}
+
 export const Browse = (props) => {
-  const sorts = props.sorts? props.sorts: sortModes;
-  const edge = props.edge? props.edge: edgeLevels;
-  tags = props.tags;
-  categories = props.categories;
+  const [currentSort, setCurrentSort] = useState('new');
+  const [currentCategories, setCurrentCategories] = useState([-1]);
+  const [currentTags, setCurrentTags] = useState([-1]);
+  const [currentEdge, setCurrentEdge] = useState(0); // No support for multiple edge levels for now
+
+  const sorts = props.customSorts? props.customSorts: sortModes;
+  const edge = props.customEdge? props.customEdge: edgeLevels;
+  const tags = props.tags.map(dropdownFormat);
+  const categories = props.categories.map(dropdownFormat);
+  const [data, setData] = useState(props.preloadData);
+  const [query, setQuery] = useState(props.preloadQuery);
+  
+  // A hypothetical new query, based on what the search controls are currently set to
+  const newQuery = {
+    sort: currentSort,
+    categories: currentCategories[0]==-1?'all':currentCategories[0]==-2?[]:currentCategories.join(','),
+    tags: currentTags[0]==-1?'all':currentTags[0]==-2?[]:currentTags.join(','),
+    edge: currentEdge,
+    from: 0,
+    filter: ''
+  };
+  
+  useEffect(() => {
+    if(JSON.stringify(query) != JSON.stringify(newQuery)) {
+      console.log("Fetching memes...");
+      // Memes are currently in an invalid state, invalidate them
+      if(data.length)
+        setData([]);
+      const fetchData = async () => {
+        const querystring = new URLSearchParams(newQuery).toString();
+        const url = `/api/memes?${querystring}`;
+        const response = await fetch(url);
+        setQuery(newQuery);
+        setData(await response.json());
+      }
+      fetchData();
+    }
+  });
 
   return <div className="page">
     <Panel type="toolbelt" title="Search Tools">
-      <DropDown name={<><i className="icon-menu2"/> Sort</>} values={sorts} default={0}/>
-      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} values={props.categories} default={[-1]} inclusivityeditor={true} inclusive={true} counter={(t) => t.memes}/>
-      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} values={props.tags} default={[-1]} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s} counter={(t) => t.memes}/>
-      <DropDown name={<><i className="icon-pepper"/> Edge</>} values={edge} default={[0]} inclusive={false}/>
+      <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={currentSort} setter={setCurrentSort}/>
+      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={currentCategories} setter={setCurrentCategories} inclusivityeditor={true} inclusive={true}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
+      <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
     </Panel>
-    <MemeGrid memes={props.preloadMemes}/>
+    <MemeGrid data={data}/>
   </div>;
 }
 
 const MemeGrid = (props) => {
-  const memes = props.memes?.memes? props.memes.memes: [];
-  const stats = props.memes?.stats? props.memes.stats[0]: {count: 0};
+  const memes = props.data?.memes? props.data.memes: [];
+  const matches = props.data?.matches? props.data.matches: 0;
 
-  return <div className='memegrid'>{memes.map((meme, i) =>
-    <GridMeme key={i} meme={meme}/>
-  )}</div>;
+  return <>
+    <span className='memecount'>Found {matches} memes.</span>
+    <div className='memegrid'>{memes.map((meme, i) =>
+      <GridMeme key={i} meme={meme}/>
+    )}</div>
+  </>;
 }
 
 const GridMeme = (props) => {

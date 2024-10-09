@@ -12,5 +12,5 @@ export default async function handler(req, res) {
 }
 
 export async function getCats(db) {
-  return await db.collection("category").find({}, {_id: 0}).toArray();
+  return await db.collection("category").find({}).toArray();
 }
