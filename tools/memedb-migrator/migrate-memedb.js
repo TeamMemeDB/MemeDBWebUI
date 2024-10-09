@@ -2,7 +2,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config({'path': '/home/yiays/memebeta/.env.local'});
 
-import { MongoClient, ObjectId } from 'mongodb'
+import { MongoClient } from 'mongodb'
 
 const uri = process.env.MONGODB_URI
 const options = {
@@ -155,7 +155,7 @@ async function main() {
       let dbtransvote = findtable('transvote').data;
       let transdata = {};
       dbtransvote.forEach(transvote => {
-        let data = {user: ObjectId(userConverter[transvote.userId]), value: parseInt(transvote.Value)};
+        let data = {user: userConverter[transvote.userId], value: parseInt(transvote.Value)};
 
         if(transdata[transvote.transId] === undefined){
           transdata[transvote.transId] = [data];
@@ -167,7 +167,7 @@ async function main() {
       let dbdescvote = findtable('descvote').data;
       let descdata = {};
       dbdescvote.forEach(descvote => {
-        let data = {user: ObjectId(userConverter[descvote.userId]), value: parseInt(descvote.Value)};
+        let data = {user: userConverter[descvote.userId], value: parseInt(descvote.Value)};
         
         if(descdata[descvote.descId] === undefined){
           descdata[descvote.descId] = [data];
@@ -179,7 +179,7 @@ async function main() {
       let dbedgevote = findtable('edge').data;
       let edgedata = {};
       dbedgevote.forEach(edgevote => {
-        let data = {user: ObjectId(userConverter[edgevote.userId]), value: parseInt(edgevote.Rating)};
+        let data = {user: userConverter[edgevote.userId], value: parseInt(edgevote.Rating)};
 
         if(edgedata[edgevote.memeId] === undefined){
           edgedata[edgevote.memeId] = [data];
@@ -199,7 +199,7 @@ async function main() {
         dbvotes.forEach(vote => {
           if(vote.memeId == meme.Id){
             memevotes.push({
-              user: ObjectId(userConverter[vote.userId]),
+              user: userConverter[vote.userId],
               value: parseInt(vote.Value)
             });
           }
@@ -211,13 +211,13 @@ async function main() {
         dbcats.forEach(cat => {
           if(cat.memeId == meme.Id){
             if(catdata[cat.categoryId] === undefined) catdata[cat.categoryId] = [];
-            catdata[cat.categoryId].push({user: ObjectId(userConverter[cat.userId]), userId: cat.userId, value: parseInt(cat.Value)});
+            catdata[cat.categoryId].push({user: userConverter[cat.userId], userId: cat.userId, value: parseInt(cat.Value)});
           }
         });
         let memecategories = [];
         for(let [catid, catvotes] of Object.entries(catdata)) {
           memecategories.push({
-            category: ObjectId(parseInt(catid)),
+            category: parseInt(catid),
             categoryId: catid,
             votes: catvotes
           });
@@ -229,13 +229,13 @@ async function main() {
         dbtags.forEach(tag => {
           if(tag.memeId == meme.Id){
             if(tagdata[tag.tagId] === undefined) tagdata[tag.tagId] = [];
-            tagdata[tag.tagId].push({user: ObjectId(userConverter[tag.userId]), userId: tag.userId, value: parseInt(tag.Value)});
+            tagdata[tag.tagId].push({user: userConverter[tag.userId], userId: tag.userId, value: parseInt(tag.Value)});
           }
         });
         let memetags = [];
         for(let [tagid, tagvotes] of Object.entries(tagdata)) {
           memetags.push({
-            tag: ObjectId(parseInt(tagid)),
+            tag: parseInt(tagid),
             tagId: tagid,
             votes: tagvotes
           });
@@ -249,7 +249,7 @@ async function main() {
             transcriptions.push({
               _id: parseInt(transcription.Id),
               transcription: transcription.Text,
-              author: ObjectId(userConverter[transcription.userId]),
+              author: userConverter[transcription.userId],
               edit: (transcription.editId === null)? null: parseInt(transcription.editId),
               votes: transdata[transcription.Id]
             });
@@ -264,7 +264,7 @@ async function main() {
             descriptions.push({
               _id: parseInt(description.Id),
               description: description.Text,
-              author: ObjectId(userConverter[description.userId]),
+              author: userConverter[description.userId],
               edit: (description.editId === null)? null: parseInt(description.editId),
               votes: descdata[description.Id]
             });

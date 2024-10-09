@@ -104,26 +104,26 @@ const GridMeme = (props) => {
   else
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
-  let bio, biotype;
+  let bio, biodetails;
   if(meme.description) {
     bio = meme.description;
-    biotype = "Description";
+    biodetails = "Description by " + meme.descriptionAuthor;
   }
   else if(meme.transcription) {
     bio = meme.transcription;
-    biotype = "Transcription";
+    biodetails = "Transcription by " + meme.transcriptionAuthor;
   }
   else if(meme.topTags) {
     bio = meme.topTags.map((tid) => tags[tid].name).join(', ');
-    biotype = "Tags";
+    biodetails = "Top tags";
   }
   else if(meme.topCategories) {
     bio = meme.topCategories.map((cid) => categories[cid].name).join(', ');
-    biotype = "Categories";
+    biodetails = "Top categories";
   }
   else {
     bio = 'Meme #'+meme._id;
-    biotype = "More information needed";
+    biodetails = "More information needed";
   }
   
   bio = bio.replaceAll('<br />', '');
@@ -132,8 +132,8 @@ const GridMeme = (props) => {
   return <div className={'meme ' + (contrast=='white'?'dark':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
     {media}
     <div className='info'>
-      <p className='bio'>{bio}</p>
-      <p className='biotype'>{biotype}</p>
+      <p className='bio' title={bio}>{bio}</p>
+      <p className='biotype'>{biodetails}</p>
     </div>
     <div className='dooter'>
       <button className='updoot'><i className='icon-arrow-up'></i></button>

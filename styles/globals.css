@@ -9,6 +9,7 @@ body {
   font-family: Lato, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #eee;
 }
 #root{
   overflow-x: hidden;
@@ -76,7 +77,7 @@ a[href] {
   color: #f9ca24;
 }
 a, a:link, a:visited {
-  color: #f0f0f0;
+  color: #eee;
   text-decoration: none;
 }
 
@@ -102,7 +103,7 @@ button, .nobutton {
 }
 .nobutton {
   /*input has OS specific font-family*/
-  color: #f0f0f0;
+  color: #eee;
 }
 
 /* Yiaycons fixes */

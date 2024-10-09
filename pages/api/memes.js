@@ -64,10 +64,22 @@ export async function getMemes(db, query={}) {
           }},0]},
           null
         ]},
+        descriptionAuthor: {$ifNull: [
+          {$arrayElemAt: [{$map: {
+            input: "$descriptions", in: {$cond: [{$eq: ["$$this.votes.value", {$max: "$descriptions.votes.value"}]}, "$$this.author", null]}
+          }},0]},
+          null
+        ]},
         // Take the best transcription and provide it for search
         transcription: {$ifNull: [
           {$arrayElemAt: [{$map:{
             input: "$transcriptions", in: {$cond: [{$eq: ["$$this.votes.value", {$max: "$transcriptions.votes.value"}]}, "$$this.transcription", null]}
+          }},0]},
+          null
+        ]},
+        transcriptionAuthor: {$ifNull: [
+          {$arrayElemAt: [{$map:{
+            input: "$transcriptions", in: {$cond: [{$eq: ["$$this.votes.value", {$max: "$transcriptions.votes.value"}]}, "$$this.author", null]}
           }},0]},
           null
         ]},
@@ -81,6 +93,35 @@ export async function getMemes(db, query={}) {
             input: "$categories", as: "category", cond: {$gt: [{$sum: "$$category.votes.value"}, 0]}
           }}, as: "category", in: "$$category.categoryId"
         }}, []]}
+      }
+    },
+    // Find the authors of the description and transcription
+    {
+      $lookup: {
+        from: "user",
+        localField: "transcriptionAuthor",
+        foreignField: "_id",
+        as: "transcriptionAuthorInfo"
+      }
+    },
+    {
+      $lookup: {
+        from: "user",
+        localField: "descriptionAuthor",
+        foreignField: "_id",
+        as: "descriptionAuthorInfo"
+      }
+    },
+    {
+      $addFields: {
+        descriptionAuthor: { $arrayElemAt: ["$descriptionAuthorInfo.username", 0] },
+        transcriptionAuthor: { $arrayElemAt: ["$transcriptionAuthorInfo.username", 0] },
+      }
+    },
+    {
+      $project: {
+        descriptionAuthorInfo: 0,
+        transcriptionAuthorInfo: 0
       }
     },
     {
