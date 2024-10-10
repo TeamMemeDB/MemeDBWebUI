@@ -3,8 +3,6 @@ import { Panel, DropDown, itemSearch, MultiDropDown, VideoControl } from './Cont
 import {User,UserNav} from './User';
 import {getContrastYIQ} from '../lib/colour.js';
 
-let tags,categories;
-
 export const Header = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
   const searchBar = useRef(null);
@@ -179,7 +177,7 @@ const GridMeme = (props) => {
   else if(meme.type=='gif')
     media = <HoverImg key={meme.id} className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='video')
-    media = <VideoControl key={meme.id} className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source key={meme.id} src={meme.url}></source></VideoControl>;
+    media = <VideoControl key={meme.id} className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none' url={meme.url}/>;
   else
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
