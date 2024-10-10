@@ -23,6 +23,10 @@ export default async function handler(req, res) {
 export async function getMemes(db, query={}) {
   const {sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0, filter=''} = query;
 
+  if(edge > 1) {
+    return {matches: 0, errorMessage: "Authorization is required to view these memes."};
+  }
+
   // Sort through tag ids, if they start with a minus, exclude them from results
   const inclusivetags = [];
   const exclusivetags = [];

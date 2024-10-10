@@ -161,9 +161,13 @@ export const Browse = (props) => {
 const MemeGrid = (props) => {
   const memes = props.data?.memes? props.data.memes: [];
 
-  return <div className='item-grid'>{memes.map((meme, i) =>
-    <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
-  )}</div>;
+  if(memes.length) {
+    return <div className='item-grid'>{memes.map((meme, i) =>
+      <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
+    )}</div>;
+  }else if(props.data.errorMessage) {
+    return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
+  }else return <></>
 }
 
 const GridMeme = (props) => {
