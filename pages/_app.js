@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useState } from 'react';
 import '../styles/globals.css';
 import '../modules/Layout.css';
 import '../modules/Control.css';
@@ -6,7 +7,9 @@ import '../modules/User.css';
 import {Header, Footer} from '../modules/Layout';
 
 function MyApp({ Component, pageProps }) {
-  return(<>
+  const [filter, setFilter] = useState('');
+
+  return <>
     <Head>
       <link rel="icon" href="/favicon.ico" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,10 +23,10 @@ function MyApp({ Component, pageProps }) {
     <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
     <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     <noscript>You need to enable JavaScript to access MemeDB.</noscript>
-    <Header/>
-    <Component {...pageProps} />
+    <Header filter={filter} setFilter={setFilter}/>
+    <Component {...pageProps} filter={filter} setFilter={setFilter}/>
     <Footer/>
-  </>)
+  </>
 }
 
 export default MyApp

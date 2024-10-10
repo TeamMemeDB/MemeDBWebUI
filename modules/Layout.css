@@ -99,18 +99,42 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 .page {
   min-height: 35rem;
   flex-grow: 1;
+  margin-bottom: 0.5rem;
+}
+.page > h2, .page > span {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+.page > h2 {
+  margin-bottom: 0;
 }
 
-.memegrid {
+.item-grid {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: stretch;
+  margin: 0 0.5rem;
+  gap: 0.5em;
 }
-.memegrid > .meme {
+.item-grid > .grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 15em;
+  height: 3em;
+  border-radius: 1.5em;
+  background: #535c68;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.grid-item:link:hover {
+  background: #727c88;
+}
+.item-grid > .meme {
   width: 20em;
   height: 20em;
-  border: 0.5em solid #131c28;
   flex-grow: 1;
 }
 
@@ -134,7 +158,7 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 }
 
 @media screen and (min-width: 100em) {
-  .memegrid > .meme {
+  .item-grid > .meme {
     width: 30em;
     height: 30em;
   }

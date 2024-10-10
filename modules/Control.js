@@ -66,6 +66,13 @@ export const DropDown = (props) => {
   </div>
 }
 
+export const itemSearch = (item, search) => {
+  return (
+    item.name.toLowerCase().includes(search.toLowerCase())
+    || item.description?.toLowerCase().includes(search.toLowerCase())
+  )
+}
+
 export const MultiDropDown = (props) => {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
@@ -116,7 +123,7 @@ export const MultiDropDown = (props) => {
     }
 
     if(search.length > 2){
-      if(item.name.toLowerCase().includes(search.toLowerCase()) || item.description?.toLowerCase().includes(search.toLowerCase())){
+      if(itemSearch(item, search)){
         classes.push('searched');
       }else{
         classes.push('hidden');

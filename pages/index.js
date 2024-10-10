@@ -28,6 +28,6 @@ export default function Home(props) {
       <meta name="og:description" content="MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!"/>
       <meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index,meme,memes,database,search,find"/>
     </Head>
-    <Browse categories={props.categories} tags={props.tags} preloadData={props.memes} preloadQuery={{sort:'new', categories:'all', tags:'all', edge:0, from:0, filter:''}}/>
+    <Browse categories={props.categories} tags={props.tags} preloadData={props.memes} preloadQuery={{sort:'new', categories:'all', tags:'all', edge:0, from:0, filter:''}} filter={props.filter} setFilter={props.setFilter}/>
   </>;
 }

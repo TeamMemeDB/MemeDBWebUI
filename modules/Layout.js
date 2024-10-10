@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import { Panel, DropDown, MultiDropDown, VideoControl } from './Control';
+import React, {useEffect, useState, useRef} from 'react';
+import { Panel, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
 import {User,UserNav} from './User';
 import {getContrastYIQ} from '../lib/colour.js';
 
@@ -7,6 +7,7 @@ let tags,categories;
 
 export const Header = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
+  const searchBar = useRef(null);
 
   return <header><nav>
     <div className={"navbutton navbutton-title-search"+(searchFocus?' searchfocus':'')}>
@@ -17,8 +18,8 @@ export const Header = (props) => {
           <span className="accent">DB</span>
         </h1>
       </NavItem>
-      <form action="" method="GET">
-        <input type="text" name="q" placeholder="Search MemeDB" onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}></input>
+      <form onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current.value)}}>
+        <input ref={searchBar} type="text" name="q" placeholder="Search MemeDB" defaultValue={props.filter} onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}></input>
         <button type="submit" className="btn" value=""><i className='icon-search'/></button>
       </form>
     </div>
@@ -97,7 +98,7 @@ export const Browse = (props) => {
     tags: currentTags[0]==-1?'all':currentTags[0]==-2?[]:currentTags.join(','),
     edge: currentEdge,
     from: 0,
-    filter: ''
+    filter: props.filter
   };
   
   useEffect(() => {
@@ -117,6 +118,12 @@ export const Browse = (props) => {
     }
   });
 
+  let filteredCategories, filteredTags;
+  if(query.filter) {
+    filteredCategories = categories.filter(c => itemSearch(c, query.filter));
+    filteredTags = tags.filter(t => itemSearch(t, query.filter));
+  }
+
   return <div className="page">
     <Panel type="toolbelt" title="Search Tools">
       <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={currentSort} setter={setCurrentSort}/>
@@ -124,20 +131,29 @@ export const Browse = (props) => {
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
     </Panel>
+    {(query.filter)?
+      <>
+        <h2>Categories matching "{query.filter}"</h2>
+        <span className='memecount'>Found {filteredCategories.length} categories.</span>
+        <CategoryGrid categories={filteredCategories}/>
+        <h2>Tags matching "{query.filter}"</h2>
+        <span className='memecount'>Found {filteredTags.length} tags.</span>
+        <TagGrid tags={filteredTags}/>
+        <h2>Memes matching "{query.filter}"</h2>
+      </>
+      :<></>
+    }
+    <span className='memecount'>Found {data.matches||0} memes.</span>
     <MemeGrid data={data}/>
   </div>;
 }
 
 const MemeGrid = (props) => {
   const memes = props.data?.memes? props.data.memes: [];
-  const matches = props.data?.matches? props.data.matches: 0;
 
-  return <>
-    <span className='memecount'>Found {matches} memes.</span>
-    <div className='memegrid'>{memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme}/>
-    )}</div>
-  </>;
+  return <div className='item-grid'>{memes.map((meme, i) =>
+    <GridMeme key={i} meme={meme}/>
+  )}</div>;
 }
 
 const GridMeme = (props) => {
@@ -190,6 +206,18 @@ const GridMeme = (props) => {
       <button className='downdoot'><i className='icon-arrow-down'></i></button>
     </div>
   </div>
+}
+
+const CategoryGrid = (props) => {
+  return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map(category => 
+    <a key={category.id} className='grid-item' href={'/category/'+category.id} title={category.description}>{category.name}</a>
+  )}</div>
+}
+
+const TagGrid = (props) => {
+  return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{props.tags.map(tag => 
+    <a key={tag.id} className='grid-item' href={'/tag/'+tag.id} title={tag.description}>#{tag.name}</a>
+  )}</div>
 }
 
 // TODO: fullscreen meme view
