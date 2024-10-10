@@ -78,6 +78,11 @@ const dropdownFormat = (item) => {
   return item;
 }
 
+const idIndex = (out, item) => {
+  out[item.id] = item;
+  return out;
+}
+
 export const Browse = (props) => {
   const [currentSort, setCurrentSort] = useState('new');
   const [currentCategories, setCurrentCategories] = useState([-1]);
@@ -131,20 +136,25 @@ export const Browse = (props) => {
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
     </Panel>
-    {(query.filter)?
-      <>
-        <h2>Categories matching "{query.filter}"</h2>
-        <span className='memecount'>Found {filteredCategories.length} categories.</span>
-        <CategoryGrid categories={filteredCategories}/>
-        <h2>Tags matching "{query.filter}"</h2>
-        <span className='memecount'>Found {filteredTags.length} tags.</span>
-        <TagGrid tags={filteredTags}/>
-        <h2>Memes matching "{query.filter}"</h2>
+    {(JSON.stringify(query) != JSON.stringify(newQuery))?
+      <p>Loading...</p>
+    :<>
+      {(query.filter)?
+        <>
+          <h2>Categories matching "{query.filter}"</h2>
+          <p className='memecount'>Found {filteredCategories.length} categories.</p>
+          <CategoryGrid categories={filteredCategories}/>
+          <h2>Tags matching "{query.filter}"</h2>
+          <p className='memecount'>Found {filteredTags.length} tags.</p>
+          <TagGrid tags={filteredTags}/>
+          <h2>Memes matching "{query.filter}"</h2>
+        </>
+        :<></>
+      }
+      <p className='memecount'>Found {data.matches||0} memes.</p>
+      <MemeGrid data={data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
       </>
-      :<></>
     }
-    <span className='memecount'>Found {data.matches||0} memes.</span>
-    <MemeGrid data={data}/>
   </div>;
 }
 
@@ -152,7 +162,7 @@ const MemeGrid = (props) => {
   const memes = props.data?.memes? props.data.memes: [];
 
   return <div className='item-grid'>{memes.map((meme, i) =>
-    <GridMeme key={i} meme={meme}/>
+    <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
   )}</div>;
 }
 
@@ -161,11 +171,11 @@ const GridMeme = (props) => {
 
   let media;
   if(meme.type=='image')
-    media = <img className='content' src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <img key={meme.id} className='content' src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='gif')
-    media = <HoverImg className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <HoverImg key={meme.id} className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='video')
-    media = <VideoControl className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source src={meme.url}></source></VideoControl>;
+    media = <VideoControl key={meme.id} className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none'><source key={meme.id} src={meme.url}></source></VideoControl>;
   else
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
@@ -178,12 +188,12 @@ const GridMeme = (props) => {
     bio = meme.transcription;
     biodetails = "Transcription by " + meme.transcriptionAuthor;
   }
-  else if(meme.topTags) {
-    bio = meme.topTags.map((tid) => tags[tid].name).join(', ');
+  else if(meme.topTags.length) {
+    bio = meme.topTags.map((tid) => props.tags[tid].name).join(', ');
     biodetails = "Top tags";
   }
-  else if(meme.topCategories) {
-    bio = meme.topCategories.map((cid) => categories[cid].name).join(', ');
+  else if(meme.topCategories.length) {
+    bio = meme.topCategories.map((cid) => props.categories[cid].name).join(', ');
     biodetails = "Top categories";
   }
   else {
@@ -196,10 +206,10 @@ const GridMeme = (props) => {
   let contrast = getContrastYIQ(meme.color);
   return <div className={'meme ' + (contrast=='white'?'dark':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
     {media}
-    <div className='info'>
-      <p className='bio' title={bio}>{bio}</p>
-      <p className='biotype'>{biodetails}</p>
-    </div>
+    <a href={'/meme/'+meme._id} className='info'>
+      <span className='bio' title={bio}>{bio}</span>
+      <span className='biotype'>{biodetails}</span>
+    </a>
     <div className='dooter'>
       <button className='updoot'><i className='icon-arrow-up'></i></button>
       <div className='doots'>{meme.totalVotes}</div>
@@ -222,11 +232,12 @@ const TagGrid = (props) => {
 
 // TODO: fullscreen meme view
 
-const HoverImg = ({ className, imageSrc, gifSrc, width, height, alt }) => {
+const HoverImg = ({ key, className, imageSrc, gifSrc, width, height, alt }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
     <img
+      key={key}
       className={className + ' ' + (isHovering ? '' : 'gif')}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}

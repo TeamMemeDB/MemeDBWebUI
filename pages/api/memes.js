@@ -1,5 +1,4 @@
 import clientPromise from "../../lib/mongodb";
-import { ObjectId } from "mongodb";
 
 const sortMode = {
   new: {uploadDate: -1},
@@ -48,7 +47,7 @@ export async function getMemes(db, query={}) {
     {
       $match: {
         // Hide unrated memes
-        edgevotes: {$exists: true},
+        ...(edge < 5? {edgevotes: {$exists: true}}: {})
       }
     },
     {
@@ -132,17 +131,17 @@ export async function getMemes(db, query={}) {
     {
       $match: {
         // Takes edge ratings by majority rule, favouring caution
-        avgEdgevotes: {$gte: Number(edge)-0.5, $lte: Number(edge)+0.5 },
+        ...(edge < 5? {avgEdgevotes: {$gte: Number(edge)-0.5, $lt: Number(edge)+0.5 }} : {edgevotes: {$eq: []}}),
         "flags.hidden": false,
         // Tag filtering
         ...(tags=='all' ? {}: (inclusivetags.length ? {topTags: {$in: inclusivetags}} : {topTags: {$nin: exclusivetags}})),
         // Category filtering
         ...(categories=='all' ? {} : (inclusivecats.length ? {topCategories: {$in: inclusivecats}} : {topCategories: {$nin: exclusivecats}})),
         // Text search
-        $or: [
+        ...(filter? {$or: [
           { description: { $regex: filter, $options: 'i' } },
           { transcription: { $regex: filter, $options: 'i' } },
-        ]
+        ]}: {})
       }
     },
     {

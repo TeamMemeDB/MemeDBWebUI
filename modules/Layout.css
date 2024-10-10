@@ -101,7 +101,7 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   flex-grow: 1;
   margin-bottom: 0.5rem;
 }
-.page > h2, .page > span {
+.page > h2, .page > p {
   margin-left: 1rem;
   margin-right: 1rem;
 }
@@ -187,9 +187,11 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   right: 0;
   padding: 0.75em 1em;
   display: block;
+  color: inherit;
   background-color: inherit;
 }
-.meme > .info > p {
+.meme > .info > span {
+  display: block;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

@@ -272,7 +272,7 @@ export const VideoControl = (props) => {
     :
       <></>
     }
-    <video ref={videoRef} className={props.className} width={props.width} height={props.height} poster={props.poster} preload={props.preload}>
+    <video key={props.key} ref={videoRef} className={props.className} width={props.width} height={props.height} poster={props.poster} preload={props.preload}>
       {props.children}
     </video>
   </div>
