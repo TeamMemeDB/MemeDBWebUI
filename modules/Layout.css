@@ -145,6 +145,7 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   background: black;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .meme.dark {
   color: #eee;
@@ -155,6 +156,28 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   height: 16.2em;
   align-self: flex-start;
   object-fit: contain;
+}
+.meme.nsfw .content {
+  filter: blur(1rem);
+  transition: filter 400ms;
+}
+.meme.nsfw::after {
+  content: "WARNING: This meme contains innapropriate content.";
+  position: absolute;
+  width: 20ch;
+  text-align: center;
+  top: 14.2em;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 400ms;
+}
+.meme.nsfw:hover::after {
+  opacity: 0;
+}
+.meme.nsfw:hover .content {
+  filter: blur(0rem);
 }
 
 @media screen and (min-width: 100em) {

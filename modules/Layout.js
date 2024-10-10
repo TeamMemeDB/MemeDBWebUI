@@ -208,7 +208,7 @@ const GridMeme = (props) => {
   bio = bio.replaceAll('<br />', '');
 
   let contrast = getContrastYIQ(meme.color);
-  return <div className={'meme ' + (contrast=='white'?'dark':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
+  return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
     {media}
     <a href={'/meme/'+meme._id} className='info'>
       <span className='bio' title={bio}>{bio}</span>
