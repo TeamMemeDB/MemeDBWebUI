@@ -1,9 +1,9 @@
-.navbutton-usernav{
+.usernav{
   display:flex;
 }
-.navbutton-usernav>a:nth-child(2){
+.usernav>a:nth-child(2){
   flex-grow: 1;
 }
-.navbutton-usernav>.btn.blurple-bg{
+.usernav>.btn.blurple-bg{
   flex-grow: 1;
 }

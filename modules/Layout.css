@@ -23,7 +23,7 @@ nav .btn, nav input{
   box-sizing: content-box;
   line-height: 1em;
 }
-nav .navbutton-spacer {
+nav .navspacer {
   background: none !important;
   box-shadow: none !important;
   flex-grow: 10;
@@ -82,7 +82,7 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   nav>.navbutton-title-search.searchfocus>a:first-child{
     display: none;
   }
-  nav>.navbutton-usernav{
+  nav>.usernav{
     margin: 0;
     grid-column-start: 1;
     grid-column-end: 7;
@@ -91,21 +91,21 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
     grid-column-start: 1;
     grid-column-end: 3;
   }
-  nav .navbutton-spacer{
+  nav .navspacer{
     display: none;
   }
 }
 
-.page {
+.browse {
   min-height: 35rem;
   flex-grow: 1;
   margin-bottom: 0.5rem;
 }
-.page > h2, .page > p {
+.browse > h2, .browse > p {
   margin-left: 1rem;
   margin-right: 1rem;
 }
-.page > h2 {
+.browse > h2 {
   margin-bottom: 0;
 }
 

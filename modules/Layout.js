@@ -1,11 +1,14 @@
 import React, {useEffect, useState, useRef} from 'react';
-import { Panel, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
-import {User,UserNav} from './User';
-import {getContrastYIQ} from '../lib/colour.js';
+import Link from 'next/link';
+import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
+import { User, UserNav } from './User';
+import { getContrastYIQ } from '../lib/colour.js';
+import { sortModes, edgeLevels, compareQuery, idIndex } from '../lib/memedb.js';
 
 export const Header = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
   const searchBar = useRef(null);
+  const user = null;// new User('Yiays');
 
   return <header><nav>
     <div className={"navbutton navbutton-title-search"+(searchFocus?' searchfocus':'')}>
@@ -21,15 +24,15 @@ export const Header = (props) => {
         <button type="submit" className="btn" value=""><i className='icon-search'/></button>
       </form>
     </div>
-    <NavItem type="spacer"></NavItem>
-    <UserNav user={<User username="Yiays"/>}/>
+    <NavSpacer></NavSpacer>
+    <UserNav user={user}/>
   </nav></header>;
 }
 
 export const Footer = (props) => {
   return <footer><nav>
     <NavItem href="https://yiays.com">Created by Yiays</NavItem>
-    <NavItem type="spacer"></NavItem>
+    <NavSpacer/>
     <NavItem href="/terms">Terms</NavItem>
     <NavItem href="/report">Report Abuse</NavItem>
     <NavItem href="https://github.com/TeamMemeDB">GitHub</NavItem>
@@ -37,48 +40,14 @@ export const Footer = (props) => {
   </nav></footer>;
 }
 
-const NavItem = (props) => {
-  return <a href={props.href} className={"btn navbutton"+(props.type?' navbutton-'+props.type:'')}>
+export const NavItem = (props) => {
+  return <Link href={props.href} className={"btn navbutton" + (props.className?' '+props.className:'')}>
     {props.children}
-  </a>
+  </Link>
 }
 
-function Pepper(props){
-  return <> {
-    Array.from({length: props.count}, (_, i) => <i key={i} className='icon-pepper red' title={(props.count) + ' pepper(s)'}/>)
-  } </>;
-}
-
-export const sortModes = [
-  {id:'new', name:'newest first', displayname: <><i className='icon-sparkle pink'/> Newest</>, description:"Newest memes first"},
-  {id:'old', name:'oldest first', displayname: <><i className='icon-calendar blue'/> Oldest</>, description:"Oldest memes first"},
-  {id:'top', name:'top rated first', displayname: <><i className='icon-fire red'/> Top rated</>, description:"Most upvoted memes first"},
-  {id:'bottom', name:'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, description:"Least upvoted memes first"}
-];
-
-export const edgeLevels = [
-  {id:5, name: 'Unrated', displayname: <><i className='icon-notification'/></>, description: "Currently unclassified"},
-  {id:0, name: 'Family friendly', displayname: <Pepper count={1}/>, description: "Regular content, safe for everyone"},
-  {id:1, name: 'NSFW/Edgy', displayname: <Pepper count={2}/>, description: "NSFW or edgy, not for children"},
-  {id:2, name: 'Turbo Edgy', displayname: <Pepper count={3}/>, description: "Very NSFW or politically edgy"},
-  {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
-];
-
-const dropdownFormat = (item) => {
-  if('_id' in item) {
-    item['id'] = item['_id'];
-    delete item['_id'];
-  }
-  if('memes' in item) {
-    item['count'] = item['memes'];
-    delete item['memes'];
-  }
-  return item;
-}
-
-const idIndex = (out, item) => {
-  out[item.id] = item;
-  return out;
+export const NavSpacer = (props) => {
+  return <span className='navspacer'/>
 }
 
 export const Browse = (props) => {
@@ -105,7 +74,7 @@ export const Browse = (props) => {
   };
   
   useEffect(() => {
-    if(JSON.stringify(query) != JSON.stringify(newQuery)) {
+    if(!compareQuery(query, newQuery)) {
       console.log("Fetching memes...");
       // Memes are currently in an invalid state, invalidate them
       if(data.length)
@@ -127,14 +96,14 @@ export const Browse = (props) => {
     filteredTags = tags.filter(t => itemSearch(t, query.filter));
   }
 
-  return <div className="page">
+  return <div className="browse">
     <Panel type="toolbelt" title="Search Tools">
       <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={currentSort} setter={setCurrentSort}/>
       <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={currentCategories} setter={setCurrentCategories} inclusivityeditor={true} inclusive={true}/>
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
     </Panel>
-    {(JSON.stringify(query) != JSON.stringify(newQuery))?
+    {(!compareQuery(query, newQuery))?
       <p>Loading...</p>
     :<>
       {(query.filter)?
@@ -206,12 +175,12 @@ const GridMeme = (props) => {
   bio = bio.replaceAll('<br />', '');
 
   let contrast = getContrastYIQ(meme.color);
-  return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} href={'/meme/'+meme._id} style={{'backgroundColor':meme.color}}>
+  return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} style={{'backgroundColor':meme.color}}>
     {media}
-    <a href={'/meme/'+meme._id} className='info'>
+    <Link href={'/meme/'+meme._id} className='info'>
       <span className='bio' title={bio}>{bio}</span>
       <span className='biotype'>{biodetails}</span>
-    </a>
+    </Link>
     <div className='dooter'>
       <button className='updoot'><i className='icon-arrow-up'></i></button>
       <div className='doots'>{meme.totalVotes}</div>
@@ -222,13 +191,13 @@ const GridMeme = (props) => {
 
 const CategoryGrid = (props) => {
   return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map(category => 
-    <a key={category.id} className='grid-item' href={'/category/'+category.id} title={category.description}>{category.name}</a>
+    <Link key={category.id} className='grid-item' href={'/category/'+category.id} title={category.description}>{category.name}</Link>
   )}</div>
 }
 
 const TagGrid = (props) => {
   return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{props.tags.map(tag => 
-    <a key={tag.id} className='grid-item' href={'/tag/'+tag.id} title={tag.description}>#{tag.name}</a>
+    <Link key={tag.id} className='grid-item' href={'/tag/'+tag.id} title={tag.description}>#{tag.name}</Link>
   )}</div>
 }
 

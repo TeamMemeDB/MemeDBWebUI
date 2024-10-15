@@ -1,29 +1,29 @@
 import React from 'react';
+import { NavItem } from './Layout.js';
 
 export class UserNav extends React.Component {
   constructor(props){
     super(props);
   }
   render(){
-    return <div className='navbutton navbutton-usernav'>
+    return <div className='usernav'>
     { this.props.user?
     <>
-      <a href='/user/favourites' className='btn'><i className="icon-star-full accent"/></a>
-      <a href='/user' className='btn'>{this.props.user.props.username}</a>
-      <a href='/user/logout' className='btn'>Logout</a>
+      <NavItem href='/user/favourites'><i className="icon-star-full accent"/></NavItem>
+      <NavItem href='/user'>{this.props.user.username}</NavItem>
+      <NavItem href='/user/logout'>Logout</NavItem>
     </>
     :
     <>
-      <a href='/user/login' className='btn blurple-bg'>Login with Discord</a>
+      <NavItem href='/user/login' className='blurple-bg'>Login with Discord</NavItem>
     </>
     }
     </div>;
   }
 }
 
-export class User extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {username: this.props.username}
+export class User {
+  constructor(username){
+    this.username = username;
   }
 }

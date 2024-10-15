@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 }
 
 export async function getMemes(db, query={}) {
-  const {sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0, filter=''} = query;
+  const {sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0, filter='', limit=50} = query;
 
   if(edge > 1) {
     return {matches: 0, errorMessage: "Authorization is required to view these memes."};
@@ -157,7 +157,7 @@ export async function getMemes(db, query={}) {
         _id: null,
         // Include a result count for pagination
         matches: {$sum: 1},
-        // Pagination with a hardcoded 50 meme limit
+        // Pagination
         memes: {$push: "$$ROOT"}
       }
     },
@@ -165,7 +165,7 @@ export async function getMemes(db, query={}) {
       $project: {
         _id: 0,
         matches: 1,
-        memes: {$slice: ["$memes", Number(from), 50]}
+        memes: {$slice: ["$memes", Number(from), limit]}
       }
     }
   ];

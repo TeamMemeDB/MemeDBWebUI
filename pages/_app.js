@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }) {
     </Head>
     <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
     <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
-    <noscript>You need to enable JavaScript to access MemeDB.</noscript>
+    <noscript>JS is not enabled! Your experience may be limited.</noscript>
     <Header filter={filter} setFilter={setFilter}/>
     <Component {...pageProps} filter={filter} setFilter={setFilter}/>
     <Footer/>
