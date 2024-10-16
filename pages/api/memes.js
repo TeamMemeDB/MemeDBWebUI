@@ -1,10 +1,12 @@
 import clientPromise from "../../lib/mongodb";
+import { Query } from "../../lib/memedb";
 
+//TODO: add a best match sort mode
 const sortMode = {
   new: {uploadDate: -1},
   old: {uploadDate: 1},
-  top: {avgVotes: 1, uploadDate: -1},
-  bottom: {avgVotes: -1, uploadDate: -1}
+  top: {totalVotes: -1, uploadDate: -1},
+  bottom: {totalVotes: 1, uploadDate: -1}
 }
 
 export default async function handler(req, res) {
@@ -14,34 +16,34 @@ export default async function handler(req, res) {
     case "GET":
       // Parse data from GET request with defaults
       // While it's technically possible to include and exclude the same type of property simultaneously, this is not supported.
-      const result = await getMemes(db, req.query);
+      const result = await getMemes(db, new Query(req.query));
       res.json(result || {matches: 0});
       break;
   }
 }
 
-export async function getMemes(db, query={}) {
-  const {sort = 'new', categories = 'all', tags = 'all', edge = 0, from = 0, filter='', limit=50} = query;
-
-  if(edge > 1) {
+export async function getMemes(db, query=new Query({})) {
+  if(query.edge > 1) {
     return {matches: 0, errorMessage: "Authorization is required to view these memes."};
   }
 
   // Sort through tag ids, if they start with a minus, exclude them from results
   const inclusivetags = [];
   const exclusivetags = [];
-  if(tags!='all') {
-    tags.split(',').forEach(tag => {
-      if(tag.charAt(0) == '-') exclusivetags.push(tag.substring(1));
+  if(query.tags.length == 0) return {matches:0};
+  if(query.tags[0]!='all') {
+    query.tags.forEach(tag => {
+      if(tag < 0) exclusivetags.push(tag * -1);
       else inclusivetags.push(tag);
     });
   }
   // The same with categories
   const inclusivecats = [];
   const exclusivecats = [];
-  if(categories!='all'){
-    categories.split(',').forEach(category => {
-      if(category.charAt(0) == '-') exclusivecats.push(category.substring(1));
+  if(query.categories.length == 0) return {matches:0};
+  if(query.categories[0]!='all'){
+    query.categories.forEach(category => {
+      if(category < 0) exclusivecats.push(category * -1);
       else inclusivecats.push(category);
     });
   }
@@ -51,7 +53,7 @@ export async function getMemes(db, query={}) {
     {
       $match: {
         // Hide unrated memes
-        ...(edge < 5? {edgevotes: {$exists: true}}: {})
+        ...(query.edge < 5? {edgevotes: {$exists: true}}: {})
       }
     },
     {
@@ -135,22 +137,22 @@ export async function getMemes(db, query={}) {
     {
       $match: {
         // Takes edge ratings by majority rule, favouring caution
-        ...(edge < 5? {avgEdgevotes: {$gte: Number(edge)-0.5, $lt: Number(edge)+0.5 }} : {edgevotes: {$eq: []}}),
+        ...(query.edge < 5? {avgEdgevotes: {$gte: Number(query.edge)-0.5, $lt: Number(query.edge)+0.5 }} : {edgevotes: {$eq: []}}),
         "flags.hidden": false,
         // Tag filtering
-        ...(tags=='all' ? {}: (inclusivetags.length ? {topTags: {$in: inclusivetags}} : {topTags: {$nin: exclusivetags}})),
+        ...(query.tags[0]=='all' ? {}: (inclusivetags.length ? {topTags: {$in: inclusivetags}} : {topTags: {$nin: exclusivetags}})),
         // Category filtering
-        ...(categories=='all' ? {} : (inclusivecats.length ? {topCategories: {$in: inclusivecats}} : {topCategories: {$nin: exclusivecats}})),
+        ...(query.categories[0]=='all' ? {} : (inclusivecats.length ? {topCategories: {$in: inclusivecats}} : {topCategories: {$nin: exclusivecats}})),
         // Text search
-        ...(filter? {$or: [
-          { description: { $regex: filter, $options: 'i' } },
-          { transcription: { $regex: filter, $options: 'i' } },
+        ...(query.filter? {$or: [
+          { description: { $regex: query.filter, $options: 'i' } },
+          { transcription: { $regex: query.filter, $options: 'i' } },
         ]}: {})
       }
     },
     {
       // Use the provided ruleset for sorting memes
-      $sort: sortMode[sort]
+      $sort: sortMode[query.sort]
     },
     {
       $group: {
@@ -165,7 +167,7 @@ export async function getMemes(db, query={}) {
       $project: {
         _id: 0,
         matches: 1,
-        memes: {$slice: ["$memes", Number(from), limit]}
+        memes: {$slice: ["$memes", Number(query.from), query.limit]}
       }
     }
   ];

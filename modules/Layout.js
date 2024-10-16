@@ -1,9 +1,10 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
 import { User, UserNav } from './User';
 import { getContrastYIQ } from '../lib/colour.js';
-import { sortModes, edgeLevels, compareQuery, idIndex } from '../lib/memedb.js';
+import { sortModes, edgeLevels, Query, idIndex } from '../lib/memedb.js';
 
 export const Header = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
@@ -51,44 +52,35 @@ export const NavSpacer = (props) => {
 }
 
 export const Browse = (props) => {
-  const [currentSort, setCurrentSort] = useState('new');
-  const [currentCategories, setCurrentCategories] = useState([-1]);
-  const [currentTags, setCurrentTags] = useState([-1]);
-  const [currentEdge, setCurrentEdge] = useState(0); // No support for multiple edge levels for now
-
+  // Page state
+  const router = useRouter();
   const sorts = props.customSorts? props.customSorts: sortModes;
   const edge = props.customEdge? props.customEdge: edgeLevels;
   const tags = props.tags.map(dropdownFormat);
   const categories = props.categories.map(dropdownFormat);
-  const [data, setData] = useState(props.preloadData);
-  const [query, setQuery] = useState(props.preloadQuery);
-  
+
+  // DropDown state
+  const [rawQuery, setQuery] = useState(props.query);
+  const query = new Query(rawQuery);
+  const [currentSort, setCurrentSort] = useState(query.sort);
+  const [currentCategories, setCurrentCategories] = useState(query.categories);
+  const [currentTags, setCurrentTags] = useState(query.tags);
+  const [currentEdge, setCurrentEdge] = useState(query.edge); // No support for multiple edge levels for now
+
   // A hypothetical new query, based on what the search controls are currently set to
-  const newQuery = {
+  const newQuery = new Query({
     sort: currentSort,
-    categories: currentCategories[0]==-1?'all':currentCategories[0]==-2?[]:currentCategories.join(','),
-    tags: currentTags[0]==-1?'all':currentTags[0]==-2?[]:currentTags.join(','),
+    categories: currentCategories[0]==-1?'all':currentCategories[0]==-2?[]:currentCategories,
+    tags: currentTags[0]==-1?'all':currentTags[0]==-2?[]:currentTags,
     edge: currentEdge,
     from: 0,
     filter: props.filter
-  };
-  
-  useEffect(() => {
-    if(!compareQuery(query, newQuery)) {
-      console.log("Fetching memes...");
-      // Memes are currently in an invalid state, invalidate them
-      if(data.length)
-        setData([]);
-      const fetchData = async () => {
-        const querystring = new URLSearchParams(newQuery).toString();
-        const url = `/api/memes?${querystring}`;
-        const response = await fetch(url);
-        setQuery(newQuery);
-        setData(await response.json());
-      }
-      fetchData();
-    }
   });
+
+  if(!query.equals(newQuery)) {
+    setQuery(newQuery.toJSON());
+    router.push(newQuery.toUrl());
+  }
 
   let filteredCategories, filteredTags;
   if(query.filter) {
@@ -103,23 +95,23 @@ export const Browse = (props) => {
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
     </Panel>
-    {(!compareQuery(query, newQuery))?
+    {(!query.equals(newQuery))?
       <p>Loading...</p>
     :<>
       {(query.filter)?
         <>
           <h2>Categories matching "{query.filter}"</h2>
-          <p className='memecount'>Found {filteredCategories.length} categories.</p>
+          <p className='memecount'>Found {filteredCategories.length} categor{filteredCategories.length==1?'y':'ies'}.</p>
           <CategoryGrid categories={filteredCategories}/>
           <h2>Tags matching "{query.filter}"</h2>
-          <p className='memecount'>Found {filteredTags.length} tags.</p>
+          <p className='memecount'>Found {filteredTags.length} tag{filteredCategories.length==1?'':'s'}.</p>
           <TagGrid tags={filteredTags}/>
           <h2>Memes matching "{query.filter}"</h2>
         </>
         :<></>
       }
-      <p className='memecount'>Found {data.matches||0} memes.</p>
-      <MemeGrid data={data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
+      <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
+      <MemeGrid data={props.data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
       </>
     }
   </div>;
