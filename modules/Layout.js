@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
@@ -20,8 +20,12 @@ export const Header = (props) => {
           <span className="accent">DB</span>
         </h1>
       </NavItem>
-      <form onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current.value)}}>
-        <input ref={searchBar} type="text" name="q" placeholder="Search MemeDB" defaultValue={props.filter} onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}></input>
+      <form target='/search' onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current.value)}}>
+        <input 
+          ref={searchBar} type="text" name="filter" placeholder="Search MemeDB" defaultValue={props.filter}
+          minLength={3} maxLength={50}
+          onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}
+        />
         <button type="submit" className="btn" value=""><i className='icon-search'/></button>
       </form>
     </div>
@@ -60,27 +64,32 @@ export const Browse = (props) => {
   const categories = props.categories.map(dropdownFormat);
 
   // DropDown state
-  const [rawQuery, setQuery] = useState(props.query);
-  const query = new Query(rawQuery);
-  const [currentSort, setCurrentSort] = useState(query.sort);
-  const [currentCategories, setCurrentCategories] = useState(query.categories);
-  const [currentTags, setCurrentTags] = useState(query.tags);
-  const [currentEdge, setCurrentEdge] = useState(query.edge); // No support for multiple edge levels for now
+  const query = new Query(props.query);
+  const [nextSort, setNextSort] = useState(query.sort);
+  const [nextCategories, setNextCategories] = useState(query.categories);
+  const [nextTags, setNextTags] = useState(query.tags);
+  const [nextEdge, setNextEdge] = useState(query.edge); // No support for multiple edge levels for now
 
-  // A hypothetical new query, based on what the search controls are currently set to
-  const newQuery = new Query({
-    sort: currentSort,
-    categories: currentCategories[0]==-1?'all':currentCategories[0]==-2?[]:currentCategories,
-    tags: currentTags[0]==-1?'all':currentTags[0]==-2?[]:currentTags,
-    edge: currentEdge,
-    from: 0,
-    filter: props.filter
-  });
+  const [loading, setLoading] = useState(false);
+  const navigate = () => {
+    // Find the new url based on changes to state
+    const nextQuery = new Query({
+      sort: nextSort,
+      categories: nextCategories,
+      tags: nextTags,
+      edge: nextEdge,
+      from: 0,
+      filter: props.filter
+    });
 
-  if(!query.equals(newQuery)) {
-    setQuery(newQuery.toJSON());
-    router.push(newQuery.toUrl());
+    if(query.equals(nextQuery)) {
+      setLoading(false);
+    }else{
+      router.push(nextQuery.toUrl());
+      setLoading(true);
+    }
   }
+  useEffect(navigate, [props.query]);
 
   let filteredCategories, filteredTags;
   if(query.filter) {
@@ -90,12 +99,13 @@ export const Browse = (props) => {
 
   return <div className="browse">
     <Panel type="toolbelt" title="Search Tools">
-      <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={currentSort} setter={setCurrentSort}/>
-      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={currentCategories} setter={setCurrentCategories} inclusivityeditor={true} inclusive={true}/>
-      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={currentTags} setter={setCurrentTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
-      <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={currentEdge} setter={setCurrentEdge} inclusive={false}/>
+      <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={nextSort} setter={setNextSort}/>
+      <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={nextCategories} setter={setNextCategories} inclusivityeditor={true} inclusive={true}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={nextTags} setter={setNextTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
+      <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={nextEdge} setter={setNextEdge} inclusive={false}/>
+      <button className='btn' onClick={navigate}>Update</button>
     </Panel>
-    {(!query.equals(newQuery))?
+    {(loading)?
       <p>Loading...</p>
     :<>
       {(query.filter)?
