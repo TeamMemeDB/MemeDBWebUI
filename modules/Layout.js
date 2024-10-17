@@ -120,10 +120,28 @@ export const Browse = (props) => {
         </>
         :<></>
       }
-      <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
-      <MemeGrid data={props.data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
-      </>
-    }
+      {(query.categories.length==0)?
+        <>
+          <h2>Categories</h2>
+          <CategoryGrid categories={categories}/>
+        </>
+        :<></>
+      }
+      {(query.tags.length==0)?
+        <>
+          <h2>Tags</h2>
+          <TagGrid tags={tags}/>
+        </>
+        :<></>
+      }
+      {(props.data)?
+        <>
+          <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
+          <MemeGrid data={props.data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
+        </>
+        :<></>
+      }
+    </>}
   </div>;
 }
 

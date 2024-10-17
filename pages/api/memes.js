@@ -28,23 +28,23 @@ export async function getMemes(db, query=new Query({})) {
   }
 
   // Sort through tag ids, if they start with a minus, exclude them from results
-  const inclusivetags = [];
-  const exclusivetags = [];
+  const includeTags = [];
+  const excludeTags = [];
   if(query.tags.length == 0) return {matches:0};
   if(query.tags[0]!='all') {
     query.tags.forEach(tag => {
-      if(tag < 0) exclusivetags.push(tag * -1);
-      else inclusivetags.push(tag);
+      if(tag < 0) excludeTags.push(tag * -1);
+      else includeTags.push(tag.toString());
     });
   }
   // The same with categories
-  const inclusivecats = [];
-  const exclusivecats = [];
+  const includeCats = [];
+  const excludeCats = [];
   if(query.categories.length == 0) return {matches:0};
   if(query.categories[0]!='all'){
     query.categories.forEach(category => {
-      if(category < 0) exclusivecats.push(category * -1);
-      else inclusivecats.push(category);
+      if(category < 0) excludeCats.push(category * -1);
+      else includeCats.push(category.toString());
     });
   }
 
@@ -140,9 +140,9 @@ export async function getMemes(db, query=new Query({})) {
         ...(query.edge < 5? {avgEdgevotes: {$gte: Number(query.edge)-0.5, $lt: Number(query.edge)+0.5 }} : {edgevotes: {$eq: []}}),
         "flags.hidden": false,
         // Tag filtering
-        ...(query.tags[0]=='all' ? {}: (inclusivetags.length ? {topTags: {$in: inclusivetags}} : {topTags: {$nin: exclusivetags}})),
+        ...(query.tags[0]=='all' ? {}: (includeTags.length ? {topTags: {$in: includeTags}} : {topTags: {$nin: excludeTags}})),
         // Category filtering
-        ...(query.categories[0]=='all' ? {} : (inclusivecats.length ? {topCategories: {$in: inclusivecats}} : {topCategories: {$nin: exclusivecats}})),
+        ...(query.categories[0]=='all' ? {} : (includeCats.length ? {topCategories: {$in: includeCats}} : {topCategories: {$nin: excludeCats}})),
         // Text search
         ...(query.filter? {$or: [
           { description: { $regex: query.filter, $options: 'i' } },
@@ -171,5 +171,7 @@ export async function getMemes(db, query=new Query({})) {
       }
     }
   ];
-  return (await db.collection("meme").aggregate(pipeline).toArray())[0];
+  const result = await db.collection("meme").aggregate(pipeline).toArray();
+  if(result.length) return result[0];
+  return {matches:0};
 }
