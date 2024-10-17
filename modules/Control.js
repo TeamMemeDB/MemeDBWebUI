@@ -56,17 +56,8 @@ export const DropDown = (props) => {
               </button>);
   }
 
-  let stringrep;
-  if(props.value == -1) {
-    stringrep = 'All';
-  }
-  else if(props.value == -2) {
-    stringrep = 'None';
-  }
-  else {
-    let selected = props.choices.filter((item) => item.id == props.value)[0];
-    stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
-  }
+  let selected = props.choices.filter((item) => item.id == props.value)[0];
+  let stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
 
   return <div className="dropdown">
     <button className="dropbtn btn">{props.name}<br/><sub className="dim">{stringrep}</sub></button>
@@ -93,108 +84,161 @@ export const MultiDropDown = (props) => {
   const [search, setSearch] = useState('');
   const [maxlength, setMaxlength] = useState(minMaxlength);
 
-  const displayname = (id) => {
+  function displayname(id) {
     if(props.displayname) return props.displayname(id);
     return id;
   }
-  
-  const find = (tids) => {
-    if(tids[0] == -1) return props.choices;
-    return props.choices.filter((item) => tids.indexOf(item.id) >= 0);
-  }
 
-  const select = (id) => {
+  function select(id) {
     let newSelection;
-    if(id === -1) newSelection = [-1];
-    else if(id === -2) newSelection = [];
-    else{
-      if(props.value[0] == -1) newSelection = props.choices.map(item => item.id);
-      else newSelection = props.value.map(a => a); // Clone object so that it can be changed
+    // Select all
+    if(id === 'all') newSelection = ['all'];
 
-      const index = newSelection.indexOf(id);
-      if(index > -1){
-        newSelection.splice(index, 1);
+    // Select none
+    else if(id === 'none') newSelection = [];
+
+    // Select custom
+    else{
+      if(inclusive) {
+        // Inclusive mode select
+        if(props.value[0] == 'all') newSelection = props.choices.map(item => item.id);
+        else newSelection = props.value.map(a => a); // Clone object so that it can be changed
+        // Add or remove id from selection
+        const index = newSelection.indexOf(id);
+        if(index > -1){
+          newSelection.splice(index, 1);
+        }else{
+          newSelection.push(id);
+        }
+        // All items were selected manually
+        if(newSelection.length == props.choices.length) {
+          newSelection = ['all'];
+        }
       }else{
-        newSelection.push(id);
-      }
-      if(newSelection.length == props.choices.length) {
-        newSelection = [-1];
+        // Exclusive mode select
+        if(props.value[0] == 'all') newSelection = props.choices.map(item => -item.id);
+        else if(props.value.length == 0) newSelection = [];
+        else newSelection = props.value.map(a => a); // Clone object so it can be changed
+        // Add or remove id from selection
+        const index = newSelection.indexOf(-id);
+        if(index > -1) {
+          newSelection.splice(index, 1);
+        }else{
+          newSelection.push(-id);
+        }
+        // All items were deselected manually
+        if(newSelection.length == props.choices.length) {
+          newSelection = ['all']
+        }
       }
     }
     props.setter(newSelection);
+    console.log('selected', newSelection);
+  }
+
+  function invertselection() {
+    // Change values from a list of selected items to a list of unselected items and vice versa
+    let newSelection = [];
+    if(props.value.length == 0){
+      // Nothing is selected
+      newSelection = ['all']
+    }else if(props.value[0]=='all'){
+      // Everything is selected
+      newSelection = []
+    }
+    else if(inclusive) {
+      // Make a list of everything that wasn't previously excluded
+      newSelection = props.choices.filter(item => props.value.indexOf(-item.id) == -1).map(item => item.id)
+    }else{
+      // Make a list of eveything that wasn't previously included
+      newSelection = props.choices.filter(item => props.value.indexOf(item.id) == -1).map(item => -item.id);
+    }
+    props.setter(newSelection);
+    console.log('inverted', newSelection);
   }
   
   let menu = [];
+  let visiblecount = 0;
   for(let i in props.choices) {
     let item = props.choices[i];
 
     let classes = ['btn'];
+    visiblecount++;
 
-    if(props.value.indexOf(item.id) >= 0 || props.value[0] == -1){
+    if(
+      (inclusive && props.value.includes(item.id) || props.value[0] == 'all')
+      || (!inclusive && !props.value.includes(-item.id) && props.value[0] != 'all')
+    ){
       classes.push('selected');
     }
 
-    if(search.length > 2){
+    if(search.length > 0){
       if(itemSearch(item, search)){
         classes.push('searched');
       }else{
         classes.push('hidden');
+        visiblecount--;
       }
     }else if(item.hidden){
       classes.push('hidden');
-    }else if(menu.length >= maxlength){
+      visiblecount--;
+    }else if(visiblecount >= maxlength){
       classes.push('hidden');
     }
 
     classes = classes.join(' ');
 
-    menu.push(<button onClick={() => select(item.id)} key={item.id} className={classes} title={item.id/*item.description*/}>
+    menu.push(<button onClick={() => select(item.id)} key={item.id} className={classes} title={item.description||item.name}>
                 {displayname(item.name)}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
               </button>);
   }
 
-  if(maxlength > 100){
-    menu.push(<button onClick={() => setMaxlength(minMaxlength)} key={-1} className='btn noselect'>Show less...</button>);
-  }
-  else if(menu.length > maxlength){
-    menu.push(<button onClick={() => setMaxlength(maxMaxlength)} key={-1} className='btn noselect'>Show all...</button>);
+  if(visiblecount > 100) {
+    if(maxlength > 100){
+      menu.push(<button onClick={() => setMaxlength(minMaxlength)} key={-1} className='btn noselect'>Show less...</button>);
+    }
+    else if(visiblecount > maxlength){
+      menu.push(<button onClick={() => setMaxlength(maxMaxlength)} key={-1} className='btn noselect'>Show all...</button>);
+    }
   }
 
   let stringrep;
-  if(props.value.length >= 1) {
-    if(props.value[0] == -1) {
-      stringrep = 'All';
-    }else{
-      if(!inclusive){
-        if(props.value.length <= 5){
-          let selected = find(props.value);
+  if(props.value.length == 0) {
+    stringrep = 'None';
+  }else if(props.value[0] == 'all') {
+    stringrep = 'All';
+  }else{
+    if(inclusive){
+      // Inclusive mode
+      let selected = props.choices.filter((item) => props.value.includes(item.id));
 
-          let names = [];
-          selected.forEach(option => {
-            names.push(option.name[0].toUpperCase()+option.name.substring(1));
-          });
-
-          stringrep = "Only "+names.join(', ');
-        }else{
-          let unselected = find(props.choices.filter(item => props.value.indexOf(item.id) == -1).map(item => item.id))
-
-          let names = [];
-          unselected.some(option => {
-            if(names.length == 5){
-              names.push('...');
-              return true;
-            }
-            names.push(option.name[0].toUpperCase()+option.name.substring(1));
-            return false;
-          });
-
-          stringrep = "All but "+names.join(', ');
+      let names = [];
+      selected.some(option => {
+        if(names.length == 5){
+          names.push('...');
+          return true;
         }
-      }else{
-        let selected = find(props.value);
+        names.push(option.name[0].toUpperCase()+option.name.substring(1));
+        return false;
+      });
+
+      stringrep = names.join(', ');
+    }else{
+      // Exclusive mode
+      if(props.choices.length - props.value.length <= 5){
+        let selected = props.choices.filter(item => !props.value.includes(-item.id));
 
         let names = [];
-        selected.some(option => {
+        selected.forEach(option => {
+          names.push(option.name[0].toUpperCase()+option.name.substring(1));
+        });
+
+        stringrep = "Only "+names.join(', ');
+      }else{
+        let unselected = props.choices.filter(item => props.value.includes(-item.id))
+
+        let names = [];
+        unselected.some(option => {
           if(names.length == 5){
             names.push('...');
             return true;
@@ -203,12 +247,9 @@ export const MultiDropDown = (props) => {
           return false;
         });
 
-        stringrep = names.join(', ');
+        stringrep = "All but "+names.join(', ');
       }
     }
-  }
-  else {
-    stringrep = 'None';
   }
 
   return <div className="dropdown dropdown-multi">
@@ -224,22 +265,28 @@ export const MultiDropDown = (props) => {
       </div>
       {(props.inclusivityeditor)?
         <div className="dropdown-content-toolbar">
-          <button className="btn" title="Select all" onClick={() => select(-1)}>
+          <button className="btn" title="Select all" onClick={() => select('all')}>
             <i className="icon-select-all"/>
             <br/>
             <sub className="dim">All</sub>
           </button>
-          <button className="btn" title="Select none" onClick={() => select(-2)}>
+          <button className="btn" title="Select none" onClick={() => select('none')}>
             <i className="icon-select-none"/>
             <br/>
             <sub className="dim">None</sub>
           </button>
-          <button className={"btn"+(inclusive?' selected':'')} title="Results can have the selected properties" onClick={() => setInclusive(true)}>
+          <button
+            className={"btn"+(inclusive?' selected':'')} title="Results can have the selected properties"
+            onClick={() => {setInclusive(true); invertselection()}}
+          >
             <i className="icon-plus"/>
             <br/>
             <sub className="dim">Inclusive</sub>
           </button>
-          <button className={"btn"+(inclusive?'':' selected')} title="Results must not have unselected properties" onClick={() => setInclusive(false)}>
+          <button
+            className={"btn"+(inclusive?'':' selected')} title="Results must not have unselected properties"
+            onClick={() => {setInclusive(false); invertselection()}}
+          >
             <i className="icon-minus"/>
             <br/>
             <sub className="dim">Exclusive</sub>
