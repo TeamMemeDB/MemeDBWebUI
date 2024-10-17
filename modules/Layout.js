@@ -183,13 +183,17 @@ const GridMeme = (props) => {
 
 const CategoryGrid = (props) => {
   return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map(category => 
-    <Link key={category.id} className='grid-item' href={'/category/'+category.id} title={category.description}>{category.name}</Link>
+    <Link key={category.id} className='grid-item category' href={'/categories/'+category.id} title={category.description}>
+      {category.name}
+      <br/>
+      <sub>{category.description}</sub>
+    </Link>
   )}</div>
 }
 
 const TagGrid = (props) => {
   return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{props.tags.map(tag => 
-    <Link key={tag.id} className='grid-item' href={'/tag/'+tag.id} title={tag.description}>#{tag.name}</Link>
+    <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id} title={tag.description}>#{tag.name}</Link>
   )}</div>
 }
 

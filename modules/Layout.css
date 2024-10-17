@@ -119,17 +119,28 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 }
 .item-grid > .grid-item {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   width: 15em;
+  max-width: 30em;
   height: 3em;
+  padding: 0.5em;
+  box-sizing: border-box;
   border-radius: 1.5em;
   background: #535c68;
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.grid-item:link:hover {
+.grid-item.category {
+  height: 5em;
+}
+.grid-item>sub {
+  font-size: 0.7em;
+}
+.grid-item:link:hover, .grid-item:visited:hover {
   background: #727c88;
 }
 .item-grid > .meme {
@@ -182,8 +193,8 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 
 @media screen and (min-width: 100em) {
   .item-grid > .meme {
-    width: 30em;
-    height: 30em;
+    width: 22.5em;
+    height: 22.5em;
   }
   .meme .content {
     height: 26.2em;
