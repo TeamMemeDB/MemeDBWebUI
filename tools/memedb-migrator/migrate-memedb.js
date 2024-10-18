@@ -40,7 +40,7 @@ const config = {
 let rawdata = fs.readFileSync("memedb-export.json");
 const data = JSON.parse(rawdata);
 
-function findtable(name) {
+function get_table(name) {
   for(let index in data){
     if(data[index].type == "table" && data[index].name == name) return data[index];
   }
@@ -58,56 +58,19 @@ async function main() {
     let db = client.db('memedb');
 
     let userConverter = {};
+    let categoryCounter = {};
+    let tagCounter = {};
 
-    if(config.category) {
-      console.log("Migrating categories...");
-      if(config.clean){
-        console.log("Clearing table first...\nDeleted "+(await db.collection('category').deleteMany({})).deletedCount+" rows.");
-      }
-      
-      let dbobj = findtable('category');
-
-      let rows = [];
-      dbobj.data.forEach(row => {
-        rows.push({
-          _id: parseInt(row.Id),
-          name: row.Name,
-          description: row.Description,
-          memes: 0
-        });
-      });
-      
-      await db.collection('category').insertMany(rows);
-    }
-    if(config.tag) {
-      console.log("\nMigrating tags...");
-      if(config.clean){
-        console.log("Clearing table first...\nDeleted "+(await db.collection('tag').deleteMany({})).deletedCount+" rows.");
-      }
-
-      let dbobj = findtable('tag');
-
-      let rows = [];
-      dbobj.data.forEach(row => {
-        rows.push({
-          _id: parseInt(row.Id),
-          name: row.Name,
-          memes: 0
-        });
-      });
-      
-      await db.collection('tag').insertMany(rows);
-    }
     if(config.user) {
       console.log("\nMigrating users...");
       if(config.clean){
         console.log("Clearing table first...\nDeleted "+(await db.collection('user').deleteMany({})).deletedCount+" rows.");
       }
 
-      let dbobj = findtable('user').data;
+      let db_user = get_table('user').data;
       let userrows = [];
       let i = 0;
-      dbobj.forEach(row => {
+      db_user.forEach(row => {
         userConverter[row.Id] = i++;
         userrows.push({
           _id: userConverter[row.Id],
@@ -130,8 +93,8 @@ async function main() {
 
       if(config.favourites) {
         console.log("\nMigrating favourites as a part of user migration...")
-        let dbobj = findtable('favourites').data;
-        dbobj.forEach(fav => {
+        let db_favourites = get_table('favourites').data;
+        db_favourites.forEach(fav => {
           if(fav.userId in userConverter) {
             userrows[userConverter[fav.userId]].lists[0].memes.push({
               memeId: fav.memeId,
@@ -152,9 +115,9 @@ async function main() {
       }
 
       // Create vote counters for all transcriptions, descriptions, and edge ratings
-      let dbtransvote = findtable('transvote').data;
+      let db_transvote = get_table('transvote').data;
       let transdata = {};
-      dbtransvote.forEach(transvote => {
+      db_transvote.forEach(transvote => {
         let data = {user: userConverter[transvote.userId], value: parseInt(transvote.Value)};
 
         if(transdata[transvote.transId] === undefined){
@@ -164,9 +127,9 @@ async function main() {
         }
       });
       
-      let dbdescvote = findtable('descvote').data;
+      let db_descvote = get_table('descvote').data;
       let descdata = {};
-      dbdescvote.forEach(descvote => {
+      db_descvote.forEach(descvote => {
         let data = {user: userConverter[descvote.userId], value: parseInt(descvote.Value)};
         
         if(descdata[descvote.descId] === undefined){
@@ -176,9 +139,9 @@ async function main() {
         }
       });
 
-      let dbedgevote = findtable('edge').data;
+      let db_edgevote = get_table('edge').data;
       let edgedata = {};
-      dbedgevote.forEach(edgevote => {
+      db_edgevote.forEach(edgevote => {
         let data = {user: userConverter[edgevote.userId], value: parseInt(edgevote.Rating)};
 
         if(edgedata[edgevote.memeId] === undefined){
@@ -189,12 +152,12 @@ async function main() {
       })
 
       // Generate list of meme objects
-      let dbmemes = findtable('meme').data;
+      let db_memes = get_table('meme').data;
 
       let rows = [];
-      dbmemes.forEach(meme => {
+      db_memes.forEach(meme => {
         // Generate list of memevote objects
-        let dbvotes = findtable('memevote').data;
+        let dbvotes = get_table('memevote').data;
         let memevotes = [];
         dbvotes.forEach(vote => {
           if(vote.memeId == meme.Id){
@@ -206,45 +169,45 @@ async function main() {
         });
 
         // Generate list of categoryvote objects
-        let dbcats = findtable('categoryvote').data;
+        let db_cats = get_table('categoryvote').data;
         let catdata = {};
-        dbcats.forEach(cat => {
+        db_cats.forEach(cat => {
           if(cat.memeId == meme.Id){
+            categoryCounter[cat.categoryId] = (categoryCounter[cat.categoryId] || 0) + 1;
             if(catdata[cat.categoryId] === undefined) catdata[cat.categoryId] = [];
-            catdata[cat.categoryId].push({user: userConverter[cat.userId], userId: cat.userId, value: parseInt(cat.Value)});
+            catdata[cat.categoryId].push({user: userConverter[cat.userId], value: parseInt(cat.Value)});
           }
         });
         let memecategories = [];
         for(let [catid, catvotes] of Object.entries(catdata)) {
           memecategories.push({
             category: parseInt(catid),
-            categoryId: catid,
             votes: catvotes
           });
         }
 
         // Generate list of tagvote objects
-        let dbtags = findtable('tagvote').data;
+        let db_tags = get_table('tagvote').data;
         let tagdata = {};
-        dbtags.forEach(tag => {
+        db_tags.forEach(tag => {
           if(tag.memeId == meme.Id){
+            tagCounter[tag.tagId] = (tagCounter[tag.tagId] || 0) + 1;
             if(tagdata[tag.tagId] === undefined) tagdata[tag.tagId] = [];
-            tagdata[tag.tagId].push({user: userConverter[tag.userId], userId: tag.userId, value: parseInt(tag.Value)});
+            tagdata[tag.tagId].push({user: userConverter[tag.userId], value: parseInt(tag.Value)});
           }
         });
         let memetags = [];
         for(let [tagid, tagvotes] of Object.entries(tagdata)) {
           memetags.push({
             tag: parseInt(tagid),
-            tagId: tagid,
             votes: tagvotes
           });
         }
 
         // Generate list of transcription objects
-        let dbtrans = findtable('transcription').data;
+        let db_trans = get_table('transcription').data;
         let transcriptions = [];
-        dbtrans.forEach(transcription => {
+        db_trans.forEach(transcription => {
           if(transcription.memeId == meme.Id){
             transcriptions.push({
               _id: parseInt(transcription.Id),
@@ -257,9 +220,9 @@ async function main() {
         });
 
         // Generate list of description objects
-        let dbdesc = findtable('description').data;
+        let db_desc = get_table('description').data;
         let descriptions = [];
-        dbdesc.forEach(description => {
+        db_desc.forEach(description => {
           if(description.memeId == meme.Id){
             descriptions.push({
               _id: parseInt(description.Id),
@@ -326,6 +289,46 @@ async function main() {
       });
       
       await db.collection('meme').insertMany(rows);
+    }
+    
+    if(config.category) {
+      console.log("\nMigrating categories...");
+      if(config.clean){
+        console.log("Clearing table first...\nDeleted "+(await db.collection('category').deleteMany({})).deletedCount+" rows.");
+      }
+      
+      let db_cats = get_table('category');
+
+      let rows = [];
+      db_cats.data.forEach(row => {
+        rows.push({
+          _id: parseInt(row.Id),
+          name: row.Name,
+          description: row.Description,
+          memes: categoryCounter[parseInt(row.Id)] || 0
+        });
+      });
+      
+      await db.collection('category').insertMany(rows);
+    }
+    if(config.tag) {
+      console.log("\nMigrating tags...");
+      if(config.clean){
+        console.log("Clearing table first...\nDeleted "+(await db.collection('tag').deleteMany({})).deletedCount+" rows.");
+      }
+
+      let db_tags = get_table('tag');
+
+      let rows = [];
+      db_tags.data.forEach(row => {
+        rows.push({
+          _id: parseInt(row.Id),
+          name: row.Name,
+          memes: tagCounter[parseInt(row.Id)] || 0
+        });
+      });
+      
+      await db.collection('tag').insertMany(rows);
     }
 
     console.log("\nDone!");
