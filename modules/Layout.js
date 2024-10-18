@@ -60,8 +60,8 @@ export const Browse = (props) => {
   const router = useRouter();
   const sorts = props.customSorts? props.customSorts: sortModes;
   const edge = props.customEdge? props.customEdge: edgeLevels;
-  const tags = props.tags.map(dropdownFormat);
-  const categories = props.categories.map(dropdownFormat);
+  const tags = dropdownFormat(props.tags).sort((a,b) => b.count-a.count);
+  const categories = dropdownFormat(props.categories);
 
   // DropDown state
   const query = new Query(props.query);
@@ -137,7 +137,7 @@ export const Browse = (props) => {
       {(props.data)?
         <>
           <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
-          <MemeGrid data={props.data} categories={categories.reduce(idIndex, {})} tags={tags.reduce(idIndex, {})}/>
+          <MemeGrid data={props.data} mappedCategories={idIndex(categories)} mappedTags={idIndex(tags)}/>
         </>
         :<></>
       }
@@ -150,7 +150,7 @@ const MemeGrid = (props) => {
 
   if(memes.length) {
     return <div className='item-grid'>{memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
+      <GridMeme key={i} meme={meme} mappedCategories={props.mappedCategories} mappedTags={props.mappedTags}/>
     )}</div>;
   }else if(props.data.errorMessage) {
     return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
@@ -180,11 +180,11 @@ const GridMeme = (props) => {
     biodetails = "Transcription by " + meme.transcriptionAuthor;
   }
   else if(meme.topTags.length) {
-    bio = meme.topTags.map((tid) => props.tags[tid].name).join(', ');
+    bio = meme.topTags.map((tagId) => props.mappedTags[parseInt(tagId)]?.name||tagId).join(', ');
     biodetails = "Top tags";
   }
   else if(meme.topCategories.length) {
-    bio = meme.topCategories.map((cid) => props.categories[cid].name).join(', ');
+    bio = meme.topCategories.map((categoryId) => props.mappedCategories[parseInt(categoryId)]?.name||categoryId).join(', ');
     biodetails = "Top categories";
   }
   else {
@@ -212,7 +212,7 @@ const GridMeme = (props) => {
 const CategoryGrid = (props) => {
   return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map(category => 
     <Link key={category.id} className='grid-item category' href={'/categories/'+category.id} title={category.description}>
-      {category.name}
+      <span>{category.name} <i className="dim">({category.count})</i></span>
       <br/>
       <sub>{category.description}</sub>
     </Link>
@@ -220,9 +220,11 @@ const CategoryGrid = (props) => {
 }
 
 const TagGrid = (props) => {
-  return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{props.tags.map(tag => 
-    <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id} title={tag.description}>#{tag.name}</Link>
-  )}</div>
+  return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{
+    props.tags.filter(tag => tag.count > 0).map(tag => 
+      <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id}><span>#{tag.name} <i className="dim">({tag.count})</i></span></Link>
+    )
+  }</div>
 }
 
 // TODO: fullscreen meme view

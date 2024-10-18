@@ -25,16 +25,19 @@ export const Panel = (props) => {
   );
 };
 
-export const dropdownFormat = (item) => {
-  if('_id' in item) {
-    item['id'] = item['_id'];
-    delete item['_id'];
-  }
-  if('memes' in item) {
-    item['count'] = item['memes'];
-    delete item['memes'];
-  }
-  return item;
+export function dropdownFormat(arr) {
+  return arr.map((item) => {
+    if('_id' in item) {
+      item['id'] = item['_id'];
+      delete item['_id'];
+    }
+    if('memes' in item) {
+      item['count'] = item['memes'];
+      if(item['count'] == 0) item['hidden'] = true;
+      delete item['memes'];
+    }
+    return item;
+  });
 }
 
 export const DropDown = (props) => {
