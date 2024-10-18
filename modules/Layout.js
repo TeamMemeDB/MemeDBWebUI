@@ -171,12 +171,12 @@ const GridMeme = (props) => {
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
   let bio, biodetails;
-  if(meme.description) {
-    bio = meme.description;
+  if(meme.topDescription) {
+    bio = meme.topDescription;
     biodetails = "Description by " + meme.descriptionAuthor;
   }
-  else if(meme.transcription) {
-    bio = meme.transcription;
+  else if(meme.topTranscription) {
+    bio = meme.topTranscription;
     biodetails = "Transcription by " + meme.transcriptionAuthor;
   }
   else if(meme.topTags.length) {

@@ -63,7 +63,7 @@ export async function getMemes(db, query=new Query({})) {
         // An average of all edge ratings for this meme
         avgEdgevotes: {$avg: "$edgevotes.value"},
         // Take the best description and provide it for search
-        description: {$ifNull: [
+        topDescription: {$ifNull: [
           {$arrayElemAt: [{$map: {
             input: "$descriptions", in: {$cond: [{$eq: ["$$this.votes.value", {$max: "$descriptions.votes.value"}]}, "$$this.description", null]}
           }},0]},
@@ -76,7 +76,7 @@ export async function getMemes(db, query=new Query({})) {
           null
         ]},
         // Take the best transcription and provide it for search
-        transcription: {$ifNull: [
+        topTranscription: {$ifNull: [
           {$arrayElemAt: [{$map:{
             input: "$transcriptions", in: {$cond: [{$eq: ["$$this.votes.value", {$max: "$transcriptions.votes.value"}]}, "$$this.transcription", null]}
           }},0]},
@@ -91,16 +91,16 @@ export async function getMemes(db, query=new Query({})) {
         // Take tags that are upvoted more than downvoted and include them in metadata
         topTags: {$ifNull: [{$map: {input: {$filter: {
             input: "$tags", as: "tag", cond: {$gt: [{$sum: "$$tag.votes.value"}, 0]}
-          }}, as: "tag", in: "$$tag.tagId"
+          }}, as: "tag", in: "$$tag.tag"
         }}, []]},
         // Take categories that are upvoted more than downvoted and include them in metadata
         topCategories: {$ifNull: [{$map: {input: {$filter: {
             input: "$categories", as: "category", cond: {$gt: [{$sum: "$$category.votes.value"}, 0]}
-          }}, as: "category", in: "$$category.categoryId"
+          }}, as: "category", in: "$$category.category"
         }}, []]}
       }
     },
-    // Find the authors of the description and transcription
+    // Find the authors of the topDescription and topTranscription
     {
       $lookup: {
         from: "user",
@@ -145,8 +145,8 @@ export async function getMemes(db, query=new Query({})) {
         ...(query.categories[0]=='all' ? {} : (includeCats.length ? {topCategories: {$in: includeCats}} : {topCategories: {$nin: excludeCats}})),
         // Text search
         ...(query.filter? {$or: [
-          { description: { $regex: query.filter, $options: 'i' } },
-          { transcription: { $regex: query.filter, $options: 'i' } },
+          { topDescription: { $regex: query.filter, $options: 'i' } },
+          { topTranscription: { $regex: query.filter, $options: 'i' } },
         ]}: {})
       }
     },
