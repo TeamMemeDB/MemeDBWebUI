@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 
-export const Panel = (props) => {
+export function Panel(props) {
   const [open, setOpen] = useState(props.closed ? false : true);
 
   return (
@@ -40,7 +40,7 @@ export function dropdownFormat(arr) {
   });
 }
 
-export const DropDown = (props) => {
+export function DropDown(props) {
   let menu = [];
   for(let i in props.choices) {
     let item = props.choices[i];
@@ -72,14 +72,14 @@ export const DropDown = (props) => {
   </div>
 }
 
-export const itemSearch = (item, search) => {
+export function itemSearch(item, search) {
   return (
     item.name.toLowerCase().includes(search.toLowerCase())
     || item.description?.toLowerCase().includes(search.toLowerCase())
   )
 }
 
-export const MultiDropDown = (props) => {
+export function MultiDropDown(props) {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
 
@@ -302,7 +302,7 @@ export const MultiDropDown = (props) => {
   </div>
 }
 
-export const VideoControl = (props) => {
+export function VideoControl(props) {
   // Simple video controller for videos in small places
   const videoRef = useRef(null);
   const [paused, setPaused] = useState(true);
