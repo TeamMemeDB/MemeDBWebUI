@@ -3,12 +3,12 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
 import { User, UserNav } from './User';
-import { getContrastYIQ } from '../lib/colour.js';
-import { sortModes, edgeLevels, Query, idIndex } from '../lib/memedb.js';
+import { getContrastYIQ } from '../lib/colour';
+import { sortModes, edgeLevels, Query, idIndex, Meme } from '../lib/memedb';
 
 export const Header = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
-  const searchBar = useRef(null);
+  const searchBar:React.MutableRefObject<HTMLInputElement|null> = useRef(null);
   const user = null;// new User('Yiays');
 
   return <header><nav>
@@ -20,7 +20,7 @@ export const Header = (props) => {
           <span className="accent">DB</span>
         </h1>
       </NavItem>
-      <form target='/search' onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current.value)}}>
+      <form target='/search' onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current?.value)}}>
         <input 
           ref={searchBar} type="text" name="filter" placeholder="Search MemeDB" defaultValue={props.filter}
           minLength={3} maxLength={50}
@@ -30,7 +30,7 @@ export const Header = (props) => {
       </form>
     </div>
     <NavSpacer></NavSpacer>
-    <UserNav user={user}/>
+    {/*<UserNav user={user}/>*/}
   </nav></header>;
 }
 
@@ -64,7 +64,7 @@ export const Browse = (props) => {
   const categories = dropdownFormat(props.categories);
 
   // DropDown state
-  const query = new Query(props.query);
+  const query = Query.create(props.query);
   const [nextSort, setNextSort] = useState(query.sort);
   const [nextCategories, setNextCategories] = useState(query.categories);
   const [nextTags, setNextTags] = useState(query.tags);
@@ -73,7 +73,7 @@ export const Browse = (props) => {
   const [loading, setLoading] = useState(false);
   const navigate = () => {
     // Find the new url based on changes to state
-    const nextQuery = new Query({
+    const nextQuery = Query.create({
       sort: nextSort,
       categories: nextCategories,
       tags: nextTags,
@@ -146,7 +146,7 @@ export const Browse = (props) => {
 }
 
 const MemeGrid = (props) => {
-  const memes = props.data?.memes? props.data.memes: [];
+  const memes: Meme[] = props.data?.memes? props.data.memes.map(rawmeme => Meme.create(rawmeme)): [];
 
   if(memes.length) {
     return <div className='item-grid'>{memes.map((meme, i) =>
@@ -158,37 +158,41 @@ const MemeGrid = (props) => {
 }
 
 const GridMeme = (props) => {
-  const meme = props.meme;
+  const meme:Meme = props.meme;
+  const [description, descriptionAuthor] = meme.descriptionWithAuthor();
+  const [transcription, transcriptionAuthor] = meme.transcriptionWithAuthor();
+  const topTags = meme.topTags();
+  const topCategories = meme.topCategories();
 
-  let media;
+  let media:JSX.Element;
   if(meme.type=='image')
-    media = <img key={meme.id} className='content' src={meme.thumbUrl} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <img key={meme.id} className='content' src={meme.thumbUrl} alt={transcription?transcription:'Meme number '+meme.id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='gif')
-    media = <HoverImg key={meme.id} className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={meme.transcription?meme.transcription:'Meme number '+meme._id} width={meme.width} height={meme.height}/>;
+    media = <HoverImg key={meme.id} className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={transcription?transcription:'Meme number '+meme.id} width={meme.width} height={meme.height}/>;
   else if(meme.type=='video')
     media = <VideoControl key={meme.id} className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none' url={meme.url}/>;
   else
     media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
 
-  let bio, biodetails;
-  if(meme.topDescription) {
-    bio = meme.topDescription;
-    biodetails = "Description by " + meme.descriptionAuthor;
+  let bio:string, biodetails:string;
+  if(description) {
+    bio = description;
+    biodetails = "Description by " + descriptionAuthor;
   }
-  else if(meme.topTranscription) {
-    bio = meme.topTranscription;
-    biodetails = "Transcription by " + meme.transcriptionAuthor;
+  else if(transcription) {
+    bio = transcription;
+    biodetails = "Transcription by " + transcriptionAuthor;
   }
-  else if(meme.topTags.length) {
-    bio = meme.topTags.map((tagId) => props.mappedTags[parseInt(tagId)]?.name||tagId).join(', ');
+  else if(topTags.length) {
+    bio = topTags.map((tagId) => props.mappedTags[tagId]?.name||tagId).join(', ');
     biodetails = "Top tags";
   }
-  else if(meme.topCategories.length) {
-    bio = meme.topCategories.map((categoryId) => props.mappedCategories[parseInt(categoryId)]?.name||categoryId).join(', ');
+  else if(topCategories.length) {
+    bio = topCategories.map((categoryId) => props.mappedCategories[categoryId]?.name||categoryId).join(', ');
     biodetails = "Top categories";
   }
   else {
-    bio = 'Meme #'+meme._id;
+    bio = 'Meme #'+meme.id;
     biodetails = "More information needed";
   }
   
@@ -197,13 +201,13 @@ const GridMeme = (props) => {
   let contrast = getContrastYIQ(meme.color);
   return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} style={{'backgroundColor':meme.color}}>
     {media}
-    <Link href={'/meme/'+meme._id} className='info'>
+    <Link href={'/meme/'+meme.id} className='info'>
       <span className='bio' title={bio}>{bio}</span>
       <span className='biotype'>{biodetails}</span>
     </Link>
     <div className='dooter'>
       <button className='updoot'><i className='icon-arrow-up'></i></button>
-      <div className='doots'>{meme.totalVotes}</div>
+      <div className='doots'>{meme.votes()}</div>
       <button className='downdoot'><i className='icon-arrow-down'></i></button>
     </div>
   </div>

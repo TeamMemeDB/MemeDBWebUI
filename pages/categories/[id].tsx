@@ -1,3 +1,4 @@
+import React from 'react';
 import Head from 'next/head';
 import clientPromise from '../../lib/mongodb';
 import { Query } from '../../lib/memedb';
@@ -9,10 +10,10 @@ import { getMemes } from '../api/memes';
 export async function getStaticPaths() {
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
-  const tags = await getTags(db);
+  const categories = await getCats(db);
 
   return {
-    paths: tags.map(tag => `/tags/${tag._id}`),
+    paths: categories.map(category => `/categories/${category._id}`),
     fallback: false
   }
 }
@@ -20,23 +21,24 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
-  let query = new Query({tags:[parseInt(context.params.id)]});
-  const tags = await getTags(db);
+  let query = Query.create({categories:[parseInt(context.params.id)]});
+  const categories = await getCats(db);
+  const memes = await getMemes(db, query);
 
   return {
     props: {
-      memes: await getMemes(db, query),
+      memes: memes,
       query: query.toJSON(),
-      tags: tags,
-      categories: await getCats(db),
-      chosenTag: tags.filter(tag => tag._id == context.params.id)[0]
+      tags: await getTags(db),
+      categories: categories,
+      chosenCategory: categories.filter(category => category._id == context.params.id)[0]
     }
   };
 }
 
 export default function Home(props) {
-  const title = `#${props.chosenTag.name} memes | MemeDB`;
-  const description = `These memes have been given the #${props.chosenTag.name} tag by the MemeDB community.`;
+  const title = `${props.chosenCategory.name} memes | MemeDB`;
+  const description = props.chosenCategory.description;
   return <>
     <Head>
       <title>{title}</title>
@@ -44,7 +46,7 @@ export default function Home(props) {
       <meta name="og:title" content={title}/>
       <meta name="description" content={description}/>
       <meta name="og:description" content={description}/>
-      <meta name="keywords" content="tag,tags,hashtag,topic,theme,type,trends,formats,search,database,meme"/>
+      <meta name="keywords" content="category,categories,genre,theme,type,search,database,meme"/>
     </Head>
     <Browse categories={props.categories} tags={props.tags} data={props.memes} query={props.query}/>
   </>;

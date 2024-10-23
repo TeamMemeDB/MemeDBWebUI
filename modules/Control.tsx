@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, FormEventHandler} from 'react';
 
 export function Panel(props) {
   const [open, setOpen] = useState(props.closed ? false : true);
@@ -41,7 +41,7 @@ export function dropdownFormat(arr) {
 }
 
 export function DropDown(props) {
-  let menu = [];
+  let menu:React.JSX.Element[] = [];
   for(let i in props.choices) {
     let item = props.choices[i];
 
@@ -52,11 +52,11 @@ export function DropDown(props) {
     if(item.hidden && !(selected || searched)) classes.push('hidden');
     else if(selected) classes.push('selected');
 
-    classes = classes.join(' ');
-
-    menu.push(<button onClick={() => props.setter(item.id)} key={item.id} className={classes} title={item.description}>
-                {item.displayname}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
-              </button>);
+    menu.push(
+      <button onClick={() => props.setter(item.id)} key={item.id} className={classes.join(' ')} title={item.description}>
+        {item.displayname}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
+      </button>
+    );
   }
 
   let selected = props.choices.filter((item) => item.id == props.value)[0];
@@ -83,7 +83,10 @@ export function MultiDropDown(props) {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
 
-  const [inclusive, setInclusive] = useState(props.inclusive);
+  // Infer whether exclusive mode is on or not based on the currently selected values
+  const inclusiveFromValue = props.value.length? props.value[0]>=0: props.inclusive;
+  const [inclusive, setInclusive] = useState(inclusiveFromValue);
+  console.log(inclusiveFromValue, inclusive, props.value);
   const [search, setSearch] = useState('');
   const [maxlength, setMaxlength] = useState(minMaxlength);
 
@@ -141,7 +144,7 @@ export function MultiDropDown(props) {
 
   function invertselection() {
     // Change values from a list of selected items to a list of unselected items and vice versa
-    let newSelection = [];
+    let newSelection:(string|number)[] = [];
     if(props.value.length == 0){
       // Nothing is selected
       newSelection = ['all']
@@ -160,7 +163,7 @@ export function MultiDropDown(props) {
     console.log('inverted', newSelection);
   }
   
-  let menu = [];
+  let menu:React.JSX.Element[] = [];
   let visiblecount = 0;
   for(let i in props.choices) {
     let item = props.choices[i];
@@ -189,11 +192,11 @@ export function MultiDropDown(props) {
       classes.push('hidden');
     }
 
-    classes = classes.join(' ');
-
-    menu.push(<button onClick={() => select(item.id)} key={item.id} className={classes} title={item.description||item.name}>
-                {displayname(item.name)}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
-              </button>);
+    menu.push(
+      <button onClick={() => select(item.id)} key={item.id} className={classes.join(' ')} title={item.description||item.name}>
+        {displayname(item.name)}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
+      </button>
+    );
   }
 
   if(visiblecount > 100) {
@@ -211,11 +214,11 @@ export function MultiDropDown(props) {
   }else if(props.value[0] == 'all') {
     stringrep = 'All';
   }else{
+    let names:string[] = [];
     if(inclusive){
       // Inclusive mode
       let selected = props.choices.filter((item) => props.value.includes(item.id));
 
-      let names = [];
       selected.some(option => {
         if(names.length == 5){
           names.push('...');
@@ -231,7 +234,6 @@ export function MultiDropDown(props) {
       if(props.choices.length - props.value.length <= 5){
         let selected = props.choices.filter(item => !props.value.includes(-item.id));
 
-        let names = [];
         selected.forEach(option => {
           names.push(option.name[0].toUpperCase()+option.name.substring(1));
         });
@@ -240,7 +242,6 @@ export function MultiDropDown(props) {
       }else{
         let unselected = props.choices.filter(item => props.value.includes(-item.id))
 
-        let names = [];
         unselected.some(option => {
           if(names.length == 5){
             names.push('...');
@@ -259,7 +260,11 @@ export function MultiDropDown(props) {
     <button className="dropbtn btn">{props.name}<br/><sub className="dim">{stringrep}</sub></button>
     <div className="dropdown-content">
       {(props.choices.length > 10)?
-        <input className="dropdown-search" type="text" onInput={(e) => setSearch(e.target.value)} placeholder="Search..."/>
+        <input
+          className="dropdown-search" type="text"
+          onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+          placeholder="Search..."
+        />
       :
         <></>
       }
@@ -304,14 +309,14 @@ export function MultiDropDown(props) {
 
 export function VideoControl(props) {
   // Simple video controller for videos in small places
-  const videoRef = useRef(null);
+  const videoRef:React.MutableRefObject<HTMLVideoElement|null> = useRef(null);
   const [paused, setPaused] = useState(true);
   const playPause = () => {
-    if (videoRef.current.paused) {
-      videoRef.current.play();
+    if (videoRef.current?.paused) {
+      videoRef.current?.play();
       setPaused(false);
     } else {
-      videoRef.current.pause();
+      videoRef.current?.pause();
       setPaused(true);
     }
   }
@@ -320,8 +325,8 @@ export function VideoControl(props) {
   }
 
   useEffect(() => {
-    videoRef.current.addEventListener('ended', onEnded);
-    videoRef.current.addEventListener('click', playPause);
+    videoRef.current?.addEventListener('ended', onEnded);
+    videoRef.current?.addEventListener('click', playPause);
     return () => {
       videoRef.current?.removeEventListener('ended', onEnded);
       videoRef.current?.removeEventListener('click', playPause);

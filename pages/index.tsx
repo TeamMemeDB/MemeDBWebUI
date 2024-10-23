@@ -1,3 +1,4 @@
+import React from 'react';
 import Head from 'next/head';
 import clientPromise from '../lib/mongodb';
 import { Query } from '../lib/memedb';
@@ -6,10 +7,10 @@ import { getCats } from './api/cats';
 import { getTags } from './api/tags';
 import { getMemes } from './api/memes';
 
-export async function getServerSideProps(context) {
+export async function getStaticProps() {
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
-  let query = new Query(context.query || {});
+  const query = Query.create({});
 
   return {
     props: {
@@ -22,16 +23,8 @@ export async function getServerSideProps(context) {
 }
 
 export default function Home(props) {
-  const delta = new Query({}).difference(props.query);
-  const pageKeys = Object.keys(delta).filter(key => ['categories', 'tags', 'filter'].includes(key));
-
-  let title;
-  if(pageKeys.length==1 && pageKeys[0]=='filter')
-    title = `'${delta.filter}' Search | MemeDB`;
-  else if(pageKeys.includes('filter'))
-    title = `'${delta.filter}' Advanced Search | MemeDB`;
-  else title = "Advanced Search | MemeDB";
-  const description = "Use the provided search filters to refine down the 1000s of memes in MemeDB to the one you want.";
+  const title = "MemeDB Browser";
+  const description = "MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!";
   return <>
     <Head>
       <title>{title}</title>
@@ -39,7 +32,7 @@ export default function Home(props) {
       <meta name="og:title" content={title}/>
       <meta name="description" content={description}/>
       <meta name="og:description" content={description}/>
-      <meta name="keywords" content="tag,tags,hashtag,topic,theme,type,trends,formats,search,database,meme"/>
+      <meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index,meme,memes,database,search,find"/>
     </Head>
     <Browse categories={props.categories} tags={props.tags} data={props.memes} query={props.query}/>
   </>;

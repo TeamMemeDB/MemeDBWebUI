@@ -1,5 +1,6 @@
 import clientPromise from "../../lib/mongodb";
 import { Query } from "../../lib/memedb";
+import { Db } from "mongodb";
 
 //TODO: add a best match sort mode
 const sortMode = {
@@ -9,42 +10,38 @@ const sortMode = {
   bottom: {totalVotes: 1, uploadDate: -1}
 }
 
-export default async function handler(req, res) {
+export async function GET(req) {
   const client = await clientPromise;
   const db = client.db("memedb");
-  switch (req.method) {
-    case "GET":
-      // Parse data from GET request with defaults
-      // While it's technically possible to include and exclude the same type of property simultaneously, this is not supported.
-      const result = await getMemes(db, new Query(req.query));
-      res.json(result || {matches: 0});
-      break;
-  }
+  // Parse data from GET request with defaults
+  // While it's technically possible to include and exclude the same type of property simultaneously, this is not supported.
+  const result = await getMemes(db, Query.create(req.query));
+  return Response.json(result || {matches: 0});
 }
 
-export async function getMemes(db, query=new Query({})) {
+export async function getMemes(db:Db, query=Query.create({})) {
   if(query.edge > 1) {
     return {matches: 0, errorMessage: "Authorization is required to view these memes."};
   }
 
   // Sort through tag ids, if they start with a minus, exclude them from results
-  const includeTags = [];
-  const excludeTags = [];
+  const includeTags:number[] = [];
+  const excludeTags:number[] = [];
   if(query.tags.length == 0) return {matches:0};
-  if(query.tags[0]!='all') {
-    query.tags.forEach(tag => {
+  if(query.tags.indexOf('all')==-1) {
+    (query.tags as number[]).forEach(tag => {
       if(tag < 0) excludeTags.push(tag * -1);
-      else includeTags.push(tag.toString());
+      else includeTags.push(tag);
     });
   }
   // The same with categories
-  const includeCats = [];
-  const excludeCats = [];
+  const includeCats:number[] = [];
+  const excludeCats:number[] = [];
   if(query.categories.length == 0) return {matches:0};
-  if(query.categories[0]!='all'){
-    query.categories.forEach(category => {
+  if(query.categories.indexOf('all')==-1){
+    (query.categories as number[]).forEach(category => {
       if(category < 0) excludeCats.push(category * -1);
-      else includeCats.push(category.toString());
+      else includeCats.push(category);
     });
   }
 

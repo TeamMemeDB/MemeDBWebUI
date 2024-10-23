@@ -1,3 +1,4 @@
+import React from 'react';
 import Head from 'next/head';
 import clientPromise from '../../lib/mongodb';
 import { Query, sortModes } from '../../lib/memedb';
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const dbClient = await clientPromise;
   const db = await dbClient.db('memedb');
-  let query = new Query({sort:context.params.sort});
+  let query = Query.create({sort:context.params.sort});
 
   return {
     props: {
