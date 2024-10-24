@@ -1,10 +1,10 @@
 import React from 'react';
 import Head from 'next/head';
-import clientPromise from '../../lib/mongodb';
-import { Query } from '../../lib/memedb';
+import clientPromise from '@/lib/mongodb';
+import { Query } from '@/lib/memedb';
 import { Browse } from '../../modules/Layout';
-import { getCats } from '../api/cats';
-import { getTags } from '../api/tags';
+import { getCats } from '@/pages/api/cats';
+import { getTags } from '@/pages/api/tags';
 
 export async function getStaticProps() {
   const dbClient = await clientPromise;

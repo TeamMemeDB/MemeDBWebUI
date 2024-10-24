@@ -1,11 +1,11 @@
 import React from 'react';
 import Head from 'next/head';
-import clientPromise from '../../lib/mongodb';
-import { Query, sortModes } from '../../lib/memedb';
+import clientPromise from '@/lib/mongodb';
+import { Query, sortModes } from '@/lib/memedb';
 import { Browse } from '../../modules/Layout';
-import { getCats } from '../api/cats';
-import { getTags } from '../api/tags';
-import { getMemes } from '../api/memes';
+import { getCats } from '@/pages/api/cats';
+import { getTags } from '@/pages/api/tags';
+import { getMemes } from '@/pages/api/memes';
 
 export async function getStaticPaths() {
   return {

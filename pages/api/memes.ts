@@ -1,5 +1,5 @@
-import clientPromise from "../../lib/mongodb";
-import { Query } from "../../lib/memedb";
+import clientPromise from "@/lib/mongodb";
+import { Query } from "@/lib/memedb";
 import { Db } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -22,9 +22,16 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   res.json(result || {matches: 0});
 }
 
-export async function getMemes(db:Db, query=Query.create({})) {
-  if(query.edge > 1) {
+export async function getMemes(db:Db, query=Query.create({}), admin=false) {
+  // Get a list of memes with the complex data abstracted away
+
+  // Auth
+  if(admin) {} // Bypass checks
+  else if(query.edge > 1) {
     return {matches: 0, errorMessage: "Authorization is required to view these memes."};
+  }
+  else if(query.limit <= 0 || query.limit > 100) {
+    return {matches: 0, errorMessage: "Authorization is required to get memes in bulk."};
   }
 
   // Sort through tag ids, if they start with a minus, exclude them from results
@@ -167,7 +174,7 @@ export async function getMemes(db:Db, query=Query.create({})) {
       $project: {
         _id: 0,
         matches: 1,
-        memes: {$slice: ["$memes", Number(query.from), query.limit]}
+        memes: (query.limit>0? {$slice: ["$memes", Number(query.from), query.limit]}: 1)
       }
     }
   ];
