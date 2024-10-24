@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { HoverImg, VideoControl } from '@/modules/Control';
 // Common utilities for working with MemeDB API data
 
 export const sortModes = [
@@ -69,7 +70,7 @@ export class Query {
     out.edge = Number(raw.edge) || 0;
     out.from = Number(raw.from) || 0;
     out.filter = raw.filter || '';
-    out.limit = Number(raw.limit) || 50;
+    out.limit = raw.limit !== undefined? Number(raw.limit): 50;
 
     return out;
   }
@@ -261,13 +262,62 @@ export class Meme {
     return this._topTags;
   }
 
-  topCategories():number[] {
+  topCategories(): number[] {
     if(this.categories) {
       return sortByVotes(this.categories)
       .filter(cat => cat.votes.reduce((out, cat) => out+cat.value, 0) > 0)
       .reduce<number[]>((out, cat) => {out.push(cat.category); return out}, []);
     }
     return this._topCategories;
+  }
+
+  bio(mappedCategories: {[id:number]:any}, mappedTags: {[id:number]:any}): {bio:string, biodetails:string} {
+    const { description, descriptionAuthor } = this.descriptionWithAuthor();
+    const { transcription, transcriptionAuthor } = this.transcriptionWithAuthor();
+    const topTags = this.topTags();
+    const topCategories = this.topCategories();
+    let bio:string, biodetails:string;
+
+    if(description) {
+      bio = description;
+      biodetails = "Description by " + descriptionAuthor;
+    }
+    else if(transcription) {
+      bio = transcription;
+      biodetails = "Transcription by " + transcriptionAuthor;
+    }
+    else if(topTags.length) {
+      bio = topTags.map((tagId) => mappedTags[tagId]?.name||tagId).join(', ');
+      biodetails = "Top tags";
+    }
+    else if(topCategories.length) {
+      bio = topCategories.map((categoryId) => mappedCategories[categoryId]?.name||categoryId).join(', ');
+      biodetails = "Top categories";
+    }
+    else {
+      bio = 'Meme #'+this.id;
+      biodetails = "More information needed";
+    }
+    
+    bio = bio.replaceAll('<br />', '');
+  
+    return {bio, biodetails};
+  }
+
+  media() {
+    const {transcription} = this.transcriptionWithAuthor();
+  
+    let media:JSX.Element;
+    if(this.type=='image')
+      media = <img key={this.id} className='content' src={this.thumbUrl} alt={transcription?transcription:'Meme number '+this.id} width={this.width} height={this.height}/>;
+    else if(this.type=='gif')
+      media = <HoverImg key={this.id} className='content' imageSrc={this.thumbUrl} gifSrc={this.url} alt={transcription?transcription:'Meme number '+this.id} width={this.width} height={this.height}/>;
+    else if(this.type=='video')
+      media = <VideoControl key={this.id} className='content' width={this.width} height={this.height} poster={this.thumbUrl} preload='none' url={this.url}/>;
+    else
+      media = <p className='content' style={{color:'red'}}>Unsupported media type {this.type}</p>
+  
+    return media;
   }
 }
 

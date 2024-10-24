@@ -345,3 +345,20 @@ export function VideoControl(props:any) {
     />
   </div>
 }
+
+export function HoverImg({ key, className, imageSrc, gifSrc, width, height, alt }:any) {
+  const [isHovering, setIsHovering] = useState(false);
+
+  return (
+    <img
+      key={key}
+      className={className + ' ' + (isHovering ? '' : 'gif')}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      src={isHovering ? gifSrc : imageSrc}
+      width={width}
+      height={height}
+      alt={alt}
+    />
+  );
+};

@@ -157,58 +157,15 @@ const MemeGrid = (props:any) => {
   }else return <></>
 }
 
-function parseMeme(meme:Meme, mappedCategories:{[id:number]:any}, mappedTags:{[id:number]:any}) {
-  const {description, descriptionAuthor} = meme.descriptionWithAuthor();
-  const {transcription, transcriptionAuthor} = meme.transcriptionWithAuthor();
-  const topTags = meme.topTags();
-  const topCategories = meme.topCategories();
-
-  let media:JSX.Element;
-  if(meme.type=='image')
-    media = <img key={meme.id} className='content' src={meme.thumbUrl} alt={transcription?transcription:'Meme number '+meme.id} width={meme.width} height={meme.height}/>;
-  else if(meme.type=='gif')
-    media = <HoverImg key={meme.id} className='content' imageSrc={meme.thumbUrl} gifSrc={meme.url} alt={transcription?transcription:'Meme number '+meme.id} width={meme.width} height={meme.height}/>;
-  else if(meme.type=='video')
-    media = <VideoControl key={meme.id} className='content' width={meme.width} height={meme.height} poster={meme.thumbUrl} preload='none' url={meme.url}/>;
-  else
-    media = <p className='content' style={{color:'red'}}>Unsupported media type {meme.type}</p>
-
-  let bio:string, biodetails:string;
-  if(description) {
-    bio = description;
-    biodetails = "Description by " + descriptionAuthor;
-  }
-  else if(transcription) {
-    bio = transcription;
-    biodetails = "Transcription by " + transcriptionAuthor;
-  }
-  else if(topTags.length) {
-    bio = topTags.map((tagId) => mappedTags[tagId]?.name||tagId).join(', ');
-    biodetails = "Top tags";
-  }
-  else if(topCategories.length) {
-    bio = topCategories.map((categoryId) => mappedCategories[categoryId]?.name||categoryId).join(', ');
-    biodetails = "Top categories";
-  }
-  else {
-    bio = 'Meme #'+meme.id;
-    biodetails = "More information needed";
-  }
-  
-  bio = bio.replaceAll('<br />', '');
-
-  return {media, bio, biodetails};
-}
-
 const GridMeme = (props:any) => {
   const meme:Meme = props.meme;
   const mappedCategories = idIndex<any>(props.categories);
   const mappedTags = idIndex<any>(props.tags);
-  const {media, bio, biodetails} = parseMeme(meme, mappedCategories, mappedTags);
+  const {bio, biodetails} = meme.bio(mappedCategories, mappedTags);
   const contrast = getContrastYIQ(meme.color);
 
   return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} style={{'backgroundColor':meme.color}}>
-    {media}
+    {meme.media()}
     <Link href={'/meme/'+meme.id} className='info'>
       <span className='bio' title={bio}>{bio}</span>
       <span className='biotype'>{biodetails}</span>
@@ -239,22 +196,3 @@ const TagGrid = (props:any) => {
     )
   }</div>
 }
-
-// TODO: fullscreen meme view
-
-const HoverImg = ({ key, className, imageSrc, gifSrc, width, height, alt }:any) => {
-  const [isHovering, setIsHovering] = useState(false);
-
-  return (
-    <img
-      key={key}
-      className={className + ' ' + (isHovering ? '' : 'gif')}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      src={isHovering ? gifSrc : imageSrc}
-      width={width}
-      height={height}
-      alt={alt}
-    />
-  );
-};
