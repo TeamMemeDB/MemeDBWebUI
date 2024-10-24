@@ -1,6 +1,7 @@
 import clientPromise from "../../lib/mongodb";
 import { Query } from "../../lib/memedb";
 import { Db } from "mongodb";
+import { NextApiRequest, NextApiResponse } from "next";
 
 //TODO: add a best match sort mode
 const sortMode = {
@@ -10,13 +11,15 @@ const sortMode = {
   bottom: {totalVotes: 1, uploadDate: -1}
 }
 
-export async function GET(req) {
+export default async function handler(req:NextApiRequest, res:NextApiResponse) {
+  if(req.method != 'GET')
+    return res.status(405);
   const client = await clientPromise;
   const db = client.db("memedb");
   // Parse data from GET request with defaults
   // While it's technically possible to include and exclude the same type of property simultaneously, this is not supported.
   const result = await getMemes(db, Query.create(req.query));
-  return Response.json(result || {matches: 0});
+  res.json(result || {matches: 0});
 }
 
 export async function getMemes(db:Db, query=Query.create({})) {

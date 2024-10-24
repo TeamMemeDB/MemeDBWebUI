@@ -22,7 +22,7 @@ const config = {
 let rawdata = fs.readFileSync("memedb-export.json");
 const data = JSON.parse(String(rawdata));
 
-function get_table(name:string):any[] {
+function get_table(name:string):{[id:string]:{[id:string]:any}[]} {
   for(let index in data){
     if(data[index].type == "table" && data[index].name == name) return data[index];
   }
@@ -39,9 +39,9 @@ async function main() {
 
     let db = client.db('memedb');
 
-    let userConverter = {};
-    let categoryCounter = {};
-    let tagCounter = {};
+    let userConverter:{[id:number]:number} = {};
+    let categoryCounter:{[id:number]:number} = {};
+    let tagCounter:{[id:number]:number} = {};
 
     if(config.user) {
       console.log("\nMigrating users...");
@@ -50,7 +50,7 @@ async function main() {
       }
 
       let db_user = get_table('user')['data'];
-      let userrows:object[] = [];
+      let userrows:any[] = [];
       let i = 0;
       db_user.forEach(row => {
         userConverter[row.Id] = i++;
@@ -78,7 +78,7 @@ async function main() {
         let db_favourites = get_table('favourites')['data'];
         db_favourites.forEach(fav => {
           if(fav.userId in userConverter) {
-            userrows[userConverter[fav.userId]]['lists'][0].memes.push({
+            userrows[userConverter[fav.userId]].lists[0].memes.push({
               memeId: fav.memeId,
               dateAdded: new Date(fav.dateAdded)
             });
@@ -98,7 +98,7 @@ async function main() {
 
       // Create vote counters for all transcriptions, descriptions, and edge ratings
       let db_transvote = get_table('transvote')['data'];
-      let transdata = {};
+      let transdata:{[id:number]:any} = {};
       db_transvote.forEach(transvote => {
         let data = {user: userConverter[transvote.userId], value: parseInt(transvote.Value)};
 
@@ -110,7 +110,7 @@ async function main() {
       });
       
       let db_descvote = get_table('descvote')['data'];
-      let descdata = {};
+      let descdata:{[id:number]:any} = {};
       db_descvote.forEach(descvote => {
         let data = {user: userConverter[descvote.userId], value: parseInt(descvote.Value)};
         
@@ -122,7 +122,7 @@ async function main() {
       });
 
       let db_edgevote = get_table('edge')['data'];
-      let edgedata = {};
+      let edgedata:{[id:number]:any} = {};
       db_edgevote.forEach(edgevote => {
         let data = {user: userConverter[edgevote.userId], value: parseInt(edgevote.Rating)};
 
@@ -152,7 +152,7 @@ async function main() {
 
         // Generate list of categoryvote objects
         let db_cats = get_table('categoryvote')['data'];
-        let catdata = {};
+        let catdata:{[id:number]:any} = {};
         db_cats.forEach(cat => {
           if(cat.memeId == meme.Id){
             categoryCounter[cat.categoryId] = (categoryCounter[cat.categoryId] || 0) + 1;
@@ -170,7 +170,7 @@ async function main() {
 
         // Generate list of tagvote objects
         let db_tags = get_table('tagvote')['data'];
-        let tagdata = {};
+        let tagdata:{[id:number]:any} = {};
         db_tags.forEach(tag => {
           if(tag.memeId == meme.Id){
             tagCounter[tag.tagId] = (tagCounter[tag.tagId] || 0) + 1;
@@ -202,7 +202,7 @@ async function main() {
         });
 
         // Generate list of description objects
-        let db_desc = get_table('description'['data']);
+        let db_desc = get_table('description')['data'];
         let descriptions:object[] = [];
         db_desc.forEach(description => {
           if(description['memeId'] == meme.Id){

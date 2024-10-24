@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavItem } from './Layout';
 
-export const UserNav = (props) => {
+export const UserNav = (props:any) => {
   return <div className='usernav'>
   { props.user?
   <>

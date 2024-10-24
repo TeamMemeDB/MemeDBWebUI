@@ -9,7 +9,7 @@ import { getMemes } from '../api/memes';
 
 export async function getStaticPaths() {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   const categories = await getCats(db);
 
   return {
@@ -18,9 +18,9 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps(context:any) {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   let query = Query.create({categories:[parseInt(context.params.id)]});
   const categories = await getCats(db);
   const memes = await getMemes(db, query);
@@ -36,7 +36,7 @@ export async function getStaticProps(context) {
   };
 }
 
-export default function Home(props) {
+export default function Home(props:any) {
   const title = `${props.chosenCategory.name} memes | MemeDB`;
   const description = props.chosenCategory.description;
   return <>

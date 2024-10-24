@@ -1,12 +1,15 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "../../lib/mongodb";
 
-export async function GET() {
+export default async function handler(req:NextApiRequest, res:NextApiResponse) {
+  if(req.method != 'GET')
+    return res.status(405);
   const client = await clientPromise;
   const db = client.db("memedb");
   try {
     const count = await db.collection("meme").estimatedDocumentCount();
-    return Response.json({status:'up', count:count});
+    res.json({status:'up', count:count});
   } catch {
-    return Response.json({status:'down'});
+    res.json({status:'down'});
   }
 }

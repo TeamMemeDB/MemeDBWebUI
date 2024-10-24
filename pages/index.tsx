@@ -9,7 +9,7 @@ import { getMemes } from './api/memes';
 
 export async function getStaticProps() {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   const query = Query.create({});
 
   return {
@@ -22,7 +22,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home(props) {
+export default function Home(props:any) {
   const title = "MemeDB Browser";
   const description = "MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!";
   return <>

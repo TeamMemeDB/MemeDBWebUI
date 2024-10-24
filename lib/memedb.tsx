@@ -8,7 +8,7 @@ export const sortModes = [
   {id:'bottom', name:'bottom rated first', displayname: <><i className='icon-bin'/> Bottom rated</>, description:"Least upvoted memes first"}
 ];
 
-function Pepper(props){
+function Pepper(props:any){
   return <> {
     Array.from({length: props.count}, (_, i) => <i key={i} className='icon-pepper red' title={(props.count) + ' pepper(s)'}/>)
   } </>;
@@ -23,9 +23,9 @@ export const edgeLevels = [
   {id:3, name: 'NSFL/Banned', displayname: <Pepper count={4}/>, description: "Banned from this database"}
 ];
 
-function tryInt(x) {
+function tryInt(x:any) {
   // Convert category and tag ids to Numbers if possible
-  let v=parseInt(x,10);
+  let v=parseInt(x, 10);
   return isNaN(v)?x:v;
 }
 
@@ -36,13 +36,13 @@ type RawQuery = {
 type sorts = 'new'|'old'|'top'|'bottom'
 
 export class Query {
-  sort:sorts;
-  categories:('all'|number)[];
-  tags:('all'|number)[];
-  edge:number;
-  from:number;
-  filter:string;
-  limit:number;
+  sort:sorts = 'new';
+  categories:('all'|number)[] = ['all'];
+  tags:('all'|number)[] = ['all'];
+  edge:number = 0;
+  from:number = 0;
+  filter:string = '';
+  limit:number = 50;
 
   // Represents a /api/memes database query
   static create(raw:Partial<RawQuery>):Query {
@@ -142,9 +142,11 @@ export class Query {
 }
 
 type DBMeme = {
-  _id, type, url, thumbUrl, color, width, height, flags, totalVotes, votes, avgEdgeVotes, edgevotes,
-  descriptions, topDescription, descriptionAuthor, transcriptions, topTranscription, transcriptionAuthor,
-  tags, topTags, categories, topCategories
+  _id:number, type:string, url:string, thumbUrl:string, color:string, width:number, height:number,
+  flags:any, totalVotes:number, votes:any[], avgEdgeVotes:number, edgevotes:any[],
+  descriptions:any[], topDescription:string, descriptionAuthor:string, transcriptions:any[],
+  topTranscription:string, transcriptionAuthor:string, tags:any[], topTags:number[],
+  categories:any[], topCategories:number[]
 }
 type memeTypes = 'image'|'video'|'gif'|'url'|'audio'|'text'|'unknown'
 type voters = {user:number, value:number}[]
@@ -157,28 +159,28 @@ function sortByVotes<T extends {votes:voters}>(arr:T[]):T[] {
 }
 
 export class Meme {
-  public id:number;
-  type:memeTypes;
-  url:string;
-  thumbUrl:string;
-  color:string;
-  width:number;
-  height:number;
-  flags:{hidden:boolean, nsfw:boolean, silent:boolean}
-  _votes:number
-  voters:voters;
-  _edge: number;
-  edgeVoters:voters;
-  descriptions:{_id:number, author:number, description:string, edit:number|null, votes:voters}[];
-  _topDescription:string|null;
-  _descriptionAuthor:number|null;
-  transcriptions:{_id:number, author:number, transcription:string, edit:number|null, votes:voters}[];
-  _topTranscription:string|null;
-  _transcriptionAuthor:number|null;
-  tags:{tag:number, votes:voters}[];
-  _topTags:number[];
-  categories:{category:number, votes:voters}[];
-  _topCategories:number[];
+  public id:number = -1;
+  type:memeTypes = 'unknown';
+  url:string = '';
+  thumbUrl:string = '';
+  color:string = '';
+  width:number = 0;
+  height:number = 0;
+  flags:{hidden:boolean, nsfw:boolean, silent:boolean} = {hidden:false, nsfw:false, silent:false};
+  _votes:number = 0;
+  voters:voters = [];
+  _edge: number = 0;
+  edgeVoters:voters = [];
+  descriptions:{_id:number, author:number, description:string, edit:number|null, votes:voters}[] = [];
+  _topDescription:string|null = null;
+  _descriptionAuthor:string|null = null;
+  transcriptions:{_id:number, author:number, transcription:string, edit:number|null, votes:voters}[] = [];
+  _topTranscription:string|null = null;
+  _transcriptionAuthor:string|null = null;
+  tags:{tag:number, votes:voters}[] = [];
+  _topTags:number[] = [];
+  categories:{category:number, votes:voters}[] = [];
+  _topCategories:number[] = [];
 
   // Represents an individual meme from a /api/memes or /api/meme query
   static create(raw:Partial<DBMeme>):Meme {
@@ -195,25 +197,25 @@ export class Meme {
     const {hidden=false, nsfw=false, silent=false} = raw.flags;
     out.flags = {hidden, nsfw, silent}
 
-    out._votes = raw.totalVotes;
+    out._votes = raw.totalVotes || 0;
     out.voters = raw.votes || [];
 
-    out._edge = raw.avgEdgeVotes;
+    out._edge = raw.avgEdgeVotes || 0;
     out.edgeVoters = raw.edgevotes || [];
 
-    out.descriptions = raw.descriptions;
-    out._topDescription = raw.topDescription;
-    out._descriptionAuthor = raw.descriptionAuthor;
+    out.descriptions = raw.descriptions || [];
+    out._topDescription = raw.topDescription || null;
+    out._descriptionAuthor = raw.descriptionAuthor || null;
     
-    out.transcriptions = raw.transcriptions;
-    out._topTranscription = raw.topTranscription;
-    out._transcriptionAuthor = raw.transcriptionAuthor;
+    out.transcriptions = raw.transcriptions || [];
+    out._topTranscription = raw.topTranscription || null;
+    out._transcriptionAuthor = raw.transcriptionAuthor || null;
 
-    out.tags = raw.tags;
-    out._topTags = raw.topTags;
+    out.tags = raw.tags || [];
+    out._topTags = raw.topTags || [];
 
-    out.categories = raw.categories;
-    out._topCategories = raw.topCategories;
+    out.categories = raw.categories || [];
+    out._topCategories = raw.topCategories || [];
 
     return out;
   }
@@ -230,24 +232,24 @@ export class Meme {
     return this._edge;
   }
 
-  descriptionWithAuthor():[string|null, number|null] {
+  descriptionWithAuthor():{description:string|null, descriptionAuthor:number|string|null} {
     if(this.descriptions) {
       const {description, author: authorId} = sortByVotes(this.descriptions)[0];
-      return [description, authorId];
+      return {description, descriptionAuthor: authorId};
     }
     if(this._descriptionAuthor === null)
-      return [null, null];
-    return [this._topDescription, this._descriptionAuthor];
+      return {description: null, descriptionAuthor: null};
+    return {description: this._topDescription, descriptionAuthor: this._descriptionAuthor};
   }
   
-  transcriptionWithAuthor():[string|null, number|null] {
+  transcriptionWithAuthor():{transcription:string|null, transcriptionAuthor:number|string|null} {
     if(this.transcriptions) {
       const {transcription, author: authorId} = sortByVotes(this.transcriptions)[0];
-      return [transcription, authorId];
+      return {transcription, transcriptionAuthor: authorId};
     }
     if(this._transcriptionAuthor === null)
-      return [null, null];
-    return [this._topTranscription, this._transcriptionAuthor];
+      return {transcription: null, transcriptionAuthor: null};
+    return {transcription: this._topTranscription, transcriptionAuthor: this._transcriptionAuthor};
   }
 
   topTags():number[] {
@@ -271,5 +273,8 @@ export class Meme {
 
 export function idIndex<T extends {id:number|string}>(arr:T[]):{[id:number]:T} {
   // Map an item with an .id property to a dictionary with the id as key
-  return arr.reduce((out, item) => {out[typeof item.id==='string'?parseInt(item.id):item.id] = item; return out}, {});
+  return arr.reduce(
+    (out, item) => {out[typeof item.id==='string'?parseInt(item.id):item.id] = item; return out},
+    {} as {[id:number]:T}
+  );
 }

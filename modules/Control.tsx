@@ -1,6 +1,6 @@
-import React, {useState, useRef, useEffect, FormEventHandler} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 
-export function Panel(props) {
+export function Panel(props:any) {
   const [open, setOpen] = useState(props.closed ? false : true);
 
   return (
@@ -25,8 +25,8 @@ export function Panel(props) {
   );
 };
 
-export function dropdownFormat(arr) {
-  return arr.map((item) => {
+export function dropdownFormat(arr:any) {
+  return arr.map((item:any) => {
     if('_id' in item) {
       item['id'] = item['_id'];
       delete item['_id'];
@@ -40,7 +40,7 @@ export function dropdownFormat(arr) {
   });
 }
 
-export function DropDown(props) {
+export function DropDown(props:any) {
   let menu:React.JSX.Element[] = [];
   for(let i in props.choices) {
     let item = props.choices[i];
@@ -59,7 +59,7 @@ export function DropDown(props) {
     );
   }
 
-  let selected = props.choices.filter((item) => item.id == props.value)[0];
+  let selected = props.choices.filter((item:any) => item.id == props.value)[0];
   let stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
 
   return <div className="dropdown">
@@ -72,14 +72,14 @@ export function DropDown(props) {
   </div>
 }
 
-export function itemSearch(item, search) {
+export function itemSearch(item:any, search:any) {
   return (
     item.name.toLowerCase().includes(search.toLowerCase())
     || item.description?.toLowerCase().includes(search.toLowerCase())
   )
 }
 
-export function MultiDropDown(props) {
+export function MultiDropDown(props:any) {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
 
@@ -90,12 +90,12 @@ export function MultiDropDown(props) {
   const [search, setSearch] = useState('');
   const [maxlength, setMaxlength] = useState(minMaxlength);
 
-  function displayname(id) {
+  function displayname(id:any) {
     if(props.displayname) return props.displayname(id);
     return id;
   }
 
-  function select(id) {
+  function select(id:any) {
     let newSelection;
     // Select all
     if(id === 'all') newSelection = ['all'];
@@ -107,8 +107,8 @@ export function MultiDropDown(props) {
     else{
       if(inclusive) {
         // Inclusive mode select
-        if(props.value[0] == 'all') newSelection = props.choices.map(item => item.id);
-        else newSelection = props.value.map(a => a); // Clone object so that it can be changed
+        if(props.value[0] == 'all') newSelection = props.choices.map((item:any) => item.id);
+        else newSelection = props.value.map((a:any) => a); // Clone object so that it can be changed
         // Add or remove id from selection
         const index = newSelection.indexOf(id);
         if(index > -1){
@@ -122,9 +122,9 @@ export function MultiDropDown(props) {
         }
       }else{
         // Exclusive mode select
-        if(props.value[0] == 'all') newSelection = props.choices.map(item => -item.id);
+        if(props.value[0] == 'all') newSelection = props.choices.map((item:any) => -item.id);
         else if(props.value.length == 0) newSelection = [];
-        else newSelection = props.value.map(a => a); // Clone object so it can be changed
+        else newSelection = props.value.map((a:any) => a); // Clone object so it can be changed
         // Add or remove id from selection
         const index = newSelection.indexOf(-id);
         if(index > -1) {
@@ -154,10 +154,10 @@ export function MultiDropDown(props) {
     }
     else if(inclusive) {
       // Make a list of everything that wasn't previously excluded
-      newSelection = props.choices.filter(item => props.value.indexOf(-item.id) == -1).map(item => item.id)
+      newSelection = props.choices.filter((item:any) => props.value.indexOf(-item.id) == -1).map((item:any) => item.id)
     }else{
       // Make a list of eveything that wasn't previously included
-      newSelection = props.choices.filter(item => props.value.indexOf(item.id) == -1).map(item => -item.id);
+      newSelection = props.choices.filter((item:any) => props.value.indexOf(item.id) == -1).map((item:any) => -item.id);
     }
     props.setter(newSelection);
     console.log('inverted', newSelection);
@@ -217,9 +217,9 @@ export function MultiDropDown(props) {
     let names:string[] = [];
     if(inclusive){
       // Inclusive mode
-      let selected = props.choices.filter((item) => props.value.includes(item.id));
+      let selected = props.choices.filter((item:any) => props.value.includes(item.id));
 
-      selected.some(option => {
+      selected.some((option:any) => {
         if(names.length == 5){
           names.push('...');
           return true;
@@ -232,17 +232,17 @@ export function MultiDropDown(props) {
     }else{
       // Exclusive mode
       if(props.choices.length - props.value.length <= 5){
-        let selected = props.choices.filter(item => !props.value.includes(-item.id));
+        let selected = props.choices.filter((item:any) => !props.value.includes(-item.id));
 
-        selected.forEach(option => {
+        selected.forEach((option:any) => {
           names.push(option.name[0].toUpperCase()+option.name.substring(1));
         });
 
         stringrep = "Only "+names.join(', ');
       }else{
-        let unselected = props.choices.filter(item => props.value.includes(-item.id))
+        let unselected = props.choices.filter((item:any) => props.value.includes(-item.id))
 
-        unselected.some(option => {
+        unselected.some((option:any) => {
           if(names.length == 5){
             names.push('...');
             return true;
@@ -307,7 +307,7 @@ export function MultiDropDown(props) {
   </div>
 }
 
-export function VideoControl(props) {
+export function VideoControl(props:any) {
   // Simple video controller for videos in small places
   const videoRef:React.MutableRefObject<HTMLVideoElement|null> = useRef(null);
   const [paused, setPaused] = useState(true);
@@ -340,7 +340,7 @@ export function VideoControl(props) {
       <></>
     }
     <video
-      key={props.key} ref={videoRef} className={props.className} width={props.width} height={props.height}
+      ref={videoRef} className={props.className} width={props.width} height={props.height}
       poster={props.poster} preload={props.preload} src={props.url}
     />
   </div>

@@ -6,7 +6,7 @@ import { User, UserNav } from './User';
 import { getContrastYIQ } from '../lib/colour';
 import { sortModes, edgeLevels, Query, idIndex, Meme } from '../lib/memedb';
 
-export const Header = (props) => {
+export const Header = (props:any) => {
   const [searchFocus, setSearchFocus] = useState(false);
   const searchBar:React.MutableRefObject<HTMLInputElement|null> = useRef(null);
   const user = null;// new User('Yiays');
@@ -34,7 +34,7 @@ export const Header = (props) => {
   </nav></header>;
 }
 
-export const Footer = (props) => {
+export const Footer = (props:any) => {
   return <footer><nav>
     <NavItem href="https://yiays.com">Created by Yiays</NavItem>
     <NavSpacer/>
@@ -45,22 +45,22 @@ export const Footer = (props) => {
   </nav></footer>;
 }
 
-export const NavItem = (props) => {
+export const NavItem = (props:any) => {
   return <Link href={props.href} className={"btn navbutton" + (props.className?' '+props.className:'')}>
     {props.children}
   </Link>
 }
 
-export const NavSpacer = (props) => {
+export const NavSpacer = (props:any) => {
   return <span className='navspacer'/>
 }
 
-export const Browse = (props) => {
+export const Browse = (props:any) => {
   // Page state
   const router = useRouter();
   const sorts = props.customSorts? props.customSorts: sortModes;
   const edge = props.customEdge? props.customEdge: edgeLevels;
-  const tags = dropdownFormat(props.tags).sort((a,b) => b.count-a.count);
+  const tags = dropdownFormat(props.tags).sort((a:any,b:any) => b.count-a.count);
   const categories = dropdownFormat(props.categories);
 
   // DropDown state
@@ -93,15 +93,15 @@ export const Browse = (props) => {
 
   let filteredCategories, filteredTags;
   if(query.filter) {
-    filteredCategories = categories.filter(c => itemSearch(c, query.filter));
-    filteredTags = tags.filter(t => itemSearch(t, query.filter));
+    filteredCategories = categories.filter((c:any) => itemSearch(c, query.filter));
+    filteredTags = tags.filter((t:any) => itemSearch(t, query.filter));
   }
 
   return <div className="browse">
     <Panel type="toolbelt" title="Search Tools">
       <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={nextSort} setter={setNextSort}/>
       <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={nextCategories} setter={setNextCategories} inclusivityeditor={true} inclusive={true}/>
-      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={nextTags} setter={setNextTags} inclusivityeditor={true} inclusive={true} displayname={(s) => '#'+s}/>
+      <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={nextTags} setter={setNextTags} inclusivityeditor={true} inclusive={true} displayname={(s:any) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={nextEdge} setter={setNextEdge} inclusive={false}/>
       <button className='btn' onClick={navigate}>Update</button>
     </Panel>
@@ -137,7 +137,7 @@ export const Browse = (props) => {
       {(props.data)?
         <>
           <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
-          <MemeGrid data={props.data} mappedCategories={idIndex(categories)} mappedTags={idIndex(tags)}/>
+          <MemeGrid data={props.data} categories={categories} tags={tags}/>
         </>
         :<></>
       }
@@ -145,22 +145,21 @@ export const Browse = (props) => {
   </div>;
 }
 
-const MemeGrid = (props) => {
-  const memes: Meme[] = props.data?.memes? props.data.memes.map(rawmeme => Meme.create(rawmeme)): [];
+const MemeGrid = (props:any) => {
+  const memes: Meme[] = props.data?.memes? props.data.memes.map((rawmeme:any) => Meme.create(rawmeme)): [];
 
   if(memes.length) {
     return <div className='item-grid'>{memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme} mappedCategories={props.mappedCategories} mappedTags={props.mappedTags}/>
+      <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
     )}</div>;
   }else if(props.data.errorMessage) {
     return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
   }else return <></>
 }
 
-const GridMeme = (props) => {
-  const meme:Meme = props.meme;
-  const [description, descriptionAuthor] = meme.descriptionWithAuthor();
-  const [transcription, transcriptionAuthor] = meme.transcriptionWithAuthor();
+function parseMeme(meme:Meme, mappedCategories:{[id:number]:any}, mappedTags:{[id:number]:any}) {
+  const {description, descriptionAuthor} = meme.descriptionWithAuthor();
+  const {transcription, transcriptionAuthor} = meme.transcriptionWithAuthor();
   const topTags = meme.topTags();
   const topCategories = meme.topCategories();
 
@@ -184,11 +183,11 @@ const GridMeme = (props) => {
     biodetails = "Transcription by " + transcriptionAuthor;
   }
   else if(topTags.length) {
-    bio = topTags.map((tagId) => props.mappedTags[tagId]?.name||tagId).join(', ');
+    bio = topTags.map((tagId) => mappedTags[tagId]?.name||tagId).join(', ');
     biodetails = "Top tags";
   }
   else if(topCategories.length) {
-    bio = topCategories.map((categoryId) => props.mappedCategories[categoryId]?.name||categoryId).join(', ');
+    bio = topCategories.map((categoryId) => mappedCategories[categoryId]?.name||categoryId).join(', ');
     biodetails = "Top categories";
   }
   else {
@@ -198,7 +197,16 @@ const GridMeme = (props) => {
   
   bio = bio.replaceAll('<br />', '');
 
-  let contrast = getContrastYIQ(meme.color);
+  return {media, bio, biodetails};
+}
+
+const GridMeme = (props:any) => {
+  const meme:Meme = props.meme;
+  const mappedCategories = idIndex<any>(props.categories);
+  const mappedTags = idIndex<any>(props.tags);
+  const {media, bio, biodetails} = parseMeme(meme, mappedCategories, mappedTags);
+  const contrast = getContrastYIQ(meme.color);
+
   return <div className={'meme' + (contrast=='white'?' dark':'') + (meme.flags.nsfw?' nsfw':'')} style={{'backgroundColor':meme.color}}>
     {media}
     <Link href={'/meme/'+meme.id} className='info'>
@@ -213,8 +221,9 @@ const GridMeme = (props) => {
   </div>
 }
 
-const CategoryGrid = (props) => {
-  return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map(category => 
+
+const CategoryGrid = (props:any) => {
+  return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map((category:any) => 
     <Link key={category.id} className='grid-item category' href={'/categories/'+category.id} title={category.description}>
       <span>{category.name} <i className="dim">({category.count})</i></span>
       <br/>
@@ -223,9 +232,9 @@ const CategoryGrid = (props) => {
   )}</div>
 }
 
-const TagGrid = (props) => {
+const TagGrid = (props:any) => {
   return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{
-    props.tags.filter(tag => tag.count > 0).map(tag => 
+    props.tags.filter((tag:any) => tag.count > 0).map((tag:any) => 
       <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id}><span>#{tag.name} <i className="dim">({tag.count})</i></span></Link>
     )
   }</div>
@@ -233,7 +242,7 @@ const TagGrid = (props) => {
 
 // TODO: fullscreen meme view
 
-const HoverImg = ({ key, className, imageSrc, gifSrc, width, height, alt }) => {
+const HoverImg = ({ key, className, imageSrc, gifSrc, width, height, alt }:any) => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (

@@ -7,9 +7,9 @@ import { getCats } from './api/cats';
 import { getTags } from './api/tags';
 import { getMemes } from './api/memes';
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context:any) {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   let query = Query.create(context.query || {});
 
   return {
@@ -22,7 +22,7 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default function Home(props) {
+export default function Home(props:any) {
   const delta = Query.create({}).difference(props.query);
   const pageKeys = Object.keys(delta).filter(key => ['categories', 'tags', 'filter'].includes(key));
 

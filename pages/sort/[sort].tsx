@@ -14,9 +14,9 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps(context:any) {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   let query = Query.create({sort:context.params.sort});
 
   return {
@@ -30,14 +30,16 @@ export async function getStaticProps(context) {
   };
 }
 
-export default function Sort(props) {
+const modeDescriptions:{[key:string]:string} = {
+  'new': "See all the memes that have been added to MemeDB recently.",
+  'old': "See the very first memes that were ever added to MemeDB.",
+  'top': "See the highest rated memes that have been added to MemeDB so far.",
+  'bottom': "See the lowest rated memes that have been added to MemeDB so far."
+};
+
+export default function Sort(props:any) {
   const title = `${props.sortName} memes | MemeDB`;
-  const description = {
-    'new': "See all the memes that have been added to MemeDB recently.",
-    'old': "See the very first memes that were ever added to MemeDB.",
-    'top': "See the highest rated memes that have been added to MemeDB so far.",
-    'bottom': "See the lowest rated memes that have been added to MemeDB so far."
-  }[props.query.sort]
+  const description = modeDescriptions[props.query.sort];
   return <>
     <Head>
       <title>{title}</title>

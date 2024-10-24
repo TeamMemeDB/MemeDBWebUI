@@ -8,7 +8,7 @@ import { getTags } from '../api/tags';
 
 export async function getStaticProps() {
   const dbClient = await clientPromise;
-  const db = await dbClient.db('memedb');
+  const db = dbClient.db('memedb');
   let query = Query.create({tags:[]});
 
   return {
@@ -20,7 +20,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home(props) {
+export default function Home(props:any) {
   const title = "All Tags | MemeDB";
   const description = "MemeDB Users have created a wide variety of tags designed to help you find specific memes, topics, trends, or formats.";
   return <>

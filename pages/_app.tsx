@@ -7,7 +7,7 @@ import '../modules/Control.css';
 import '../modules/User.css';
 import {Header, Footer} from '../modules/Layout';
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }:any) {
   const [filter, setFilter] = useState('');
 
   return <>
