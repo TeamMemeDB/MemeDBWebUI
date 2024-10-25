@@ -84,7 +84,7 @@ export function MultiDropDown(props:any) {
   const maxMaxlength = 1000;
 
   // Infer whether exclusive mode is on or not based on the currently selected values
-  const inclusiveFromValue = props.value.length? props.value[0]>=0: props.inclusive;
+  const inclusiveFromValue = props.value.length? props.value[0]>=0 || props.value[0]=='all': props.inclusive;
   const [inclusive, setInclusive] = useState(inclusiveFromValue);
   console.log(inclusiveFromValue, inclusive, props.value);
   const [search, setSearch] = useState('');
