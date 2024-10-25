@@ -40,7 +40,7 @@ export class Query {
   sort:sorts = 'new';
   categories:('all'|number)[] = ['all'];
   tags:('all'|number)[] = ['all'];
-  edge:number = 0;
+  edge:'all'|number = 0;
   from:number = 0;
   filter:string = '';
   limit:number = 50;
@@ -67,10 +67,25 @@ export class Query {
       out.tags = raw.tags;
     else out.tags = ['all'];
 
+    if(raw.edge == 'all') out.edge = 'all';
     out.edge = Number(raw.edge) || 0;
     out.from = Number(raw.from) || 0;
     out.filter = raw.filter || '';
     out.limit = raw.limit !== undefined? Number(raw.limit): 50;
+
+    return out;
+  }
+
+  static clone(input:Query):Query {
+    let out = new Query();
+
+    out.sort = input.sort;
+    out.categories = input.categories;
+    out.tags = input.tags;
+    out.edge = input.edge;
+    out.from = input.from;
+    out.filter = input.filter;
+    out.limit = input.limit;
 
     return out;
   }
@@ -150,7 +165,7 @@ type DBMeme = {
   categories:any[], topCategories:number[]
 }
 type memeTypes = 'image'|'video'|'gif'|'url'|'audio'|'text'|'unknown'
-type voters = {user:number, value:number}[]
+export type voters = {user:number, value:number}[]
 
 function sortByVotes<T extends {votes:voters}>(arr:T[]):T[] {
   // Sorts any array of objects with a votes.value key.
@@ -195,8 +210,8 @@ export class Meme {
     out.width = raw.width || 0;
     out.height = raw.height || 0;
 
-    const {hidden=false, nsfw=false, silent=false} = raw.flags;
-    out.flags = {hidden, nsfw, silent}
+    const {hidden=false, nsfw=false, silent=false} = raw.flags || {};
+    out.flags = {hidden, nsfw, silent};
 
     out._votes = raw.totalVotes || 0;
     out.voters = raw.votes || [];
@@ -234,7 +249,7 @@ export class Meme {
   }
 
   descriptionWithAuthor():{description:string|null, descriptionAuthor:number|string|null} {
-    if(this.descriptions) {
+    if(this.descriptions.length) {
       const {description, author: authorId} = sortByVotes(this.descriptions)[0];
       return {description, descriptionAuthor: authorId};
     }
@@ -244,7 +259,7 @@ export class Meme {
   }
   
   transcriptionWithAuthor():{transcription:string|null, transcriptionAuthor:number|string|null} {
-    if(this.transcriptions) {
+    if(this.transcriptions.length) {
       const {transcription, author: authorId} = sortByVotes(this.transcriptions)[0];
       return {transcription, transcriptionAuthor: authorId};
     }
@@ -254,7 +269,7 @@ export class Meme {
   }
 
   topTags():number[] {
-    if(this.tags) {
+    if(this.tags.length) {
       return sortByVotes(this.tags)
       .filter(tag => tag.votes.reduce((out, tag) => out+tag.value, 0) > 0)
       .reduce<number[]>((out, tag) => {out.push(tag.tag); return out}, []);
@@ -263,7 +278,7 @@ export class Meme {
   }
 
   topCategories(): number[] {
-    if(this.categories) {
+    if(this.categories.length) {
       return sortByVotes(this.categories)
       .filter(cat => cat.votes.reduce((out, cat) => out+cat.value, 0) > 0)
       .reduce<number[]>((out, cat) => {out.push(cat.category); return out}, []);
@@ -324,7 +339,10 @@ export class Meme {
 export function idIndex<T extends {id:number|string}>(arr:T[]):{[id:number]:T} {
   // Map an item with an .id property to a dictionary with the id as key
   return arr.reduce(
-    (out, item) => {out[typeof item.id==='string'?parseInt(item.id):item.id] = item; return out},
+    (out, item) => {
+      out[typeof item.id==='string'?parseInt(item.id):item.id] = item;
+      return out;
+    },
     {} as {[id:number]:T}
   );
 }

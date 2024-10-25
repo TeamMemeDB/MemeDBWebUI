@@ -26,12 +26,16 @@ export async function getMemes(db:Db, query=Query.create({}), admin=false) {
   // Get a list of memes with the complex data abstracted away
 
   // Auth
-  if(admin) {} // Bypass checks
-  else if(query.edge > 1) {
-    return {matches: 0, errorMessage: "Authorization is required to view these memes."};
-  }
-  else if(query.limit <= 0 || query.limit > 100) {
-    return {matches: 0, errorMessage: "Authorization is required to get memes in bulk."};
+  if(admin) {
+    // Privileged checks
+  }else{
+    // Unprivileged checks
+    if(query.edge == 'all' || query.edge > 1) {
+      return {matches: 0, errorMessage: "Authorization is required to view these memes."};
+    }
+    if(query.limit <= 0 || query.limit > 100) {
+      return {matches: 0, errorMessage: "Authorization is required to get memes in bulk."};
+    }
   }
 
   // Sort through tag ids, if they start with a minus, exclude them from results
@@ -60,7 +64,7 @@ export async function getMemes(db:Db, query=Query.create({}), admin=false) {
     {
       $match: {
         // Hide unrated memes
-        ...(query.edge < 5? {edgevotes: {$exists: true}}: {})
+        ...(query.edge != 'all' && query.edge < 5? {edgevotes: {$exists: true}}: {})
       }
     },
     {
@@ -144,7 +148,7 @@ export async function getMemes(db:Db, query=Query.create({}), admin=false) {
     {
       $match: {
         // Takes edge ratings by majority rule, favouring caution
-        ...(query.edge < 5? {avgEdgevotes: {$gte: Number(query.edge)-0.5, $lt: Number(query.edge)+0.5 }} : {edgevotes: {$eq: []}}),
+        ...(query.edge == 'all'? {}: query.edge < 5? {avgEdgevotes: {$gte: Number(query.edge)-0.5, $lt: Number(query.edge)+0.5 }} : {edgevotes: {$eq: []}}),
         "flags.hidden": false,
         // Tag filtering
         ...(query.tags[0]=='all' ? {}: (includeTags.length ? {topTags: {$in: includeTags}} : {topTags: {$nin: excludeTags}})),
