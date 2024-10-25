@@ -48,6 +48,6 @@ export default function Home(props:any) {
       <meta name="og:description" content={description}/>
       <meta name="keywords" content="category,categories,genre,theme,type,search,database,meme"/>
     </Head>
-    <Browse categories={props.categories} tags={props.tags} data={props.data} query={props.query}/>
+    <Browse {...props}/>
   </>;
 }

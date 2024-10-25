@@ -59,7 +59,7 @@ export default function Home(props:any) {
       <meta name="og:description" content={description}/>
       <meta name="keywords" content={tags.join(',')}/>
     </Head>
-    <SingleMeme categories={props.categories} tags={props.tags} meme={meme}/>
+    <SingleMeme {...props} meme={meme}/>
     <div className="browse">
       <h2>Related memes</h2>
       <MemeGrid data={{errorMessage: "Feature not implemented yet."}}/>

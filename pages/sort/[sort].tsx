@@ -49,6 +49,6 @@ export default function Sort(props:any) {
       <meta name="og:description" content={description}/>
       <meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index,meme,memes,database,search,find"/>
     </Head>
-    <Browse categories={props.categories} tags={props.tags} data={props.data} query={props.query}/>
+    <Browse {...props}/>
   </>;
 }
