@@ -1,15 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, VideoControl } from './Control';
+import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown } from './Control';
 import { User, UserNav } from './User';
 import { getContrastYIQ } from '../lib/colour';
-import { sortModes, edgeLevels, Query, idIndex, Meme } from '../lib/memedb';
+import { sortModes, edgeLevels, Query, idIndex, Meme, voters } from '../lib/memedb';
 
 export const Header = (props:any) => {
   const [searchFocus, setSearchFocus] = useState(false);
   const searchBar:React.MutableRefObject<HTMLInputElement|null> = useRef(null);
   const user = null;// new User('Yiays');
+
+  function search(value:string) {
+    let nextQuery = Query.clone(props.query);
+    nextQuery.filter = value;
+    props.setQuery(nextQuery);
+  }
 
   return <header><nav>
     <div className={"navbutton navbutton-title-search"+(searchFocus?' searchfocus':'')}>
@@ -20,9 +25,9 @@ export const Header = (props:any) => {
           <span className="accent">DB</span>
         </h1>
       </NavItem>
-      <form target='/search' onSubmit={(e)=>{e.preventDefault();props.setFilter(searchBar.current?.value)}}>
+      <form target='/search' onSubmit={(e)=>{e.preventDefault();search(searchBar.current?.value || '')}}>
         <input 
-          ref={searchBar} type="text" name="filter" placeholder="Search MemeDB" defaultValue={props.filter}
+          ref={searchBar} type="text" name="filter" placeholder="Search MemeDB" defaultValue={props.query.filter}
           minLength={3} maxLength={50}
           onFocus={()=>setSearchFocus(true)} onBlur={()=>setSearchFocus(false)}
         />
@@ -57,44 +62,33 @@ export const NavSpacer = (props:any) => {
 
 export const Browse = (props:any) => {
   // Page state
-  const router = useRouter();
   const sorts = props.customSorts? props.customSorts: sortModes;
   const edge = props.customEdge? props.customEdge: edgeLevels;
   const tags = dropdownFormat(props.tags).sort((a:any,b:any) => b.count-a.count);
   const categories = dropdownFormat(props.categories);
 
   // DropDown state
-  const query = Query.create(props.query);
-  const [nextSort, setNextSort] = useState(query.sort);
-  const [nextCategories, setNextCategories] = useState(query.categories);
-  const [nextTags, setNextTags] = useState(query.tags);
-  const [nextEdge, setNextEdge] = useState(query.edge); // No support for multiple edge levels for now
+  const [nextSort, setNextSort] = useState(props.query.sort);
+  const [nextCategories, setNextCategories] = useState(props.query.categories);
+  const [nextTags, setNextTags] = useState(props.query.tags);
+  const [nextEdge, setNextEdge] = useState(props.query.edge); // No support for multiple edge levels for now
 
-  const [loading, setLoading] = useState(false);
-  const navigate = () => {
+  function search() {
     // Find the new url based on changes to state
-    const nextQuery = Query.create({
+    props.setQuery(Query.create({
       sort: nextSort,
       categories: nextCategories,
       tags: nextTags,
       edge: nextEdge,
       from: 0,
       filter: props.filter
-    });
-
-    if(query.equals(nextQuery)) {
-      setLoading(false);
-    }else{
-      router.push(nextQuery.toUrl());
-      setLoading(true);
-    }
+    }));
   }
-  useEffect(navigate, [props.query]);
 
   let filteredCategories, filteredTags;
-  if(query.filter) {
-    filteredCategories = categories.filter((c:any) => itemSearch(c, query.filter));
-    filteredTags = tags.filter((t:any) => itemSearch(t, query.filter));
+  if(props.query.filter) {
+    filteredCategories = categories.filter((c:any) => itemSearch(c, props.query.filter));
+    filteredTags = tags.filter((t:any) => itemSearch(t, props.query.filter));
   }
 
   return <div className="browse">
@@ -103,45 +97,41 @@ export const Browse = (props:any) => {
       <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={nextCategories} setter={setNextCategories} inclusivityeditor={true} inclusive={true}/>
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={nextTags} setter={setNextTags} inclusivityeditor={true} inclusive={true} displayname={(s:any) => '#'+s}/>
       <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={nextEdge} setter={setNextEdge} inclusive={false}/>
-      <button className='btn' onClick={navigate}>Update</button>
+      <button className='btn' onClick={search}>Update</button>
     </Panel>
-    {(loading)?
-      <p>Loading...</p>
-    :<>
-      {(query.filter)?
-        <>
-          <h2>Categories matching "{query.filter}"</h2>
-          <p className='memecount'>Found {filteredCategories.length} categor{filteredCategories.length==1?'y':'ies'}.</p>
-          <CategoryGrid categories={filteredCategories}/>
-          <h2>Tags matching "{query.filter}"</h2>
-          <p className='memecount'>Found {filteredTags.length} tag{filteredCategories.length==1?'':'s'}.</p>
-          <TagGrid tags={filteredTags}/>
-          <h2>Memes matching "{query.filter}"</h2>
-        </>
-        :<></>
-      }
-      {(query.categories.length==0)?
-        <>
-          <h2>Categories</h2>
-          <CategoryGrid categories={categories}/>
-        </>
-        :<></>
-      }
-      {(query.tags.length==0)?
-        <>
-          <h2>Tags</h2>
-          <TagGrid tags={tags}/>
-        </>
-        :<></>
-      }
-      {(props.data)?
-        <>
-          <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
-          <MemeGrid data={props.data} categories={categories} tags={tags}/>
-        </>
-        :<></>
-      }
-    </>}
+    {(props.query.filter)?
+      <>
+        <h2>Categories matching "{props.query.filter}"</h2>
+        <p className='memecount'>Found {filteredCategories.length} categor{filteredCategories.length==1?'y':'ies'}.</p>
+        <CategoryGrid categories={filteredCategories}/>
+        <h2>Tags matching "{props.query.filter}"</h2>
+        <p className='memecount'>Found {filteredTags.length} tag{filteredCategories.length==1?'':'s'}.</p>
+        <TagGrid tags={filteredTags}/>
+        <h2>Memes matching "{props.query.filter}"</h2>
+      </>
+      :<></>
+    }
+    {(props.query.categories.length==0)?
+      <>
+        <h2>Categories</h2>
+        <CategoryGrid categories={categories}/>
+      </>
+      :<></>
+    }
+    {(props.query.tags.length==0)?
+      <>
+        <h2>Tags</h2>
+        <TagGrid tags={tags}/>
+      </>
+      :<></>
+    }
+    {(props.data)?
+      <>
+        <p className='memecount'>Found {props.data.matches||0} meme{props.data.matches&&props.data.matches==1?'':'s'}.</p>
+        <MemeGrid data={props.data} categories={categories} tags={tags}/>
+      </>
+      :<></>
+    }
   </div>;
 }
 

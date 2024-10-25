@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { useState } from 'react';
 import '../styles/globals.css';
@@ -6,9 +6,28 @@ import '../modules/Layout.css';
 import '../modules/Control.css';
 import '../modules/User.css';
 import {Header, Footer} from '../modules/Layout';
+import { Query } from '@/lib/memedb';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }:any) {
-  const [filter, setFilter] = useState('');
+  const router = useRouter();
+  const [query] = useState(Query.create(pageProps.query || {}));
+  const [loading, setLoading] = useState(false);
+  
+  function navigate(nextQuery:Query) {
+    if(!query.equals(nextQuery))
+      router.push(nextQuery?.toUrl());
+  }
+  
+  useEffect(() => {
+    router.events.on("routeChangeStart", () => setLoading(true));
+    router.events.on("routeChangeComplete", () => setLoading(false));
+
+    return () => {
+      router.events.off("routeChangeStart", () => setLoading(true));
+      router.events.off("routeChangeComplete", () => setLoading(false));
+    };
+  }, []);
 
   return <>
     <Head>
@@ -24,8 +43,12 @@ function MyApp({ Component, pageProps }:any) {
     <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet"/>
     <link href="https://cdn.yiays.com/yiaycons/yiaycons.css" rel="stylesheet"/>
     <noscript>JS is not enabled! Your experience may be limited.</noscript>
-    <Header filter={filter} setFilter={setFilter}/>
-    <Component {...pageProps} filter={filter} setFilter={setFilter}/>
+    <Header query={query} setQuery={navigate}/>
+    {(loading)?
+      <div className="browse"><p>Loading...</p></div>
+    :
+      <Component {...pageProps} query={query}/>
+    }
     <Footer/>
   </>
 }
