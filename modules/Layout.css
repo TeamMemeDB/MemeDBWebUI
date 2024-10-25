@@ -97,7 +97,6 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 }
 
 .browse {
-  min-height: 35rem;
   flex-grow: 1;
   margin-bottom: 0.5rem;
 }
@@ -166,21 +165,31 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
 }
 .meme.large {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: 4rem auto auto;
   min-height: 20rem;
-  flex-grow: 1;
 }
 .meme.dark {
   color: #eee;
 }
 
 .meme > .head {
-  grid-column: 1 / 3;
   padding: 0.75em 1em;
 }
 .meme > .head > h2 {
   margin: 0;
+}
+
+.meme .media {
+  background: black;
+}
+.meme.large .media {
+  display: flex;
+  align-items: center;
+  align-self: baseline;
+}
+.meme.large .media>.content {
+  align-self: unset;
 }
 
 .meme .content {
@@ -189,14 +198,19 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   align-self: flex-start;
   object-fit: contain;
 }
+.meme .content.error {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: max-content;
+}
 .meme.large .content {
   width: 100%;
-  height: 100%;
-  background: black;
+  height: auto;
+  max-height: min(calc(100vh - 10rem), var(--content-height));
 }
 
 .meme .controls {
-  height: 100%;
   padding: 1rem;
   align-self: start;
   background: rgba(0,0,0,0.4);
@@ -227,6 +241,7 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   position: absolute;
   width: 20ch;
   text-align: center;
+  text-shadow: #fff 0 0 0.5em;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -75%);
@@ -234,11 +249,39 @@ nav i[class^="icon-"], nav i[class*=" icon-"] {
   opacity: 1;
   transition: opacity 400ms;
 }
+.meme.dark.nsfw::after {
+  text-shadow: #000 0 0 0.5em;
+}
 .meme.nsfw:hover::after {
   opacity: 0;
 }
 .meme.nsfw:hover .content {
   filter: blur(0rem);
+}
+
+@media screen and (min-width:60em) {
+  .meme.large {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 4rem 100%;
+  }
+  .meme .head {
+    grid-column: 1 / 3;
+  }
+  .meme .controls {
+    min-height: 28rem;
+  }
+  .meme.large .media {
+    aspect-ratio: 16 / 9;
+  }
+  .meme.large .content {
+    max-height: var(--content-height);
+  }
+}
+
+@media screen and (min-width:80em) {
+  .meme .controls {
+    aspect-ratio: 9 / 10.18;
+  }
 }
 
 @media screen and (min-width: 100em) {

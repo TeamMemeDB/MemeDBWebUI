@@ -135,7 +135,7 @@ export const Browse = (props:any) => {
   </div>;
 }
 
-const MemeGrid = (props:any) => {
+export const MemeGrid = (props:any) => {
   const memes: Meme[] = props.data?.memes? props.data.memes.map((rawmeme:any) => Meme.create(rawmeme)): [];
 
   if(memes.length) {
@@ -191,7 +191,9 @@ export const SingleMeme = (props:any) => {
       <h2>{bio}</h2>
       <sub>{biodetails}</sub>
     </div>
-    {meme.media()}
+    <div className="media">
+      {meme.media()}
+    </div>
     <div className="controls">
       <h3>Description</h3>
       <p>{description?.replaceAll('<br />', '')}</p>
@@ -211,17 +213,17 @@ export const SingleMeme = (props:any) => {
       <p>{meme.edge().toString()}</p>
       <hr/>
       <h3>Flags</h3>
-      <input type="checkbox" disabled name="hidden" id={meme.id+'_hidden'} value={meme.flags.hidden?'true':'false'}/>
+      <input type="checkbox" disabled name="hidden" id={meme.id+'_hidden'} checked={meme.flags.hidden}/>
       <label htmlFor={meme.id+'_hidden'}>Hidden</label>
       { meme.type == 'video'?
         <>
-          <input type="checkbox" disabled name="silent" id={meme.id+'_silent'} value={meme.flags.silent?'true':'false'}/>
+          <input type="checkbox" disabled name="silent" id={meme.id+'_silent'} checked={meme.flags.silent}/>
           <label htmlFor={meme.id+'_silent'}>Silent</label>
         </>
       :
         <></>
       }
-      <input type="checkbox" disabled name="nsfw" id={meme.id+'_nsfw'} value={meme.flags.nsfw?'true':'false'}/>
+      <input type="checkbox" disabled name="nsfw" id={meme.id+'_nsfw'} checked={meme.flags.nsfw}/>
       <label htmlFor={meme.id+'_nsfw'}>NSFW</label>
     </div>
   </article>

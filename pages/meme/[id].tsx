@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Meme, Query } from '@/lib/memedb';
-import { Browse, SingleMeme } from '@/modules/Layout';
+import { SingleMeme, MemeGrid } from '@/modules/Layout';
 import { dropdownFormat } from '@/modules/Control';
 import { idIndex } from '@/lib/memedb';
 import { getCats } from '@/pages/api/cats';
@@ -60,5 +60,9 @@ export default function Home(props:any) {
       <meta name="keywords" content={tags.join(',')}/>
     </Head>
     <SingleMeme categories={props.categories} tags={props.tags} meme={meme}/>
+    <div className="browse">
+      <h2>Related memes</h2>
+      <MemeGrid data={{errorMessage: "Feature not implemented yet."}}/>
+    </div>
   </>;
 }

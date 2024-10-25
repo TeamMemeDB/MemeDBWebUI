@@ -339,19 +339,15 @@ export function VideoControl(props:any) {
     :
       <></>
     }
-    <video
-      ref={videoRef} className={props.className} width={props.width} height={props.height}
-      poster={props.poster} preload={props.preload} src={props.url}
-    />
+    <video ref={videoRef} {...props}/>
   </div>
 }
 
-export function HoverImg({ key, className, imageSrc, gifSrc, width, height, alt }:any) {
+export function HoverImg({ className, imageSrc, gifSrc, width, height, alt }:any) {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
     <img
-      key={key}
       className={className + ' ' + (isHovering ? '' : 'gif')}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}

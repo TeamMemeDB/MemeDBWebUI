@@ -68,7 +68,8 @@ export class Query {
     else out.tags = ['all'];
 
     if(raw.edge == 'all') out.edge = 'all';
-    out.edge = Number(raw.edge) || 0;
+    else out.edge = Number(raw.edge) || 0;
+    
     out.from = Number(raw.from) || 0;
     out.filter = raw.filter || '';
     out.limit = raw.limit !== undefined? Number(raw.limit): 50;
@@ -323,14 +324,19 @@ export class Meme {
     const {transcription} = this.transcriptionWithAuthor();
   
     let media:JSX.Element;
+    const commonProps = {
+      className:'content', width:this.width, height:this.height, style:{'--content-height':this.height+'px'}
+    };
+    const altText = transcription?transcription:'Meme number '+this.id;
+
     if(this.type=='image')
-      media = <img key={this.id} className='content' src={this.thumbUrl} alt={transcription?transcription:'Meme number '+this.id} width={this.width} height={this.height}/>;
+      media = <img key={this.id} {...commonProps} src={this.thumbUrl} alt={altText}/>;
     else if(this.type=='gif')
-      media = <HoverImg key={this.id} className='content' imageSrc={this.thumbUrl} gifSrc={this.url} alt={transcription?transcription:'Meme number '+this.id} width={this.width} height={this.height}/>;
+      media = <HoverImg key={this.id} {...commonProps} imageSrc={this.thumbUrl} gifSrc={this.url} alt={altText}/>;
     else if(this.type=='video')
-      media = <VideoControl key={this.id} className='content' width={this.width} height={this.height} poster={this.thumbUrl} preload='none' url={this.url}/>;
+      media = <VideoControl key={this.id} {...commonProps} poster={this.thumbUrl} preload='none' url={this.url}/>;
     else
-      media = <p className='content' style={{color:'red'}}>Unsupported media type {this.type}</p>
+      media = <span className='content error'>Unsupported media type {this.type}</span>
   
     return media;
   }
