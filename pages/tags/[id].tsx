@@ -26,7 +26,7 @@ export async function getStaticProps(context:any) {
 
   return {
     props: {
-      memes: await getMemes(db, query),
+      data: await getMemes(db, query),
       query: query.toJSON(),
       tags: tags,
       categories: await getCats(db),
@@ -47,6 +47,6 @@ export default function Home(props:any) {
       <meta name="og:description" content={description}/>
       <meta name="keywords" content="tag,tags,hashtag,topic,theme,type,trends,formats,search,database,meme"/>
     </Head>
-    <Browse categories={props.categories} tags={props.tags} data={props.memes} query={props.query}/>
+    <Browse categories={props.categories} tags={props.tags} data={props.data} query={props.query}/>
   </>;
 }

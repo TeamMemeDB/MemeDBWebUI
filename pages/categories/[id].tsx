@@ -23,11 +23,11 @@ export async function getStaticProps(context:any) {
   const db = dbClient.db('memedb');
   let query = Query.create({categories:[parseInt(context.params.id)]});
   const categories = await getCats(db);
-  const memes = await getMemes(db, query);
+  const data = await getMemes(db, query);
 
   return {
     props: {
-      memes: memes,
+      data: data,
       query: query.toJSON(),
       tags: await getTags(db),
       categories: categories,
@@ -48,6 +48,6 @@ export default function Home(props:any) {
       <meta name="og:description" content={description}/>
       <meta name="keywords" content="category,categories,genre,theme,type,search,database,meme"/>
     </Head>
-    <Browse categories={props.categories} tags={props.tags} data={props.memes} query={props.query}/>
+    <Browse categories={props.categories} tags={props.tags} data={props.data} query={props.query}/>
   </>;
 }

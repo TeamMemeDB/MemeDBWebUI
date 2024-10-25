@@ -11,10 +11,10 @@ import { getMeme } from '@/pages/api/meme';
 export async function getStaticPaths() {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  const memes = await getMemes(db, Query.create({limit:0, edge:5}), true);
+  const data = await getMemes(db, Query.create({limit:0, edge:'all'}), true);
 
   return {
-    paths: memes.map((meme:any) => `/meme/${meme._id}`),
+    paths: data['memes'].map((meme:any) => `/meme/${meme._id}`),
     fallback: false
   }
 }
