@@ -168,19 +168,76 @@ const GridMeme = (props:any) => {
   </div>
 }
 
+function voteFormat(arr:any[], idKey:string, source:{[id: number]:any}) {
+  return arr.map((vote) => {
+    let item = source[vote[idKey]];
+    item.count = vote.votes.length;
+    return item;
+  })
+}
+
+export const SingleMeme = (props:any) => {
+  const meme:Meme = props.meme;
+  const mappedCategories = idIndex<any>(dropdownFormat(props.categories));
+  const mappedTags = idIndex<any>(dropdownFormat(props.tags));
+  //const mappedUsers = idIndex<any>(props.users);
+  const {bio, biodetails} = meme.bio(mappedCategories, mappedTags);
+  const contrast = getContrastYIQ(meme.color);
+  const {description, descriptionAuthor} = meme.descriptionWithAuthor();
+  const {transcription, transcriptionAuthor} = meme.transcriptionWithAuthor();
+
+  return <article className={'meme large' + (contrast=='white'?' dark':'')} style={{'backgroundColor':meme.color}}>
+    <div className='head'>
+      <h2>{bio}</h2>
+      <sub>{biodetails}</sub>
+    </div>
+    {meme.media()}
+    <div className="controls">
+      <h3>Description</h3>
+      <p>{description?.replaceAll('<br />', '')}</p>
+      <sub>By {/*typeof descriptionAuthor == 'number'? mappedUsers[descriptionAuthor]?.name: */descriptionAuthor}</sub>
+      <hr/>
+      <h3>Transcription</h3>
+      <p>{transcription?.replaceAll('<br />', '')}</p>
+      <sub>By {/*typeof transcriptionAuthor == 'number'? mappedUsers[transcriptionAuthor]?.name: */transcriptionAuthor}</sub>
+      <hr/>
+      <h3>Categories</h3>
+      <CategoryGrid categories={voteFormat(meme.categories, 'category', mappedCategories)}/>
+      <hr/>
+      <h3>Tags</h3>
+      <TagGrid tags={voteFormat(meme.tags, 'tag', mappedTags)}/>
+      <hr/>
+      <h3>Edge Rating</h3>
+      <p>{meme.edge().toString()}</p>
+      <hr/>
+      <h3>Flags</h3>
+      <input type="checkbox" disabled name="hidden" id={meme.id+'_hidden'} value={meme.flags.hidden?'true':'false'}/>
+      <label htmlFor={meme.id+'_hidden'}>Hidden</label>
+      { meme.type == 'video'?
+        <>
+          <input type="checkbox" disabled name="silent" id={meme.id+'_silent'} value={meme.flags.silent?'true':'false'}/>
+          <label htmlFor={meme.id+'_silent'}>Silent</label>
+        </>
+      :
+        <></>
+      }
+      <input type="checkbox" disabled name="nsfw" id={meme.id+'_nsfw'} value={meme.flags.nsfw?'true':'false'}/>
+      <label htmlFor={meme.id+'_nsfw'}>NSFW</label>
+    </div>
+  </article>
+}
 
 const CategoryGrid = (props:any) => {
-  return <div className='item-grid' style={{fontSize:'1.25em', 'margin':'0 1rem'}}>{props.categories.map((category:any) => 
+  return <div className='item-grid categories'>{props.categories.map((category:any) => 
     <Link key={category.id} className='grid-item category' href={'/categories/'+category.id} title={category.description}>
       <span>{category.name} <i className="dim">({category.count})</i></span>
-      <br/>
       <sub>{category.description}</sub>
     </Link>
   )}</div>
 }
 
 const TagGrid = (props:any) => {
-  return <div className='item-grid' style={{fontSize:'0.8em', margin: '0 1rem'}}>{
+  return <div className='item-grid tags'>{
     props.tags.filter((tag:any) => tag.count > 0).map((tag:any) => 
       <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id}><span>#{tag.name} <i className="dim">({tag.count})</i></span></Link>
     )

@@ -3,6 +3,8 @@ import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Meme, Query } from '@/lib/memedb';
 import { Browse, SingleMeme } from '@/modules/Layout';
+import { dropdownFormat } from '@/modules/Control';
+import { idIndex } from '@/lib/memedb';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 import { getMemes } from '@/pages/api/memes';
@@ -25,7 +27,7 @@ export async function getStaticProps(context:any) {
 
   return {
     props: {
-      data: await getMeme(db, context.params.id, 1),
+      data: await getMeme(db, Number(context.params.id), 1),
       tags: await getTags(db),
       categories: await getCats(db)
     }
@@ -37,9 +39,17 @@ export default function Home(props:any) {
     return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
   }
   const meme = Meme.create(props.data);
-  //const { bio, biodetails } = meme.bio();
-  const title = "MemeDB Browser";
-  const description = "MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!";
+  const mappedCategories = idIndex<any>(dropdownFormat(props.categories));
+  const mappedTags = idIndex<any>(dropdownFormat(props.tags));
+  const { bio } = meme.bio(mappedCategories, mappedTags);
+  const { description: memeDescription } = meme.descriptionWithAuthor();
+  const title = bio.substring(0, 20) + (bio.length>20? '...': '') + ' | MemeDB';
+  const description = memeDescription || "More information on this meme is needed.";
+  const memeTags = meme.tags.reduce<string[]>((out, tagVote) => {
+    out.push(mappedTags[tagVote.tag].name);
+    return out;
+  }, []);
+  const tags = ['meme', meme.type].concat(memeTags);
   return <>
     <Head>
       <title>{title}</title>
@@ -47,7 +57,7 @@ export default function Home(props:any) {
       <meta name="og:title" content={title}/>
       <meta name="description" content={description}/>
       <meta name="og:description" content={description}/>
-      <meta name="keywords" content="meme,memes,image,images,video,videos,gifs,webms,hashtag,search,database,index,meme,memes,database,search,find"/>
+      <meta name="keywords" content={tags.join(',')}/>
     </Head>
     <SingleMeme categories={props.categories} tags={props.tags} meme={meme}/>
   </>;
