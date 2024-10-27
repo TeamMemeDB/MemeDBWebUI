@@ -53,7 +53,7 @@ function headr($data,$conn){
 	global $user;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
@@ -73,7 +73,7 @@ function headr($data,$conn){
 		<meta name="theme-color" content="#535C68">
 		
 		<!--<link rel="stylesheet" href="//cdn.yiays.com/reset.css" type="text/css">-->
-		<link rel="stylesheet" href="/css/style.css?v=51" type="text/css">
+		<link rel="stylesheet" href="/css/style.css?v=54" type="text/css">
 		<link rel="stylesheet" href="/css/video.css?v=1" type="text/css">
 		<noscript>
 			<style>
@@ -86,6 +86,7 @@ function headr($data,$conn){
 		<link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i&display=swap" rel="stylesheet">
   </head>
   <body>
+		<div class="notice"><b>Logging in is disabled</b> - MemeDB is being rewritten, while this work is ongoing, no further changes to the database will be allowed.</div>
 		<div id="flood" style="display:none;"></div>
 		<div id="modal" style="display:none;"></div>
 		<div id="prompt" style="display:none;"></div>
@@ -143,7 +144,7 @@ function headr($data,$conn){
 					<div class="show-xl" style="width:2.5em;display:inline-block;"></div>
 					<h1><span class="hide-small">Meme</span><span class="accent">DB</span></h1>
 				</a>
-				<div class="float-right">
+				<!--<div class="float-right">
 					<?php if(!isset($_SESSION['access_token'])){?>
 						<a class="menu-btn float-right blurple-bg login-discord" href="/user/login/">Login</a>
 					<?php }else{?>
@@ -153,7 +154,7 @@ function headr($data,$conn){
 						<br class="show-tiny">
 						<?php echo "<a class=\"menu-btn float-right account accent\" href=\"{$user->account_url}favourites/\" title=\"View a list of all the memes you've favourited.\">★</a>"; ?>
 					<?php }?>
-				</div>
+				</div>-->
 				<br class="till-tiny">
 				<a class="menu-btn till-small" href="/search">🔍</a>
 				<form action="/search" method="GET" class="from-small">
@@ -213,7 +214,6 @@ function headr($data,$conn){
 			</div>
 		</header>
 		<div class="wrapper">
-			<div class="push push-header"></div>
 			<?php /*
 			<div class="panel warning hide">
 					<p>
@@ -234,7 +234,7 @@ function footer($meme=false){
 ?>
 		</div>
 		<footer>
-			&copy; 2020, Yiays
+			&copy; 2024, Yiays
 			<span class="float-right">
 				<a href="/terms/">Terms</a> |
 				<a href="/report/">Report</a> |

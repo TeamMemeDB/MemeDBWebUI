@@ -1,4 +1,7 @@
 <?php
+header('Location: https://meme.yiays.com/lockdown.php');
+die();
+
 require('../../../meme.conn.php');
 
 session_start();

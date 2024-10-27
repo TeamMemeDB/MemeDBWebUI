@@ -5,10 +5,15 @@ html{
 	overflow:overlay;
 	overflow-x:hidden;
 	position: relative;
-	font-size: 14px;
+	font-size: 16px;
 }
 html,body{
 	height:calc(100% - 2em);
+}
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 }
 body,input{
 	padding:0;
@@ -22,7 +27,7 @@ body,input{
 	padding:0 1em;
 	padding-bottom: 1rem;
 	box-sizing: border-box;
-	min-height:100%;
+	flex-grow: 1;
 	box-shadow:rgba(0,0,0,0.25) 0 0.25em 0.25em;
 }
 .lock{
@@ -361,15 +366,6 @@ textarea{
 }
 
 /* HEADER */
-.push{
-	height:3em;
-}
-header{
-	position: absolute;
-	top:0;
-	left:0;
-	right:0;
-}
 header,footer{
 	background:#535c68;
 	box-shadow:rgba(0,0,0,0.4) 0 0 0.5em;
@@ -378,11 +374,6 @@ header,footer{
 header .popdownmenu{
 	padding:1em;
 	border-top:0.3em solid rgba(255,255,255,0.3);
-}
-@media only screen and (max-width: 37.5em){
-	.push-header{
-		height:5em;
-	}
 }
 
 /* FOOTER */
@@ -393,6 +384,12 @@ footer{
 }
 
 /* NAV */
+.notice {
+	background: #c0392b;
+	color: white;
+	padding: 0.5rem;
+}
+
 header>nav{
 	min-height:3em;
 }
