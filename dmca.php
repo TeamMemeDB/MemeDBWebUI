@@ -8,7 +8,7 @@ headr(['title'=>"DMCA",'description'=>"If you are a copyright holder, you can pl
 <p>If you are a copyright holder, you can place a DMCA takedown request to protect your intellectual property.</p>
 <sub>
     This website is still in development and handling DMCA requests hasn't been implemented. Contact the developer at
-    <a href="mailto:yesiateyoursheep@gmail.com">yesiateyoursheep@gmail.com</a> if you need to place one.
+    <a href="mailto:yiays@yiays.com">yiays@yiays.com</a> if you need to place one.
 </sub>
 <?php 
 footer();

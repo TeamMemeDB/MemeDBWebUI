@@ -242,7 +242,7 @@ function footer($meme=false){
 				<a href="/dmca/">DMCA</a>
 			</span>
 		</footer>
-		<script src="//cdn.yiays.com/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="//cdn.yiays.com/jquery-3.7.1.min.js" type="text/javascript"></script>
 		<script src="/js/autocomplete.js?v=1" type="text/javascript"></script>
 		<script src="/js/main.js?v=7" type="text/javascript"></script>
 		<script src="/js/video.js" type="text/javascript"></script>
