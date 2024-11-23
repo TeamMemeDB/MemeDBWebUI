@@ -214,18 +214,6 @@ function headr($data,$conn){
 			</div>
 		</header>
 		<div class="wrapper">
-			<?php /*
-			<div class="panel warning hide">
-					<p>
-						<b>Warning:</b> MemeDB is currently in emergency mode, you will not be able to log in or make changes. The latest status on the situation is below.
-					</p>
-					<ul class="well">
-						<li>The main server for MemeDB has gone down, we have switched to a backup. Load times may be slower.</li>
-						<li>The most recent memes will not be able to load and new memes cannot be added until issues have been resolved.</li>
-					</ul>
-			</div>
-			<noscript><b>Warning:</b> Many features on this website may not work without enabling JavaScript.</noscript>
-			*/ ?>
 <?php 
 return true;
 }
