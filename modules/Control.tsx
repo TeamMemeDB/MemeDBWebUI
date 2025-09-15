@@ -1,6 +1,43 @@
+import Image from 'next/image';
 import React, {useState, useRef, useEffect} from 'react';
 
-export function Panel(props:any) {
+export type Selection = 'all'|'none'|number;
+
+export interface PanelProps {
+  type: 'toolbelt'|'';
+  title: string;
+  closed?: boolean;
+  children?: React.ReactNode;
+}
+
+export interface DropDownItem<T> {
+  id: T;
+  name: string;
+  count?: number;
+  displayname?: React.JSX.Element;
+  description?: string;
+  hidden?: boolean;
+}
+
+interface GenericDropDownProps<T> {
+  name: string|React.JSX.Element;
+  choices: Array<DropDownItem<T>>;
+}
+
+export interface DropDownProps<T> extends GenericDropDownProps<T> {
+  value: T;
+  setter: (newValue: T) => void;
+}
+
+export interface MultiDropDownProps extends GenericDropDownProps<Selection> {
+  value: Selection[];
+  setter: (newValue: Selection[]) => void;
+  displayname?: (id: number) => string;
+  inclusive: boolean;
+  inclusivityeditor: boolean;
+}
+
+export function Panel(props: PanelProps) {
   const [open, setOpen] = useState(props.closed ? false : true);
 
   return (
@@ -25,22 +62,22 @@ export function Panel(props:any) {
   );
 };
 
-export function dropdownFormat(arr:any) {
-  return arr.map((item:any) => {
-    if('_id' in item) {
-      item['id'] = item['_id'];
-      delete item['_id'];
+export function dropdownFormat<T extends Record<string, any>>(arr:T[]): DropDownItem<number>[] {
+  return arr.map((item) => {
+    const newItem: DropDownItem<number> = {
+      id: item._id ?? item.id,
+      name: item.name,
+      count: item.memes ?? item.count,
+      displayname: item.displayname,
+      description: item.description,
+      hidden: !item.memes || !item.count || item.hidden
     }
-    if('memes' in item) {
-      item['count'] = item['memes'];
-      if(item['count'] == 0) item['hidden'] = true;
-      delete item['memes'];
-    }
-    return item;
+
+    return newItem;
   });
 }
 
-export function DropDown(props:any) {
+export function DropDown<T extends string|number>(props:DropDownProps<T>) {
   let menu:React.JSX.Element[] = [];
   for(let i in props.choices) {
     let item = props.choices[i];
@@ -54,12 +91,12 @@ export function DropDown(props:any) {
 
     menu.push(
       <button onClick={() => props.setter(item.id)} key={item.id} className={classes.join(' ')} title={item.description}>
-        {item.displayname}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
+        {item.displayname}{item.count?<>&nbsp;<i className="dim">({item.count})</i></>:''}
       </button>
     );
   }
 
-  let selected = props.choices.filter((item:any) => item.id == props.value)[0];
+  let selected = props.choices.filter((item:DropDownItem<T>) => item.id == props.value)[0];
   let stringrep = selected?.name[0].toUpperCase()+selected?.name.substring(1);
 
   return <div className="dropdown">
@@ -72,21 +109,26 @@ export function DropDown(props:any) {
   </div>
 }
 
-export function itemSearch(item:any, search:any) {
+export function itemSearch<T>(item:DropDownItem<T>, search:string) {
   return (
     item.name.toLowerCase().includes(search.toLowerCase())
     || item.description?.toLowerCase().includes(search.toLowerCase())
   )
 }
 
-export function MultiDropDown(props:any) {
+export function MultiDropDown(props:MultiDropDownProps) {
   const minMaxlength = 50;
   const maxMaxlength = 1000;
 
   // Infer whether exclusive mode is on or not based on the currently selected values
-  const inclusiveFromValue = props.value.length? props.value[0]>=0 || props.value[0]=='all': props.inclusive;
+  let inclusiveFromValue = false;
+  if (props.value.length) {
+    if (props.value[0]=='all')
+      inclusiveFromValue = true;
+    else if (typeof props.value[0] == 'number' && props.value[0] >= 0)
+      inclusiveFromValue = true;
+  }
   const [inclusive, setInclusive] = useState(inclusiveFromValue);
-  console.log(inclusiveFromValue, inclusive, props.value);
   const [search, setSearch] = useState('');
   const [maxlength, setMaxlength] = useState(minMaxlength);
 
@@ -95,8 +137,8 @@ export function MultiDropDown(props:any) {
     return id;
   }
 
-  function select(id:any) {
-    let newSelection;
+  function select(id: Selection) {
+    let newSelection: Array<Selection>;
     // Select all
     if(id === 'all') newSelection = ['all'];
 
@@ -139,12 +181,11 @@ export function MultiDropDown(props:any) {
       }
     }
     props.setter(newSelection);
-    console.log('selected', newSelection);
   }
 
   function invertselection() {
     // Change values from a list of selected items to a list of unselected items and vice versa
-    let newSelection:(string|number)[] = [];
+    let newSelection: Selection[] = [];
     if(props.value.length == 0){
       // Nothing is selected
       newSelection = ['all']
@@ -160,7 +201,6 @@ export function MultiDropDown(props:any) {
       newSelection = props.choices.filter((item:any) => props.value.indexOf(item.id) == -1).map((item:any) => -item.id);
     }
     props.setter(newSelection);
-    console.log('inverted', newSelection);
   }
   
   let menu:React.JSX.Element[] = [];
@@ -173,7 +213,7 @@ export function MultiDropDown(props:any) {
 
     if(
       (inclusive && props.value.includes(item.id) || props.value[0] == 'all')
-      || (!inclusive && !props.value.includes(-item.id) && props.value[0] != 'all')
+      || (!inclusive && !props.value.includes(-item.id))
     ){
       classes.push('selected');
     }
@@ -194,7 +234,7 @@ export function MultiDropDown(props:any) {
 
     menu.push(
       <button onClick={() => select(item.id)} key={item.id} className={classes.join(' ')} title={item.description||item.name}>
-        {displayname(item.name)}{item.count>=0?<>&nbsp;<i className="dim">({item.count})</i></>:''}
+        {displayname(item.name)}{item.count?<>&nbsp;<i className="dim">({item.count})</i></>:''}
       </button>
     );
   }
@@ -347,7 +387,7 @@ export function HoverImg({ className, imageSrc, gifSrc, width, height, alt }:any
   const [isHovering, setIsHovering] = useState(false);
 
   return (
-    <img
+    <Image
       className={className + ' ' + (isHovering ? '' : 'gif')}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}

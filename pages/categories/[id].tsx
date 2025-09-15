@@ -2,10 +2,11 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Query } from '@/lib/memedb';
-import { Browse } from '../../modules/Layout';
+import { Browse, BrowseProps } from '../../modules/Layout';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 import { getMemes } from '@/pages/api/memes';
+import { DropDownItem } from '@/modules/Control';
 
 export async function getStaticPaths() {
   const dbClient = await clientPromise;
@@ -18,10 +19,10 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps(context:any) {
+export async function getStaticProps(context:{params:{id:string}}) {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create({categories:[parseInt(context.params.id)]});
+  const query = Query.create({categories:context.params.id});
   const categories = await getCats(db);
   const data = await getMemes(db, query);
 
@@ -31,12 +32,12 @@ export async function getStaticProps(context:any) {
       query: query.toJSON(),
       tags: await getTags(db),
       categories: categories,
-      chosenCategory: categories.filter(category => category._id == context.params.id)[0]
+      chosenCategory: categories.filter(category => category.id == context.params.id)[0]
     }
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props: BrowseProps & {chosenCategory: DropDownItem<number>}) {
   const title = `${props.chosenCategory.name} memes | MemeDB`;
   const description = props.chosenCategory.description;
   return <>

@@ -2,14 +2,14 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Query } from '@/lib/memedb';
-import { Browse } from '../../modules/Layout';
+import { Browse, BrowseProps } from '../../modules/Layout';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 
 export async function getStaticProps() {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create({tags:[]});
+  const query = Query.create({tags:''});
 
   return {
     props: {
@@ -20,7 +20,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props: BrowseProps) {
   const title = "All Tags | MemeDB";
   const description = "MemeDB Users have created a wide variety of tags designed to help you find specific memes, topics, trends, or formats.";
   return <>

@@ -2,14 +2,14 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Query } from '@/lib/memedb';
-import { Browse } from '../../modules/Layout';
+import { Browse, BrowseProps } from '../../modules/Layout';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 
 export async function getStaticProps() {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create({categories:[]});
+  const query = Query.create({categories:''});
 
   return {
     props: {
@@ -20,7 +20,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props: BrowseProps) {
   const title = "All Categories | MemeDB";
   const description = "Categories are a quick way to find specific genres and styles of memes. Some examples include Absurdist memes, Political memes, and Anime memes.";
   return <>

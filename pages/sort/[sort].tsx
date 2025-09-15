@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Query, sortModes } from '@/lib/memedb';
-import { Browse } from '../../modules/Layout';
+import { Browse, BrowseProps } from '../../modules/Layout';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 import { getMemes } from '@/pages/api/memes';
@@ -14,10 +14,10 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps(context:any) {
+export async function getStaticProps(context:{params:{sort:string}}) {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create({sort:context.params.sort});
+  const query = Query.create({sort:context.params.sort});
 
   return {
     props: {
@@ -37,7 +37,7 @@ const modeDescriptions:{[key:string]:string} = {
   'bottom': "See the lowest rated memes that have been added to MemeDB so far."
 };
 
-export default function Sort(props:any) {
+export default function Sort(props: BrowseProps & {sortName: string}) {
   const title = `${props.sortName} memes | MemeDB`;
   const description = modeDescriptions[props.query.sort];
   return <>

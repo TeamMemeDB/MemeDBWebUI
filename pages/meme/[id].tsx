@@ -1,8 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
-import { Meme, Query } from '@/lib/memedb';
-import { SingleMeme, MemeGrid } from '@/modules/Layout';
+import { DBError, DBMeme, Meme, Query } from '@/lib/memedb';
+import { SingleMeme, MemeGrid, DataProps } from '@/modules/Layout';
 import { dropdownFormat } from '@/modules/Control';
 import { idIndex } from '@/lib/memedb';
 import { getCats } from '@/pages/api/cats';
@@ -16,12 +16,12 @@ export async function getStaticPaths() {
   const data = await getMemes(db, Query.create({limit:0, edge:'all'}), true);
 
   return {
-    paths: data['memes'].map((meme:any) => `/meme/${meme._id}`),
+    paths: data['memes'].map((meme: DBMeme) => `/meme/${meme._id}`),
     fallback: false
   }
 }
 
-export async function getStaticProps(context:any) {
+export async function getStaticProps(context:{params:{id:string}}) {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
 
@@ -34,13 +34,13 @@ export async function getStaticProps(context:any) {
   };
 }
 
-export default function Home(props:any) {
-  if(props.data.errorMessage) {
+export default function Home(props:DataProps & {data:Partial<DBMeme>|DBError}) {
+  if('errorMessage' in props.data) {
     return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
   }
   const meme = Meme.create(props.data);
-  const mappedCategories = idIndex<any>(dropdownFormat(props.categories));
-  const mappedTags = idIndex<any>(dropdownFormat(props.tags));
+  const mappedCategories = idIndex(dropdownFormat(props.categories));
+  const mappedTags = idIndex(dropdownFormat(props.tags));
   const { bio } = meme.bio(mappedCategories, mappedTags);
   const { description: memeDescription } = meme.descriptionWithAuthor();
   const title = bio.substring(0, 20) + (bio.length>20? '...': '') + ' | MemeDB';
@@ -62,7 +62,7 @@ export default function Home(props:any) {
     <SingleMeme {...props} meme={meme}/>
     <div className="browse">
       <h2>Related memes</h2>
-      <MemeGrid data={{errorMessage: "Feature not implemented yet."}}/>
+      <MemeGrid {...props} data={{errorMessage: "Feature not implemented yet."}}/>
     </div>
   </>;
 }

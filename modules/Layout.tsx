@@ -1,11 +1,48 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown } from './Control';
+import { Panel, dropdownFormat, DropDown, itemSearch, MultiDropDown, DropDownItem } from './Control';
 import { User, UserNav } from './User';
 import { getContrastYIQ } from '../lib/colour';
-import { sortModes, edgeLevels, Query, idIndex, Meme, voters } from '../lib/memedb';
+import { sortModes, edgeLevels, Query, idIndex, Meme, Voter, DBError } from '../lib/memedb';
 
-export const Header = (props:any) => {
+export interface BrowseProps {
+  /* Search/filter/query state */
+  query: Query;
+  /* Meme search results and metadata */
+  data?: DBData;
+  /* All available tags */
+  tags?: DropDownItem<number>[];
+  /* All available categories */
+  categories?: DropDownItem<number>[];
+  /* Callback to update query and trigger navigation */
+  setQuery: (nextQuery: Query) => void;
+  /* Optional: custom sort modes */
+  customSorts?: DropDownItem<string>[];
+  /* Optional: custom edge levels */
+  customEdge?: DropDownItem<number>[];
+  /* Optional: filter string */
+  filter?: string;
+}
+
+export interface MemeProps {
+  data?: DBData | DBError;
+  meme: Meme;
+  categories: DropDownItem<number>[];
+  tags: DropDownItem<number>[];
+}
+
+export interface DataProps {
+  data: DBData | DBError;
+  categories: DropDownItem<number>[];
+  tags: DropDownItem<number>[];
+}
+
+export interface DBData {
+  matches?: number;
+  memes?: Meme[];
+}
+
+export const Header = (props: BrowseProps) => {
   const [searchFocus, setSearchFocus] = useState(false);
   const searchBar:React.MutableRefObject<HTMLInputElement|null> = useRef(null);
   const user = null;// new User('Yiays');
@@ -39,7 +76,7 @@ export const Header = (props:any) => {
   </nav></header>;
 }
 
-export const Footer = (props:any) => {
+export const Footer = () => {
   return <footer><nav>
     <NavItem href="https://yiays.com">Created by Yiays</NavItem>
     <NavSpacer/>
@@ -50,42 +87,49 @@ export const Footer = (props:any) => {
   </nav></footer>;
 }
 
-export const NavItem = (props:any) => {
-  return <Link href={props.href} className={"btn navbutton" + (props.className?' '+props.className:'')}>
+interface NavItemProps {
+  href: string;
+  className?: string;
+  children: React.ReactNode;
+}
+
+export const NavItem: React.FC<NavItemProps> = (props) => {
+  return <Link href={props.href} className={"btn navbutton" + (props.className ? ' ' + props.className : '')}>
     {props.children}
   </Link>
 }
 
-export const NavSpacer = (props:any) => {
+export const NavSpacer = () => {
   return <span className='navspacer'/>
 }
 
-export const Browse = (props:any) => {
+export const Browse = (props:BrowseProps) => {
   // Page state
   const sorts = props.customSorts? props.customSorts: sortModes;
   const edge = props.customEdge? props.customEdge: edgeLevels;
-  const tags = dropdownFormat(props.tags).sort((a:any,b:any) => b.count-a.count);
-  const categories = dropdownFormat(props.categories);
+  const tags = props.tags? dropdownFormat(props.tags).sort((a:any,b:any) => b.count-a.count): [];
+  const categories = props.categories? dropdownFormat(props.categories): [];
 
   // DropDown state
-  const [nextSort, setNextSort] = useState(props.query.sort);
+  const [nextSort, setNextSort] = useState<string>(props.query.sort);
   const [nextCategories, setNextCategories] = useState(props.query.categories);
   const [nextTags, setNextTags] = useState(props.query.tags);
-  const [nextEdge, setNextEdge] = useState(props.query.edge); // No support for multiple edge levels for now
+  const [nextEdge, setNextEdge] = useState<number|'all'>(props.query.edge); // No support for multiple edge levels for now
 
   function search() {
     // Find the new url based on changes to state
     props.setQuery(Query.create({
       sort: nextSort,
-      categories: nextCategories,
-      tags: nextTags,
+      categories: nextCategories.join(','),
+      tags: nextTags.join(','),
       edge: nextEdge,
       from: 0,
       filter: props.filter
     }));
   }
 
-  let filteredCategories, filteredTags;
+  let filteredCategories: DropDownItem<number>[] = [];
+  let filteredTags: DropDownItem<number>[] = [];
   if(props.query.filter) {
     filteredCategories = categories.filter((c:any) => itemSearch(c, props.query.filter));
     filteredTags = tags.filter((t:any) => itemSearch(t, props.query.filter));
@@ -93,10 +137,10 @@ export const Browse = (props:any) => {
 
   return <div className="browse">
     <Panel type="toolbelt" title="Search Tools">
-      <DropDown name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={nextSort} setter={setNextSort}/>
+      <DropDown<string> name={<><i className="icon-menu2"/> Sort</>} choices={sorts} value={nextSort} setter={setNextSort}/>
       <MultiDropDown name={<><i className="icon-folder"/> Categories</>} choices={categories} value={nextCategories} setter={setNextCategories} inclusivityeditor={true} inclusive={true}/>
       <MultiDropDown name={<><i className="icon-tags"/> Tags</>} choices={tags} value={nextTags} setter={setNextTags} inclusivityeditor={true} inclusive={true} displayname={(s:any) => '#'+s}/>
-      <DropDown name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={nextEdge} setter={setNextEdge} inclusive={false}/>
+      <DropDown<number|'all'> name={<><i className="icon-pepper"/> Edge</>} choices={edge} value={nextEdge} setter={setNextEdge}/>
       <button className='btn' onClick={search}>Update</button>
     </Panel>
     {(props.query.filter)?
@@ -135,22 +179,24 @@ export const Browse = (props:any) => {
   </div>;
 }
 
-export const MemeGrid = (props:any) => {
-  const memes: Meme[] = props.data?.memes? props.data.memes.map((rawmeme:any) => Meme.create(rawmeme)): [];
+export const MemeGrid = (props: DataProps) => {
+  if('errorMessage' in props.data) {
+    return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
+  }
+  
+  const memes = props.data.memes? props.data.memes.map((rawmeme:any) => Meme.create(rawmeme)): [];
 
   if(memes.length) {
     return <div className='item-grid'>{memes.map((meme, i) =>
-      <GridMeme key={i} meme={meme} categories={props.categories} tags={props.tags}/>
+      <GridMeme key={i} meme={meme} categories={props.categories ?? []} tags={props.tags ?? []}/>
     )}</div>;
-  }else if(props.data.errorMessage) {
-    return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
   }else return <></>
 }
 
-const GridMeme = (props:any) => {
-  const meme:Meme = props.meme;
-  const mappedCategories = idIndex<any>(props.categories);
-  const mappedTags = idIndex<any>(props.tags);
+const GridMeme = (props: MemeProps) => {
+  const meme = props.meme;
+  const mappedCategories = idIndex(props.categories);
+  const mappedTags = idIndex(props.tags);
   const {bio, biodetails} = meme.bio(mappedCategories, mappedTags);
   const contrast = getContrastYIQ(meme.color);
 
@@ -176,10 +222,14 @@ function voteFormat(arr:any[], idKey:string, source:{[id: number]:any}) {
   })
 }
 
-export const SingleMeme = (props:any) => {
+export const SingleMeme = (props: MemeProps) => {
+  if(props.data && 'errorMessage' in props.data) {
+    return <p style={{color:'red'}}>{props.data.errorMessage}</p>;
+  }
+  
   const meme:Meme = props.meme;
-  const mappedCategories = idIndex<any>(dropdownFormat(props.categories));
-  const mappedTags = idIndex<any>(dropdownFormat(props.tags));
+  const mappedCategories = idIndex(dropdownFormat(props.categories));
+  const mappedTags = idIndex(dropdownFormat(props.tags));
   //const mappedUsers = idIndex<any>(props.users);
   const {bio, biodetails} = meme.bio(mappedCategories, mappedTags);
   const contrast = getContrastYIQ(meme.color);
@@ -229,7 +279,7 @@ export const SingleMeme = (props:any) => {
   </article>
 }
 
-const CategoryGrid = (props:any) => {
+const CategoryGrid = (props:{categories: DropDownItem<number>[]}) => {
   return <div className='item-grid categories'>{props.categories.map((category:any) => 
     <Link key={category.id} className='grid-item category' href={'/categories/'+category.id} title={category.description}>
       <span>{category.name} <i className="dim">({category.count})</i></span>
@@ -238,9 +288,9 @@ const CategoryGrid = (props:any) => {
   )}</div>
 }
 
-const TagGrid = (props:any) => {
+const TagGrid = (props:{tags: DropDownItem<number>[]}) => {
   return <div className='item-grid tags'>{
-    props.tags.filter((tag:any) => tag.count > 0).map((tag:any) => 
+    props.tags.filter((tag:DropDownItem<number>) => tag.count??0 > 0).map((tag:DropDownItem<number>) => 
       <Link key={tag.id} className='grid-item' href={'/tags/'+tag.id}><span>#{tag.name} <i className="dim">({tag.count})</i></span></Link>
     )
   }</div>

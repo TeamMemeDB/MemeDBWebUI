@@ -2,10 +2,11 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '@/lib/mongodb';
 import { Query } from '@/lib/memedb';
-import { Browse } from '../../modules/Layout';
+import { Browse, BrowseProps } from '../../modules/Layout';
 import { getCats } from '@/pages/api/cats';
 import { getTags } from '@/pages/api/tags';
 import { getMemes } from '@/pages/api/memes';
+import { DropDownItem } from '@/modules/Control';
 
 export async function getStaticPaths() {
   const dbClient = await clientPromise;
@@ -18,10 +19,10 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps(context:any) {
+export async function getStaticProps(context:{params:{id:string}}) {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create({tags:[parseInt(context.params.id)]});
+  const query = Query.create({tags:context.params.id});
   const tags = await getTags(db);
 
   return {
@@ -30,12 +31,12 @@ export async function getStaticProps(context:any) {
       query: query.toJSON(),
       tags: tags,
       categories: await getCats(db),
-      chosenTag: tags.filter(tag => tag._id == context.params.id)[0]
+      chosenTag: tags.filter(tag => tag.id == context.params.id)[0]
     }
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props: BrowseProps & {chosenTag: DropDownItem<number>}) {
   const title = `#${props.chosenTag.name} memes | MemeDB`;
   const description = `These memes have been given the #${props.chosenTag.name} tag by the MemeDB community.`;
   return <>

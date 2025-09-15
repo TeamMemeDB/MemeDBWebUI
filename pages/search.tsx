@@ -1,16 +1,16 @@
 import React from 'react';
 import Head from 'next/head';
 import clientPromise from '../lib/mongodb';
-import { Query } from '../lib/memedb';
-import { Browse } from '../modules/Layout';
+import { Query, RawQuery } from '../lib/memedb';
+import { Browse, BrowseProps } from '../modules/Layout';
 import { getCats } from './api/cats';
 import { getTags } from './api/tags';
 import { getMemes } from './api/memes';
 
-export async function getServerSideProps(context:any) {
+export async function getServerSideProps(context: {query:RawQuery}) {
   const dbClient = await clientPromise;
   const db = dbClient.db('memedb');
-  let query = Query.create(context.query || {});
+  const query = Query.create(context.query || {});
 
   return {
     props: {
@@ -22,7 +22,7 @@ export async function getServerSideProps(context:any) {
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props:BrowseProps) {
   const delta = Query.create({}).difference(props.query);
   const pageKeys = Object.keys(delta).filter(key => ['categories', 'tags', 'filter'].includes(key));
 

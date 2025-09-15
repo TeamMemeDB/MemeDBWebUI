@@ -1,3 +1,4 @@
+import { DBError, DBMeme } from "@/lib/memedb";
 import clientPromise from "@/lib/mongodb";
 import { Db } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -7,15 +8,15 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
     return res.status(405);
   const client = await clientPromise;
   const db = client.db("memedb");
-  let result: object | false = false;
+  let result: Partial<DBMeme> | DBError;
   if(typeof req.query.id == 'string')
     result = await getMeme(db, Number(req.query.id), Number(req.query.edge||0));
   else
-    result = false;
-  res.json(result || {errorMessage: 'Meme not found'});
+    result = {errorMessage: 'Meme not found'};
+  res.json(result);
 }
 
-export async function getMeme(db:Db, id:number, maxEdge:number): Promise<object|false> {
+export async function getMeme(db:Db, id:number, maxEdge:number): Promise<Partial<DBMeme>|DBError> {
   if(maxEdge > 1) {
     return {errorMessage: "Authorization is required to view these memes."};
   }
@@ -50,5 +51,5 @@ export async function getMeme(db:Db, id:number, maxEdge:number): Promise<object|
   ];
   const result = await db.collection("meme").aggregate(pipeline).toArray();
   if(result) return result[0];
-  return false;
+  return {errorMessage: 'Meme not found'};
 }

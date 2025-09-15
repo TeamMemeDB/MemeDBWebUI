@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import clientPromise from '../lib/mongodb';
 import { Query } from '../lib/memedb';
-import { Browse } from '../modules/Layout';
+import { Browse, BrowseProps } from '../modules/Layout';
 import { getCats } from './api/cats';
 import { getTags } from './api/tags';
 import { getMemes } from './api/memes';
@@ -22,7 +22,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home(props:any) {
+export default function Home(props: BrowseProps) {
   const title = "MemeDB Browser";
   const description = "MemeDB is a massive database of memes. Memes are indexed and metadata is crowd-sourced and so that any meme you are thinking of should be searchable!";
   return <>

@@ -1,4 +1,4 @@
-export const getContrastYIQ = (hexcolor) => {
+export const getContrastYIQ = (hexcolor: string) => {
   hexcolor = hexcolor || '#000000';
   hexcolor = hexcolor.replace("#", "");
   const r = parseInt(hexcolor.substr(0, 2), 16);
